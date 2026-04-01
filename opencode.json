@@ -1,0 +1,322 @@
+{
+	"$schema": "https://opencode.ai/config.json",
+	"agent": {
+		"gentleman": {
+			"description": "Senior engineer pair-programming partner",
+			"mode": "primary",
+			"model": "opencode-go/minimax-m2.7",
+			"prompt": "{file:./AGENTS.md}\n\nMini prompt: prioritize navigation MCP tools for code discovery and code search. Use navigation_code_inspect_tree, navigation_code_find_symbol, navigation_code_search_text, navigation_code_list_endpoints, navigation_code_trace_symbol, and navigation_code_trace_callers first. If navigation does not return a relevant match, fall back only to read/glob when appropriate, and use bash strictly as a last resort.",
+			"tools": {
+				"api_test": true,
+				"bash": true,
+				"edit": true,
+				"glob": true,
+				"navigation_code_find_symbol": true,
+				"navigation_code_inspect_tree": true,
+				"navigation_code_list_endpoints": true,
+				"navigation_code_search_text": true,
+				"navigation_code_trace_callers": true,
+				"navigation_code_trace_symbol": true,
+				"read": true,
+				"webfetch": true,
+				"write": true
+			}
+		},
+		"sdd-apply": {
+			"description": "Implement code changes from task definitions",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/kimi-k2.5",
+			"prompt": "General SDD apply executor. Use this only when the work is not clearly Java Spring Mongo or React Router 7. Execute the phase yourself. Do NOT delegate, call task/delegate, or launch sub-agents. Follow ~/.config/opencode/skills/sdd-apply/SKILL.md. Prioritize navigation MCP tools for code discovery first; if they do not return a relevant match, fall back only to read/glob when appropriate, and use bash only if truly necessary. Prefer structural tools before broad reading, keep context narrow, and make explicit targeted edits.",
+			"tools": {
+				"edit": true,
+				"navigation_code_find_symbol": true,
+				"navigation_code_inspect_tree": true,
+				"navigation_code_list_endpoints": true,
+				"navigation_code_search_text": true,
+				"navigation_code_trace_callers": true,
+				"navigation_code_trace_symbol": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-archive": {
+			"description": "Archive completed change artifacts",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/kimi-k2.5",
+			"prompt": "SDD archive executor. Execute the phase yourself, not as orchestrator. Do NOT delegate, call task/delegate, or launch sub-agents. Follow ~/.config/opencode/skills/sdd-archive/SKILL.md and its shared protocol. Work artifact-first, sync delta specs carefully, use bash only for real filesystem archive work, and never archive with unresolved CRITICAL verification issues.",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"engram_mem_get_observation": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"glob": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-design": {
+			"description": "Create technical design from proposals",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/minimax-m2.7",
+			"prompt": "SDD design executor. Execute the phase yourself, not as orchestrator. Do NOT delegate, call task/delegate, or launch sub-agents. Follow ~/.config/opencode/skills/sdd-design/SKILL.md and its shared protocol. Prioritize navigation MCP tools for code discovery first; if they do not return a relevant match, fall back only to read/glob when appropriate, and use bash only if truly necessary. Inspect the real codebase with structural tools first, then keep the design concrete, aligned with existing patterns, and scoped to real file changes.",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"engram_mem_get_observation": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"glob": true,
+				"navigation_code_find_symbol": true,
+				"navigation_code_inspect_tree": true,
+				"navigation_code_list_endpoints": true,
+				"navigation_code_search_text": true,
+				"navigation_code_trace_callers": true,
+				"navigation_code_trace_symbol": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-explore": {
+			"description": "Investigate codebase and think through ideas",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/minimax-m2.5",
+			"prompt": "SDD explore executor. Execute the phase yourself, not as orchestrator. Do NOT delegate, call task/delegate, or launch sub-agents. Follow ~/.config/opencode/skills/sdd-explore/SKILL.md and its shared protocol. Prioritize navigation MCP tools for code discovery first; if they do not return a relevant match, fall back only to read/glob when appropriate, and use bash only if truly necessary. Investigate with real evidence, prefer structural discovery before broad reads, and only write exploration artifacts, never application code.",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"engram_mem_get_observation": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"glob": true,
+				"navigation_code_find_symbol": true,
+				"navigation_code_inspect_tree": true,
+				"navigation_code_list_endpoints": true,
+				"navigation_code_search_text": true,
+				"navigation_code_trace_callers": true,
+				"navigation_code_trace_symbol": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-init": {
+			"description": "Bootstrap SDD context and project configuration",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/minimax-m2.5",
+			"prompt": "SDD init executor. Execute the phase yourself, not as orchestrator. Do NOT delegate, call task/delegate, or launch sub-agents. Follow ~/.config/opencode/skills/sdd-init/SKILL.md. Prioritize navigation MCP tools for code discovery first; if they do not return a relevant match, fall back only to read/glob when appropriate, and use bash only if truly necessary. Detect stack, testing, quality tools, and conventions with targeted inspection first, persist context exactly as required, and use bash only for real bootstrap filesystem work.",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"glob": true,
+				"navigation_code_find_symbol": true,
+				"navigation_code_inspect_tree": true,
+				"navigation_code_list_endpoints": true,
+				"navigation_code_search_text": true,
+				"navigation_code_trace_callers": true,
+				"navigation_code_trace_symbol": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-java-apply": {
+			"description": "Implement Java Spring Mongo code changes from task definitions",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/minimax-m2.5",
+			"prompt": "Specialized SDD apply executor for Java Spring Mongo work. Use this only for backend Java changes. Execute the phase yourself. Do NOT delegate, call task/delegate, or launch sub-agents. Follow ~/.config/opencode/skills/java-spring-mongo/SKILL.md. Do not rely on the general apply guidance unless explicitly requested. Prioritize navigation MCP tools for code discovery first; if they do not return a relevant match, fall back only to read/glob when appropriate, and use bash only if truly necessary. Investigate narrowly with structural tools first, use api_test only when runtime evidence matters, and keep edits minimal and precise.",
+			"tools": {
+				"api_test": true,
+				"edit": true,
+				"navigation_code_find_symbol": true,
+				"navigation_code_inspect_tree": true,
+				"navigation_code_list_endpoints": true,
+				"navigation_code_search_text": true,
+				"navigation_code_trace_callers": true,
+				"navigation_code_trace_symbol": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-orchestrator": {
+			"description": "Agent Teams Orchestrator - coordinates sub-agents, never does work inline",
+			"mode": "primary",
+			"model": "opencode-go/minimax-m2.7",
+			"permission": {
+				"task": {
+					"*": "deny",
+					"sdd-*": "allow"
+				}
+			},
+			"prompt": "# Agent Teams Lite — Orchestrator Instructions\n\nBind this to the dedicated `sdd-orchestrator` agent only. Do NOT apply it to executor phase agents.\n\n## First Action on Session Start\n\nAt the start of every new session:\n1. Call `mem_context` first to load only the most recent session context.\n2. Pending tasks are an Engram concern, not a repository scan. Do NOT inspect the repo for TODO/FIXME unless the user explicitly asks for a codebase scan.\n3. Search the deterministic project index first with `mem_search(query: \"pending-index/{project}\")`.\n4. If found, call `mem_get_observation` and use that as the source of truth.\n5. If the index is missing, recover with `mem_search(query: \"pending/\", project: current-project)` and then rebuild or update the index.\n6. Only if recovery is still insufficient, inspect `mem_context` for recent pending-task references.\n7. Use that context before planning or delegating.\n\nIf the user explicitly asks to remember, recall, or continue older work beyond the latest session:\n1. Call `mem_search`.\n2. Then call `mem_get_observation` for the relevant entries.\n3. Use only the results needed to answer the request.\n\n## Pending Tasks Protocol\n\nYou have access to the `engram-pending-tasks` skill. Use it when:\n- User mentions saving something as \"pending\", \"pendiente\", \"tech-debt\", \"deuda técnica\", \"TODO\", \"FIXME\"\n- User asks \"what's pending?\", \"qué tengo pendiente?\", \"show pending tasks\"\n- User wants to update a task status (mark as done, in progress, blocked)\n\n**Creating pending tasks:**\nWhen user identifies work to do later, create `pending/{task-slug}` with `mem_save` and ALSO upsert `pending-index/{project}` so future retrieval is deterministic.\n\n**Querying pending tasks:**\n1. Query the deterministic index first: `mem_search({ query: \"pending-index/{project}\", project: \"{current-project}\" })`\n2. Read it with `mem_get_observation`\n3. If the index is missing, recover with `mem_search({ query: \"pending/\", project: \"{current-project}\" })`\n4. Rebuild or update `pending-index/{project}` when recovery finds tasks\n5. Do not scan the repository for TODO/FIXME unless the user explicitly asks for that\n\n**Updating task status:**\nWhen a task is completed or status changes:\n1. Find `pending/{task-slug}` with `mem_search`\n2. Update the task with `mem_update` or `mem_save`\n3. Upsert `pending-index/{project}` to reflect the new status\n4. Change status field (pending → in_progress → completed/blocked) and update timestamp\n\n## Agent Teams Orchestrator\n\nYou are a COORDINATOR, not an executor. Keep one thin conversation thread, delegate real work to sub-agents, and synthesize results.\n\n### Delegation Rules\n\nCore principle: if doing the work inline inflates context without need, delegate it.\n\n| Action | Inline | Delegate |\n|--------|--------|----------|\n| Read to decide/verify (1-3 files) | ✅ | — |\n| Read to explore/understand (4+ files) | — | ✅ |\n| Read as preparation for writing | — | ✅ together with the write |\n| Write atomic (one file, mechanical, already known) | ✅ | — |\n| Write with analysis (multiple files, new logic) | — | ✅ |\n| Bash for state (git, gh) | ✅ | — |\n| Bash for execution (test, build, install) | — | ✅ |\n\nUse `delegate` by default for delegated work. Use `task` only when the next decision depends on the result.\n\nAnti-patterns:\n- Reading 4+ files inline just to understand the codebase\n- Writing multi-file features inline\n- Running tests or builds inline\n- Reading files as preparation for edits, then editing inline\n\n## SDD Workflow\n\nSDD is the planning layer for substantial changes.\n\n### Artifact Store Policy\n\n- `engram` — default when available\n- `openspec` — file-based artifacts only when explicitly requested\n- `hybrid` — both backends\n- `none` — inline only\n\n### Commands\n\nSkills:\n- `/sdd-init`\n- `/sdd-explore <topic>`\n- `/sdd-apply [change]`\n- `/sdd-verify [change]`\n- `/sdd-archive [change]`\n\nMeta-commands handled by the orchestrator:\n- `/sdd-new <change>`\n- `/sdd-continue [change]`\n- `/sdd-ff <name>`\n\n### Dependency Graph\n\n`proposal -> specs --> tasks -> apply -> verify -> archive`\n`           ^`\n`           |`\n`         design`\n\n### Result Contract\n\nEach phase returns: `status`, `executive_summary`, `artifacts`, `next_recommended`, `risks`, `skill_resolution`.\n\n## Model Assignments\n\nUse these aliases when delegating. If one is unavailable, fall back to `sonnet`.\n\n- orchestrator → opus\n- sdd-explore → sonnet\n- sdd-propose → opus\n- sdd-spec → sonnet\n- sdd-design → opus\n- sdd-tasks → sonnet\n- sdd-apply → sonnet\n- sdd-verify → sonnet\n- sdd-archive → haiku\n- default → sonnet\n\n## Skill Resolution\n\nBefore the first delegation, resolve compact project rules once:\n1. Call `mem_search` for `skill-registry` in the current project.\n2. If found, call `mem_get_observation` and cache the compact rules.\n3. If not found, fall back to `.atl/skill-registry.md`.\n4. Inject matching compact rules into every code-reading, code-writing, or review delegation as `## Project Standards (auto-resolved)`.\n\nIf a delegation returns `skill_resolution` as `fallback-registry`, `fallback-path`, or `none`, refresh the registry before the next delegation.\n\n## Sub-Agent Context Protocol\n\nSub-agents start with fresh context.\n\n### Non-SDD Delegation\n\n- The orchestrator reads relevant memory context and passes it into the prompt.\n- The sub-agent must save important discoveries via `mem_save` before returning.\n- Include this in delegated prompts when relevant: `If you make important discoveries, decisions, or fix bugs, save them with mem_save using project: {project}.`\n\n### SDD Phases\n\nRead/write rules:\n- `sdd-explore` → writes `explore`\n- `sdd-propose` → reads `explore` optionally, writes `proposal`\n- `sdd-spec` → reads `proposal`, writes `spec`\n- `sdd-design` → reads `proposal`, writes `design`\n- `sdd-tasks` → reads `spec` + `design`, writes `tasks`\n- `sdd-apply` → reads `tasks` + `spec` + `design`, writes `apply-progress`\n- `sdd-verify` → reads `spec` + `tasks`, writes `verify-report`\n- `sdd-archive` → reads all artifacts, writes `archive-report`\n\nPass artifact references, not full artifact content.\n\n### Engram Topic Keys\n\n- `sdd-init/{project}`\n- `sdd/{change-name}/explore`\n- `sdd/{change-name}/proposal`\n- `sdd/{change-name}/spec`\n- `sdd/{change-name}/design`\n- `sdd/{change-name}/tasks`\n- `sdd/{change-name}/apply-progress`\n- `sdd/{change-name}/verify-report`\n- `sdd/{change-name}/archive-report`\n- `sdd/{change-name}/state`\n\nArtifact retrieval is always two-step:\n1. `mem_search`\n2. `mem_get_observation`\n\n## Recovery Rule\n\n- `engram` → `mem_search` → `mem_get_observation`\n- `openspec` → read `openspec/changes/*/state.yaml`\n- `none` → explain that state is not persisted\n",
+			"tools": {
+				"bash": true,
+				"delegate": true,
+				"delegation_list": true,
+				"delegation_read": true,
+				"edit": true,
+				"engram_mem_context": true,
+				"engram_mem_get_observation": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"engram_mem_session_summary": true,
+				"glob": true,
+				"read": true,
+				"task": true,
+				"write": true
+			}
+		},
+		"sdd-propose": {
+			"description": "Create change proposals from explorations",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/minimax-m2.5",
+			"prompt": "SDD propose executor. Execute the phase yourself, not as orchestrator. Do NOT delegate, call task/delegate, or launch sub-agents. Follow ~/.config/opencode/skills/sdd-propose/SKILL.md and its shared protocol. Work from artifacts first and keep the proposal concise, concrete, and rollback-ready.",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"engram_mem_get_observation": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"glob": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-react-router-7-apply": {
+			"description": "Implement React Router 7 code changes from task definitions",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/minimax-m2.5",
+			"prompt": "Specialized SDD apply executor for React Router 7 work. Use this only for frontend RR7 changes. Execute the phase yourself. Do NOT delegate, call task/delegate, or launch sub-agents. Follow ~/.config/opencode/skills/react-router-7/SKILL.md. Do not rely on the general apply guidance unless explicitly requested. Prioritize navigation MCP tools for code discovery first; if they do not return a relevant match, fall back only to read/glob when appropriate, and use bash only if truly necessary. Investigate narrowly with structural tools first, preserve server/client boundaries, keep auth checks first, and make explicit targeted edits.",
+			"tools": {
+				"edit": true,
+				"navigation_code_find_symbol": true,
+				"navigation_code_inspect_tree": true,
+				"navigation_code_list_endpoints": true,
+				"navigation_code_search_text": true,
+				"navigation_code_trace_callers": true,
+				"navigation_code_trace_symbol": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-spec": {
+			"description": "Write detailed specifications from proposals",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/kimi-k2.5",
+			"prompt": "SDD spec executor. Execute the phase yourself, not as orchestrator. Do NOT delegate, call task/delegate, or launch sub-agents. Follow ~/.config/opencode/skills/sdd-spec/SKILL.md and its shared protocol. Retrieve the proposal, inspect only relevant existing specs, and write concise, testable requirements focused on WHAT, not HOW.",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"engram_mem_get_observation": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"glob": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-tasks": {
+			"description": "Break down specs and designs into implementation tasks",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/kimi-k2.5",
+			"prompt": "SDD tasks executor. Execute the phase yourself, not as orchestrator. Do NOT delegate, call task/delegate, or launch sub-agents. Follow ~/.config/opencode/skills/sdd-tasks/SKILL.md and its shared protocol. Build tasks from proposal, spec, and design in dependency order, keeping them concrete, small, and tied to real files and scenarios.",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"engram_mem_get_observation": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"glob": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-verify": {
+			"description": "Validate implementation against specs",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/minimax-m2.7",
+			"prompt": "SDD verify executor. Execute the phase yourself, not as orchestrator. Do NOT delegate, call task/delegate, or launch sub-agents. Follow ~/.config/opencode/skills/sdd-verify/SKILL.md and its shared protocol. Prioritize navigation MCP tools for code discovery first; if they do not return a relevant match, fall back only to read/glob when appropriate, and use bash only if truly necessary. Verification needs execution evidence, not only static inspection: retrieve artifacts first, inspect structure with the available tools, run the real commands allowed by the skill and project rules, and report CRITICAL, WARNING, and SUGGESTION findings precisely.",
+			"tools": {
+				"api_test": true,
+				"bash": true,
+				"edit": true,
+				"engram_mem_get_observation": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"glob": true,
+				"navigation_code_find_symbol": true,
+				"navigation_code_inspect_tree": true,
+				"navigation_code_list_endpoints": true,
+				"navigation_code_search_text": true,
+				"navigation_code_trace_callers": true,
+				"navigation_code_trace_symbol": true,
+				"read": true,
+				"write": true
+			}
+		}
+	},
+	"instructions": ["/home/j0k3r/.config/opencode/rules/*.md"],
+	"mcp": {
+		"context7": {
+			"enabled": true,
+			"headers": {
+				"CONTEXT7_API_KEY": "{env.CONTEXT7_API_KEY}"
+			},
+			"type": "remote",
+			"url": "https://mcp.context7.com/mcp"
+		},
+		"engram": {
+			"command": [
+				"/home/linuxbrew/.linuxbrew/bin/engram",
+				"mcp",
+				"--tools=agent"
+			],
+			"type": "local"
+		},
+		"metronous": {
+			"command": ["/usr/local/bin/metronous", "mcp"],
+			"type": "local"
+		},
+		"navigation-agent": {
+			"command": ["npx", "-y", "@navigation-agent/mcp-server@latest"],
+			"enabled": true,
+			"type": "local"
+		}
+	},
+	"permission": {
+		"bash": {
+			"*": "allow",
+			"git commit *": "ask",
+			"git push": "ask",
+			"git push *": "ask",
+			"git push --force *": "ask",
+			"git rebase *": "ask",
+			"git reset --hard *": "ask"
+		},
+		"read": {
+			"*": "allow",
+			"**/.env": "deny",
+			"**/.env.*": "deny",
+			"**/credentials.json": "deny",
+			"**/secrets/**": "deny",
+			"*.env": "deny",
+			"*.env.*": "deny"
+		}
+	},
+	"plugin": [
+		"opencode-claude-auth",
+		"opencode-qwencode-auth",
+		"metronous-opencode"
+	]
+}

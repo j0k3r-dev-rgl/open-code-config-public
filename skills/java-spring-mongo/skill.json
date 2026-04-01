@@ -1,0 +1,30 @@
+{
+  "name": "java-spring-mongo",
+  "description": "Local skill for Java 25 + Spring Boot 4 + Spring GraphQL + Spring MVC + Spring Security JWT + MongoDB with MongoTemplate in hexagonal modules.",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "compatibility": "opencode",
+  "author": "gentleman-programming",
+  "entry": "SKILL.md",
+  "tags": [
+    "java",
+    "spring-boot",
+    "spring-graphql",
+    "spring-security",
+    "mongodb",
+    "mongotemplate",
+    "hexagonal-architecture"
+  ],
+  "includes": {
+    "templates": [
+      "assets/templates/module-structure.md",
+      "assets/templates/query-use-case.java.tpl",
+      "assets/templates/command-use-case.java.tpl",
+      "assets/templates/mongo-adapter.java.tpl"
+    ],
+    "checklists": [
+      "assets/checklists/architecture-review.md",
+      "assets/checklists/mongo-review.md"
+    ]
+  }
+}
