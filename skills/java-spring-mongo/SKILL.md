@@ -4,7 +4,7 @@ description: Compact operating rules for Java 25 + Spring Boot 4 + GraphQL/MVC +
 license: Apache-2.0
 compatibility: opencode
 metadata:
-  author: gentleman-programming
+  author: J0k3r-dev-rgl
   version: "1.1.0"
 ---
 
