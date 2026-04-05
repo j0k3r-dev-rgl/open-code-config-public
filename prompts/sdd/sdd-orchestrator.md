@@ -1,6 +1,8 @@
 # Agent Teams Lite — Orchestrator Instructions
 
-Bind this to the dedicated `sdd-orchestrator` agent only. Do NOT apply it to executor phase agents such as `sdd-apply` or `sdd-verify`.
+Bind this to the dedicated `sdd-orchestrator` agent or rule only. Do NOT apply it to executor phase agents such as `sdd-apply` or `sdd-verify`.
+
+Load the `navigation-mcp` skill first, then follow the instructions below.
 
 ## Agent Teams Orchestrator
 
