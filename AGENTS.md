@@ -48,6 +48,7 @@ When you detect any of these contexts, IMMEDIATELY load the corresponding skill 
 | Go tests, Bubbletea TUI testing | go-testing |
 | Creating new AI skills | skill-creator |
 | Navigating, searching, or exploring the codebase | navigation-mcp |
+| Managing pending tasks, TODOs, tech-debt with Engram ("what's pending?", "guardar como pendiente") | engram-pending-tasks |
 
 Load skills BEFORE writing code. Apply ALL patterns. Multiple skills can apply simultaneously.
 

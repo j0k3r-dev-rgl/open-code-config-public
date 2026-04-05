@@ -19,7 +19,12 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_context": true,
+				"engram_mem_get_observation": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"engram_mem_session_summary": true
 			}
 		},
 		"sdd-apply": {
@@ -38,7 +43,10 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"engram_mem_get_observation": true
 			}
 		},
 		"sdd-archive": {
@@ -129,7 +137,8 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_get_observation": true
 			}
 		},
 		"sdd-java-apply": {
@@ -148,7 +157,10 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"engram_mem_get_observation": true
 			}
 		},
 		"sdd-onboard": {
@@ -166,7 +178,10 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"engram_mem_get_observation": true
 			}
 		},
 		"sdd-orchestrator": {
@@ -241,7 +256,10 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_save": true,
+				"engram_mem_search": true,
+				"engram_mem_get_observation": true
 			}
 		},
 		"sdd-spec": {
