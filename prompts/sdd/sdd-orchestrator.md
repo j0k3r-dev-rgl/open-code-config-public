@@ -32,19 +32,7 @@ Anti-patterns — these ALWAYS inflate context without need:
 
 ## Pending Tasks Protocol
 
-You have access to the `engram-pending-tasks` skill. Use it when:
-- User mentions saving something as "pending", "pendiente", "tech-debt", "deuda técnica", "TODO", "FIXME"
-- User asks "what's pending?", "qué tengo pendiente?", "show pending tasks"
-- User wants to update a task status (mark as done, in progress, blocked)
-
-**Creating pending tasks:**
-When user identifies work to do later, create `pending/{task-slug}` with `mem_save` and ALSO upsert `pending-index/{project}` so future retrieval is deterministic.
-
-**Querying pending tasks:**
-1. Query the deterministic index first: `mem_search({ query: "pending-index/{project}", project: "{current-project}" })`
-2. Read it with `mem_get_observation`
-3. If the index is missing, recover with `mem_search(query: "pending/", project: "{project}")` and rebuild the index
-4. Do NOT scan the repository for `TODO`/`FIXME` unless the user explicitly asks for a codebase scan
+Use the `engram-pending-tasks` skill for any task management request. It handles the deterministic namespaces (`pending/{slug}`, `pending-index/{project}`) and recovery logic automatically.
 
 ## SDD Workflow (Spec-Driven Development)
 
