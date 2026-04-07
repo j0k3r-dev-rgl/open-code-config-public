@@ -1,8 +1,11 @@
 {
 	"$schema": "https://opencode.ai/tui.json",
+	"keybinds": {
+		"tool_details": "ctrl+alt+t"
+	},
 	"plugin": [
 		[
-			"/home/j0k3r/opencode-mask",
+			"/home/j0k3r/opencode-mask/",
 			{
 				"enabled": true,
 				"theme": "tokyo-night-dev",

@@ -332,13 +332,9 @@
 			}
 		}
 	},
-	"command": {
-		"gentle": {
-			"description": "Abre un modal visual para ingresar texto y lo procesa al cerrar",
-			"template": "Ejecuta este comando de shell:\n`! echo -n $HOME/terminal-opentui/dist/gentle-tui` \n\n**IMPORTANTE:** Una vez que el programa termine (se cierre la interfaz), lee el contenido del archivo `/tmp/gentle_result.txt` para obtener el mensaje del usuario y continúa con la tarea."
-		}
-	},
-	"instructions": ["/home/j0k3r/.config/opencode/rules/*.md"],
+	"instructions": [
+		"/home/j0k3r/.config/opencode/rules/*.md"
+	],
 	"mcp": {
 		"context7": {
 			"enabled": true,
@@ -357,11 +353,18 @@
 			"type": "local"
 		},
 		"metronous": {
-			"command": ["/usr/local/bin/metronous", "mcp"],
+			"command": [
+				"/usr/local/bin/metronous",
+				"mcp"
+			],
 			"type": "local"
 		},
 		"navigation-agent": {
-			"command": ["npx", "-y", "@navigation-agent/mcp-server@latest"],
+			"command": [
+				"npx",
+				"-y",
+				"@navigation-agent/mcp-server@latest"
+			],
 			"enabled": true,
 			"type": "local"
 		}
@@ -390,5 +393,6 @@
 		"opencode-claude-auth",
 		"metronous-opencode",
 		"opencode-gemini-auth@latest"
-	]
+	],
+	"_profileType": "sdd"
 }
