@@ -21,7 +21,7 @@ The orchestrator will give you:
 
 ## Execution and Persistence Contract
 
-> Follow **Section B** (retrieval) and **Section C** (persistence) from `skills/_shared/sdd-phase-common.md`.
+> Follow **Section C** (retrieval) and **Section D** (persistence) from `skills/_shared/sdd-phase-common.md`.
 
 - **engram**: Optionally read `sdd-init/{project}` for project context. Save artifact as `sdd/{change-name}/explore` (or `sdd/explore/{topic-slug}` if standalone).
 - **openspec**: Read and follow `skills/_shared/openspec-convention.md`.
@@ -30,7 +30,7 @@ The orchestrator will give you:
 
 ### Retrieving Context
 
-> Follow **Section B** from `skills/_shared/sdd-phase-common.md` for retrieval.
+> Follow **Section C** from `skills/_shared/sdd-phase-common.md` for retrieval.
 
 - **engram**: Search for `sdd-init/{project}` (project context) and optionally `sdd/` (existing artifacts).
 - **openspec**: Read `openspec/config.yaml` and `openspec/specs/`.
@@ -39,7 +39,7 @@ The orchestrator will give you:
 ## What to Do
 
 ### Step 1: Load Skills
-Follow **Section A** from `skills/_shared/sdd-phase-common.md`.
+Follow **Section B** from `skills/_shared/sdd-phase-common.md`.
 
 ### Step 2: Understand the Request
 
@@ -77,7 +77,7 @@ If there are multiple approaches, compare them:
 
 **This step is MANDATORY when tied to a named change — do NOT skip it.**
 
-Follow **Section C** from `skills/_shared/sdd-phase-common.md`.
+Follow **Section D** from `skills/_shared/sdd-phase-common.md`.
 - artifact: `explore`
 - topic_key: `sdd/{change-name}/explore` (or `sdd/explore/{topic-slug}` if standalone)
 - type: `architecture`
@@ -126,4 +126,4 @@ Return EXACTLY this format to the orchestrator (and write the same content to `e
 - Keep your analysis CONCISE - the orchestrator needs a summary, not a novel
 - If you can't find enough information, say so clearly
 - If the request is too vague to explore, say what clarification is needed
-- Return envelope per **Section D** from `skills/_shared/sdd-phase-common.md`.
+- Return envelope per **Section E** from `skills/_shared/sdd-phase-common.md`.

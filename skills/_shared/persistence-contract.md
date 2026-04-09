@@ -4,9 +4,18 @@
 
 The orchestrator passes `artifact_store.mode` with one of: `engram | openspec | hybrid | none`.
 
+The orchestrator should resolve this from BOTH:
+- user preference
+- runtime capability
+
 The orchestrator ASKs the user which mode they want when `/sdd-new`, `/sdd-ff`, or `/sdd-continue` is invoked for the first time in a session. The choice is cached for the session.
 
 Default (if user doesn't specify): if Engram is available → `engram`. Otherwise → `none`.
+
+If the requested mode is unavailable, degrade explicitly instead of failing silently:
+- `hybrid` -> `openspec`
+- `engram` -> `openspec` or `none`
+- `openspec` -> `none`
 
 ## Mode Roles
 

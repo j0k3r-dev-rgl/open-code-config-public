@@ -87,7 +87,7 @@ rules:
     test_command: ""
   verify:
     test_command: ""
-    build_command: ""
+    typecheck_command: ""
     coverage_threshold: 0
   archive:
     - Warn before merging destructive deltas

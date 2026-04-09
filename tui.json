@@ -12,12 +12,6 @@
 				"set_theme": true,
 				"show_sidebar": true
 			}
-		],
-		[
-			"/home/j0k3r/plugin-sdd/",
-			{
-				"enabled": true
-			}
 		]
 	]
 }

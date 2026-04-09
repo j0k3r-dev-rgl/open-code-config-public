@@ -16,6 +16,12 @@ metadata:
 - Adding GraphQL or REST controllers
 - Reviewing ObjectId handling, lookups, batching, pagination, or projections
 
+When this skill is loaded during `sdd-apply`, it COMPLEMENTS the apply-phase workflow. It does NOT replace the `sdd-apply` contract:
+- read assigned tasks, specs, and design first
+- implement only the assigned tasks
+- update task completion state
+- persist `apply-progress`
+
 ## Architecture Rules
 
 - Organize by module, not by technical layer at the repository root
@@ -54,12 +60,12 @@ metadata:
 
 ## Preferred Tools
 
-- `list_endpoints` → inspect API surface before opening controllers
-- `find_symbol` → locate ports, use cases, controllers, adapters, or mappers
-- `trace_symbol` → follow controller → port → use case → adapter
-- `trace_callers` → impact analysis for changing ports or helpers
-- `scan_module` → read one module with low noise
-- `grep_workspace` → detect ObjectId mistakes, annotation usage, or persistence patterns
+- `navigation-agent_code_list_endpoints` → inspect API surface before opening controllers
+- `navigation-agent_code_find_symbol` → locate ports, use cases, controllers, adapters, or mappers
+- `navigation-agent_code_trace_flow` → follow controller → port → use case → adapter
+- `navigation-agent_code_trace_callers` → impact analysis for changing ports or helpers
+- `navigation-agent_code_inspect_tree` → inspect module structure with low noise
+- `navigation-agent_code_search_text` → detect ObjectId mistakes, annotation usage, or persistence patterns
 - `api_test` → verify controller contract when runtime evidence matters
 
 ## Workflow
@@ -69,6 +75,7 @@ metadata:
 - Start from the endpoint, use case, or repository port
 - Trace the full flow before editing
 - Reuse existing module patterns before creating new abstractions
+- Stay inside the task/spec/design boundaries defined by `sdd-apply`
 
 ### 2. Place code in the correct layer
 
@@ -165,3 +172,4 @@ return mongoTemplate.aggregate(aggregation, "titulares", TitularDetailDTO.class)
 - [ ] Reads use batching/aggregation where needed
 - [ ] Response projections convert ids correctly
 - [ ] Naming matches module conventions
+- [ ] Changes stay within assigned SDD tasks and design constraints

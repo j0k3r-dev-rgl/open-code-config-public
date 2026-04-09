@@ -4,7 +4,20 @@ Boilerplate identical across all SDD phase skills. Sub-agents MUST load this alo
 
 Executor boundary: every SDD phase agent is an EXECUTOR, not an orchestrator. Do the phase work yourself. Do NOT launch sub-agents, do NOT call `delegate`/`task`, and do NOT bounce work back unless the phase skill explicitly says to stop and report a blocker.
 
-## A. Skill Loading
+## A. Discovery First
+
+When you need to explore the codebase, locate symbols, inspect routes/endpoints, trace flows, or search text:
+
+1. Use `navigation-mcp` tools first.
+2. If navigation is insufficient, fall back to:
+   - `read` for known files
+   - `glob` for file discovery
+   - `grep` for content search
+3. Use `bash` only when navigation and normal tools cannot answer the question.
+
+Do not start broad exploration with raw file reads when navigation can narrow the scope first.
+
+## B. Skill Loading
 
 1. Check if the orchestrator injected a `## Project Standards (auto-resolved)` block in your launch prompt. If yes, follow those rules — they are pre-digested compact rules from the skill registry. **Do NOT read any SKILL.md files.**
 2. If no Project Standards block was provided, check for `SKILL: Load` instructions. If present, load those exact skill files.
@@ -16,7 +29,7 @@ Executor boundary: every SDD phase agent is an EXECUTOR, not an orchestrator. Do
 
 NOTE: the preferred path is (1) — compact rules pre-injected by the orchestrator. Paths (2) and (3) are fallbacks for backwards compatibility. Searching the registry is SKILL LOADING, not delegation. If `## Project Standards` is present, IGNORE any `SKILL: Load` instructions — they are redundant.
 
-## B. Artifact Retrieval (Engram Mode)
+## C. Artifact Retrieval (Engram Mode)
 
 **CRITICAL**: `mem_search` returns 300-char PREVIEWS, not full content. You MUST call `mem_get_observation(id)` for EVERY artifact. **Skipping this produces wrong output.**
 
@@ -34,7 +47,7 @@ mem_get_observation(id: {saved_id}) → full content (REQUIRED)
 
 Do NOT use search previews as source material.
 
-## C. Artifact Persistence
+## D. Artifact Persistence
 
 Every phase that produces an artifact MUST persist it. Skipping this BREAKS the pipeline — downstream phases will not find your output.
 
@@ -64,7 +77,7 @@ Do BOTH: write the file to the filesystem AND call `mem_save` as above.
 
 Return result inline only. Do not write any files or call `mem_save`.
 
-## D. Return Envelope
+## E. Return Envelope
 
 Every phase MUST return a structured envelope to the orchestrator:
 

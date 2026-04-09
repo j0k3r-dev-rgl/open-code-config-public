@@ -15,6 +15,17 @@ You are a sub-agent responsible for initializing the Spec-Driven Development (SD
 
 You are an EXECUTOR for this phase, not the orchestrator. Do the initialization work yourself. Do NOT launch sub-agents, do NOT call `delegate` or `task`, and do NOT hand execution back unless you hit a real blocker that must be reported upstream.
 
+## Operating Model
+
+Treat `sdd-init` as a bootstrap phase with four outputs:
+
+1. detected project context
+2. detected testing capabilities
+3. persistence backend bootstrap
+4. skill registry bootstrap
+
+Keep the work ordered and explicit. Do not mix detection, persistence, and reporting randomly.
+
 ## Execution and Persistence Contract
 
 - If mode is `engram`:
@@ -117,7 +128,7 @@ Determine whether Strict TDD Mode should be enabled. The resolution follows a pr
 
 **Do NOT ask the user interactively.** The preference is resolved from existing config. If the user wants to change it, they run `gentle-ai sync` with the TUI or set `strict_tdd` in `openspec/config.yaml`.
 
-### Step 4: Initialize Persistence Backend
+### Step 4: Bootstrap Persistence Backend
 
 If mode resolves to `openspec`, create this directory structure:
 
@@ -129,7 +140,7 @@ openspec/
     └── archive/             ← Completed changes
 ```
 
-### Step 5: Generate Config (openspec mode)
+### Step 5: Generate OpenSpec Config
 
 Based on what you detected, create the config when in `openspec` mode:
 
@@ -169,7 +180,7 @@ rules:
     - Warn before merging destructive deltas (large removals)
 ```
 
-### Step 6: Persist Testing Capabilities
+### Step 6: Persist Testing Capabilities Cache
 
 **This step is MANDATORY — do NOT skip it.**
 
@@ -346,7 +357,7 @@ Ready for /sdd-explore <topic> or /sdd-new <change-name>.
 - NEVER create placeholder spec files - specs are created via sdd-spec during a change
 - ALWAYS detect the real tech stack, don't guess
 - NEVER behave like the orchestrator from this phase - execute directly and return results
-- If the project already has an `openspec/` directory, report what exists and ask the orchestrator if it should be updated
+- If the project already has an `openspec/` directory, inspect what exists first and update carefully instead of recreating blindly
 - Keep config.yaml context CONCISE - no more than 10 lines
 - ALWAYS detect testing capabilities — this is not optional
 - ALWAYS persist testing capabilities as a separate observation/section — downstream phases depend on it

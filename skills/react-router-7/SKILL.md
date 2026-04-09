@@ -12,6 +12,12 @@ compatibility: opencode
 - Changing server-only API layer files under `app/api/`
 - Reviewing React Router 7 SSR boundaries, deferred data, auth, or route structure
 
+When this skill is loaded during `sdd-apply`, it COMPLEMENTS the apply-phase workflow. It does NOT replace the `sdd-apply` contract:
+- read assigned tasks, specs, and design first
+- implement only the assigned tasks
+- update task completion state
+- persist `apply-progress`
+
 ## Stack and Structure
 
 - React 19 + React Router 7 SSR
@@ -52,12 +58,12 @@ app/
 
 ## Preferred Tools
 
-- `list_endpoints` → inspect existing routes/loaders/actions before opening files
-- `find_symbol` → locate route helpers, loaders, actions, hooks, or shared utilities
-- `trace_symbol` → follow route → loader/action → API layer flow
-- `trace_callers` → impact analysis when changing helpers or hooks
-- `grep_workspace` → detect server/client boundary violations or route patterns
-- `scan_module` → read a focused route or feature module
+- `navigation-agent_code_list_endpoints` → inspect existing routes/loaders/actions before opening files
+- `navigation-agent_code_find_symbol` → locate route helpers, loaders, actions, hooks, or shared utilities
+- `navigation-agent_code_trace_flow` → follow route → loader/action → API layer flow
+- `navigation-agent_code_trace_callers` → impact analysis when changing helpers or hooks
+- `navigation-agent_code_search_text` → detect server/client boundary violations or route patterns
+- `navigation-agent_code_inspect_tree` → inspect a focused route or feature module
 
 ## Workflow
 
@@ -66,6 +72,7 @@ app/
 - Inspect route surface first
 - Read only the route module and the API layer files actually involved
 - Reuse existing route and layout patterns before inventing new ones
+- Stay inside the task/spec/design boundaries defined by `sdd-apply`
 
 ### 2. Decide the route shape
 
@@ -174,3 +181,4 @@ export async function getResourceById(token: string, id: string) {
 - [ ] Matching skeleton exists
 - [ ] Types are explicit
 - [ ] Route follows existing module conventions
+- [ ] Changes stay within assigned SDD tasks and design constraints
