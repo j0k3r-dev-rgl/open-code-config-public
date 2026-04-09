@@ -97,6 +97,7 @@ Format for `mem_save`:
 - **title**: Verb + what — short, searchable
 - **type**: bugfix | decision | architecture | discovery | pattern | config | preference
 - **scope**: `project` (default) | `personal`
+- **project**: omit it unless you intentionally need to target a different project; prefer Engram's auto-detected current project
 - **topic_key**: stable key for evolving topics when useful
 - **content**:
   - **What**: one sentence

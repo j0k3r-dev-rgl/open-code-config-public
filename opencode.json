@@ -22,7 +22,9 @@
 				"engram_mem_get_observation": true,
 				"engram_mem_save": true,
 				"engram_mem_search": true,
-				"engram_mem_session_summary": true
+				"engram_mem_session_summary": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Senior Architect mentor - helpful first, challenging when it matters",
 			"mode": "primary",
@@ -43,7 +45,9 @@
 				"engram_mem_get_observation": "allow",
 				"engram_mem_save": "allow",
 				"engram_mem_search": "allow",
-				"engram_mem_session_summary": "allow"
+				"engram_mem_session_summary": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		},
 		"sdd-apply": {
@@ -62,7 +66,9 @@
 				"navigation-agent_code_trace_callers": true,
 				"engram_mem_save": true,
 				"engram_mem_search": true,
-				"engram_mem_get_observation": true
+				"engram_mem_get_observation": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Implement code changes from task definitions",
 			"mode": "subagent",
@@ -80,7 +86,9 @@
 				"navigation-agent_code_trace_callers": "allow",
 				"engram_mem_save": "allow",
 				"engram_mem_search": "allow",
-				"engram_mem_get_observation": "allow"
+				"engram_mem_get_observation": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		},
 		"sdd-archive": {
@@ -100,7 +108,9 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Archive completed change artifacts",
 			"mode": "subagent",
@@ -119,7 +129,9 @@
 				"navigation-agent_code_find_symbol": "allow",
 				"navigation-agent_code_search_text": "allow",
 				"navigation-agent_code_trace_flow": "allow",
-				"navigation-agent_code_trace_callers": "allow"
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		},
 		"sdd-design": {
@@ -139,7 +151,9 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Create technical design from proposals",
 			"mode": "subagent",
@@ -158,7 +172,9 @@
 				"navigation-agent_code_find_symbol": "allow",
 				"navigation-agent_code_search_text": "allow",
 				"navigation-agent_code_trace_flow": "allow",
-				"navigation-agent_code_trace_callers": "allow"
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		},
 		"sdd-explore": {
@@ -178,7 +194,9 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Investigate codebase and think through ideas",
 			"mode": "subagent",
@@ -197,7 +215,9 @@
 				"navigation-agent_code_find_symbol": "allow",
 				"navigation-agent_code_search_text": "allow",
 				"navigation-agent_code_trace_flow": "allow",
-				"navigation-agent_code_trace_callers": "allow"
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		},
 		"sdd-init": {
@@ -217,7 +237,9 @@
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
 				"navigation-agent_code_trace_callers": true,
-				"engram_mem_get_observation": true
+				"engram_mem_get_observation": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Bootstrap SDD context and project configuration",
 			"mode": "subagent",
@@ -236,7 +258,9 @@
 				"navigation-agent_code_search_text": "allow",
 				"navigation-agent_code_trace_flow": "allow",
 				"navigation-agent_code_trace_callers": "allow",
-				"engram_mem_get_observation": "allow"
+				"engram_mem_get_observation": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		},
 		"sdd-java-apply": {
@@ -255,7 +279,9 @@
 				"navigation-agent_code_trace_callers": true,
 				"engram_mem_save": true,
 				"engram_mem_search": true,
-				"engram_mem_get_observation": true
+				"engram_mem_get_observation": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Implement Java Spring Mongo code changes from task definitions",
 			"mode": "subagent",
@@ -273,7 +299,9 @@
 				"navigation-agent_code_trace_callers": "allow",
 				"engram_mem_save": "allow",
 				"engram_mem_search": "allow",
-				"engram_mem_get_observation": "allow"
+				"engram_mem_get_observation": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		},
 		"sdd-onboard": {
@@ -291,7 +319,9 @@
 				"navigation-agent_code_trace_callers": true,
 				"engram_mem_save": true,
 				"engram_mem_search": true,
-				"engram_mem_get_observation": true
+				"engram_mem_get_observation": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Guide user through a complete SDD cycle using their real codebase",
 			"mode": "subagent",
@@ -309,7 +339,9 @@
 				"navigation-agent_code_trace_callers": "allow",
 				"engram_mem_save": "allow",
 				"engram_mem_search": "allow",
-				"engram_mem_get_observation": "allow"
+				"engram_mem_get_observation": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		},
 		"sdd-orchestrator": {
@@ -335,7 +367,9 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Agent Teams Orchestrator - coordinates sub-agents, never does work inline",
 			"mode": "primary",
@@ -362,7 +396,9 @@
 				"navigation-agent_code_find_symbol": "allow",
 				"navigation-agent_code_search_text": "allow",
 				"navigation-agent_code_trace_flow": "allow",
-				"navigation-agent_code_trace_callers": "allow"
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		},
 		"sdd-propose": {
@@ -382,7 +418,9 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Create change proposals from explorations",
 			"mode": "subagent",
@@ -401,7 +439,9 @@
 				"navigation-agent_code_find_symbol": "allow",
 				"navigation-agent_code_search_text": "allow",
 				"navigation-agent_code_trace_flow": "allow",
-				"navigation-agent_code_trace_callers": "allow"
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		},
 		"sdd-react-router-7-apply": {
@@ -419,7 +459,9 @@
 				"navigation-agent_code_trace_callers": true,
 				"engram_mem_save": true,
 				"engram_mem_search": true,
-				"engram_mem_get_observation": true
+				"engram_mem_get_observation": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Implement React Router 7 code changes from task definitions",
 			"mode": "subagent",
@@ -436,7 +478,9 @@
 				"navigation-agent_code_trace_callers": "allow",
 				"engram_mem_save": "allow",
 				"engram_mem_search": "allow",
-				"engram_mem_get_observation": "allow"
+				"engram_mem_get_observation": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		},
 		"sdd-spec": {
@@ -456,7 +500,9 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Write detailed specifications from proposals",
 			"mode": "subagent",
@@ -475,7 +521,9 @@
 				"navigation-agent_code_find_symbol": "allow",
 				"navigation-agent_code_search_text": "allow",
 				"navigation-agent_code_trace_flow": "allow",
-				"navigation-agent_code_trace_callers": "allow"
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		},
 		"sdd-tasks": {
@@ -495,7 +543,9 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Break down specs and designs into implementation tasks",
 			"mode": "subagent",
@@ -514,7 +564,9 @@
 				"navigation-agent_code_find_symbol": "allow",
 				"navigation-agent_code_search_text": "allow",
 				"navigation-agent_code_trace_flow": "allow",
-				"navigation-agent_code_trace_callers": "allow"
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		},
 		"sdd-verify": {
@@ -535,7 +587,9 @@
 				"navigation-agent_code_find_symbol": true,
 				"navigation-agent_code_search_text": true,
 				"navigation-agent_code_trace_flow": true,
-				"navigation-agent_code_trace_callers": true
+				"navigation-agent_code_trace_callers": true,
+				"engram_mem_suggest_topic_key": true,
+				"engram_mem_update": true
 			},
 			"description": "Validate implementation against specs",
 			"mode": "subagent",
@@ -555,7 +609,9 @@
 				"navigation-agent_code_find_symbol": "allow",
 				"navigation-agent_code_search_text": "allow",
 				"navigation-agent_code_trace_flow": "allow",
-				"navigation-agent_code_trace_callers": "allow"
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow"
 			}
 		}
 	},

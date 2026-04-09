@@ -24,7 +24,7 @@ Do not start broad exploration with raw file reads when navigation can narrow th
 1. Check if the orchestrator injected a `## Project Standards (auto-resolved)` block in your launch prompt. If yes, follow those rules — they are pre-digested compact rules from the skill registry.
 2. If no Project Standards block was provided, check for `SKILL: Load` instructions. If present, load those exact skill files.
 3. If neither was provided, search for the skill registry as a fallback:
-   a. `mem_search(query: "skill-registry", project: "{project}")` — if found, `mem_get_observation(id)` for full content
+   a. `mem_search(query: "skill-registry")` — if found, `mem_get_observation(id)` for full content
    b. Fallback: read `.atl/skill-registry.md` from the project root if it exists
    c. From the registry's **Compact Rules** section, apply rules whose triggers match your current task.
 4. If no registry exists, proceed with your phase skill only.
@@ -40,7 +40,7 @@ This section applies only when the runtime actually exposes the required `mem_*`
 **Run all searches in parallel** — do NOT search sequentially.
 
 ```
-mem_search(query: "sdd/{change-name}/{artifact-type}", project: "{project}") → save ID
+mem_search(query: "sdd/{change-name}/{artifact-type}") → save ID
 ```
 
 Then **run all retrievals in parallel**:
@@ -64,7 +64,6 @@ mem_save(
   title: "sdd/{change-name}/{artifact-type}",
   topic_key: "sdd/{change-name}/{artifact-type}",
   type: "architecture",
-  project: "{project}",
   content: "{your full artifact markdown}"
 )
 ```

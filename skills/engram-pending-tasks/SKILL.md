@@ -133,7 +133,6 @@ When user says:
 mem_save({
   title: "[PENDING] Review auth middleware",
   type: "manual",
-  project: "current-project",
   topic_key: "pending/review-auth-middleware",
   content: `
 **Description**: Review auth middleware implementation
@@ -148,10 +147,9 @@ mem_save({
 
 // Then upsert the project index
 mem_save({
-  title: "pending-index/current-project",
-  topic_key: "pending-index/current-project",
+  title: "pending-index/{auto-detected-project}",
+  topic_key: "pending-index/{auto-detected-project}",
   type: "pattern",
-  project: "current-project",
   content: `
 ## Open Tasks
 - topic_key: pending/review-auth-middleware
@@ -174,15 +172,14 @@ mem_save({
 
 // 1. Search the deterministic project index first
 const index = await mem_search({
-  query: "pending-index/current-project",
-  project: "current-project"
+  query: "pending-index/{auto-detected-project}"
 })
 
 // 2. Read the full index content
 const fullIndex = await mem_get_observation({ id: index[0].id })
 
 // 3. If index is missing or stale, recover with exact namespace searches:
-//    mem_search({ query: "pending/", project: "current-project" })
+//    mem_search({ query: "pending/" })
 // 4. Only if recovery is needed, use mem_context to find recently mentioned pending work
 ```
 
@@ -194,8 +191,7 @@ const fullIndex = await mem_get_observation({ id: index[0].id })
 
 // 1. Find the task
 const results = await mem_search({
-  query: "pending/review-auth-middleware",
-  project: "current-project"
+  query: "pending/review-auth-middleware"
 });
 
 // 2. Update it
@@ -216,10 +212,9 @@ if (results && results[0]) {
 
 // 3. Update the project index too
 mem_save({
-  title: "pending-index/current-project",
-  topic_key: "pending-index/current-project",
+  title: "pending-index/{auto-detected-project}",
+  topic_key: "pending-index/{auto-detected-project}",
   type: "pattern",
-  project: "current-project",
   content: `
 ## Open Tasks
 
