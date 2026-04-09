@@ -78,7 +78,7 @@ export default function Page() {
 }
 ```
 
-- **SIEMPRE** usar `Suspense` + `Await` para datos async en loaders
+- **MUST** usar `Suspense` + `Await` cuando el loader devuelve datos async para render de UI; solo omitilo en loaders no visuales o respuestas simples donde no haya estado de carga visible
 - **SIEMPRE** tener un skeleton correspondiente en `components/skeletons/`
 - `requireUserToken` se llama primero en todo loader protegido
 

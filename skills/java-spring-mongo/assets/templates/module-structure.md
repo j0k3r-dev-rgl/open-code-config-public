@@ -15,12 +15,12 @@ modules/{module-name}/
 │   │       ├── Create{Entity}Repository.java
 │   │       ├── Edit{Entity}Repository.java
 │   │       └── Get{Entity}ByIdRepository.java
-│   └── use_cases/
-│       ├── command/
-│       │   └── {Action}{Entity}UseCase.java
-│       └── query/
-│           └── {Action}{Entity}UseCase.java
 └── infrastructure/
+    ├── use_cases/
+    │   ├── command/
+    │   │   └── {Action}{Entity}UseCase.java
+    │   └── query/
+    │       └── {Action}{Entity}UseCase.java
     ├── persistence/
     │   ├── dao/
     │   │   └── {Action}{Entity}Adapter.java
@@ -47,7 +47,7 @@ modules/{module-name}/
 
 - `application/ports/input`: use case contracts exposed to controllers or other modules.
 - `application/ports/output`: persistence or external dependency contracts.
-- `application/use_cases`: business orchestration only.
+- `infrastructure/use_cases`: Spring `@Component` implementations for orchestration and business rules.
 - `infrastructure/persistence/dao`: `MongoTemplate`, `Criteria`, `Aggregation`, `Update`, batching.
 - `infrastructure/web`: GraphQL and REST adapters only.
 - `infrastructure/persistence/models`: Mongo persistence models, indexes, FK storage definitions.

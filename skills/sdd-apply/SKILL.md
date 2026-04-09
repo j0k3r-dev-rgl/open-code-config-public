@@ -25,8 +25,8 @@ From the orchestrator:
 > Follow **Section C** (retrieval) and **Section D** (persistence) from `skills/_shared/sdd-phase-common.md`.
 
 - **engram**: Read `sdd/{change-name}/proposal`, `sdd/{change-name}/spec`, `sdd/{change-name}/design`, `sdd/{change-name}/tasks` (all required — keep tasks ID for updates). Mark tasks complete via `mem_update(id: {tasks-observation-id}, content: "...")`. Save progress as `sdd/{change-name}/apply-progress`.
-- **openspec**: Read and follow `skills/_shared/openspec-convention.md`. Update `tasks.md` with `[x]` marks.
-- **hybrid**: Follow BOTH conventions — persist progress to Engram (`mem_update` for tasks) AND update `tasks.md` with `[x]` marks on filesystem.
+- **openspec**: Read and follow `skills/_shared/openspec-convention.md`. Update `tasks.md` with `[x]` marks and persist `openspec/changes/{change-name}/apply-progress.md`.
+- **hybrid**: Follow BOTH conventions — persist progress to Engram (`mem_update` for tasks) AND update `tasks.md` with `[x]` marks plus `apply-progress.md` on the filesystem.
 - **none**: Return progress only. Do not update project artifacts.
 
 ## What to Do
@@ -101,6 +101,7 @@ Follow **Section D** from `skills/_shared/sdd-phase-common.md`.
 - topic_key: `sdd/{change-name}/apply-progress`
 - type: `architecture`
 - Also update the tasks artifact with `[x]` marks via `mem_update` (engram) or file edit (openspec/hybrid).
+- In `openspec` or `hybrid`, `apply-progress` maps to `openspec/changes/{change-name}/apply-progress.md`.
 
 ### Step 7: Return Summary
 

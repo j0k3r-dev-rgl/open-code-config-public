@@ -25,8 +25,8 @@ From the orchestrator:
 
 > Follow **Section C** (retrieval) and **Section D** (persistence) from `skills/_shared/sdd-phase-common.md`.
 
-- **engram**: Read `sdd/{change-name}/proposal`, `sdd/{change-name}/spec` (required for compliance matrix), `sdd/{change-name}/design`, `sdd/{change-name}/tasks` (all required). Save as `sdd/{change-name}/verify-report`.
-- **openspec**: Read and follow `skills/_shared/openspec-convention.md`. Save to `openspec/changes/{change-name}/verify-report.md`.
+- **engram**: Read `sdd/{change-name}/proposal`, `sdd/{change-name}/spec` (required for compliance matrix), `sdd/{change-name}/design`, `sdd/{change-name}/tasks`, and `sdd/{change-name}/apply-progress` when present (required for Strict TDD verification). Save as `sdd/{change-name}/verify-report`.
+- **openspec**: Read and follow `skills/_shared/openspec-convention.md`. Read `openspec/changes/{change-name}/apply-progress.md` when present or required by Strict TDD. Save to `openspec/changes/{change-name}/verify-report.md`.
 - **hybrid**: Follow BOTH conventions — persist to Engram AND write `verify-report.md` to filesystem.
 - **none**: Return the verification report inline only. Never write files.
 

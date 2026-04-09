@@ -1,7 +1,7 @@
 # Strict TDD Module — Verify Phase
 
 > **This module is loaded ONLY when Strict TDD Mode is enabled AND a test runner is available.**
-> If you are reading this, the orchestrator already verified both conditions. Follow every instruction.
+> If you are reading this, the caller already resolved both conditions for this phase. Follow every instruction.
 
 ## TDD Verification Philosophy
 

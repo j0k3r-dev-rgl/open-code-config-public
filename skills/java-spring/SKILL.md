@@ -15,8 +15,8 @@ La base de datos está configurada como **replica set** (operaciones atómicas a
 
 ## Checklist antes de crear un módulo o caso de uso
 
-- [ ] ¿Es lectura? → puerto en `input/Get*.java`, use case en `query/`
-- [ ] ¿Es escritura? → puerto en `input/Edit*.java` o `Create*`, use case en `command/`
+- [ ] ¿Es lectura? → puerto en `input/Get*.java`, use case en `infrastructure/use_cases/query/`
+- [ ] ¿Es escritura? → puerto en `input/Edit*.java` o `Create*.java`, use case en `infrastructure/use_cases/command/`
 - [ ] ¿Es operación de admin/root? → puerto en `input/Root*.java`
 - [ ] ¿El puerto output necesita MongoDB? → adapter en `dao/*Adapter.java`
 - [ ] ¿La query trae datos relacionados? → usar `$lookup` (singular) o `$in` batching (múltiples)
@@ -68,7 +68,7 @@ public class RecursoPersistenceModel {
 
 ---
 
-## 2. Puerto Input (Interface en `application`)
+## 2. Puerto Input (Interface en `application/ports/input`)
 
 ```java
 // Lectura
@@ -89,7 +89,7 @@ public interface RootEditRecurso {
 
 ---
 
-## 3. Puerto Output (Interface en `application`)
+## 3. Puerto Output (Interface en `application/ports/output`)
 
 ```java
 public interface GetRecursoByIdRepository {

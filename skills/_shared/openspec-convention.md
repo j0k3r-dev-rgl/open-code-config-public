@@ -19,6 +19,7 @@ openspec/
         │       └── spec.md  <- Delta spec
         ├── design.md        <- from sdd-design
         ├── tasks.md         <- from sdd-tasks (updated by sdd-apply)
+        ├── apply-progress.md <- from sdd-apply
         └── verify-report.md <- from sdd-verify
 ```
 
@@ -34,6 +35,7 @@ openspec/
 | sdd-design | Creates | `openspec/changes/{change-name}/design.md` |
 | sdd-tasks | Creates | `openspec/changes/{change-name}/tasks.md` |
 | sdd-apply | Updates | `openspec/changes/{change-name}/tasks.md` (marks `[x]`) |
+| sdd-apply | Creates/Updates | `openspec/changes/{change-name}/apply-progress.md` |
 | sdd-verify | Creates | `openspec/changes/{change-name}/verify-report.md` |
 | sdd-archive | Moves | `openspec/changes/{change-name}/` → `openspec/changes/archive/YYYY-MM-DD-{change-name}/` |
 | sdd-archive | Updates | `openspec/specs/{domain}/spec.md` (merges deltas into main specs) |
@@ -45,6 +47,7 @@ Proposal:   openspec/changes/{change-name}/proposal.md
 Specs:      openspec/changes/{change-name}/specs/  (all domain subdirectories)
 Design:     openspec/changes/{change-name}/design.md
 Tasks:      openspec/changes/{change-name}/tasks.md
+Apply:      openspec/changes/{change-name}/apply-progress.md
 Verify:     openspec/changes/{change-name}/verify-report.md
 Config:     openspec/config.yaml
 Main specs: openspec/specs/{domain}/spec.md
@@ -69,6 +72,19 @@ context: |
   Testing: {detected}
   Style: {detected}
 
+strict_tdd: false
+
+testing:
+  test_command: ""
+  coverage_command: ""
+  coverage_available: false
+  unit_available: false
+  integration_available: false
+  e2e_available: false
+  linter_command: ""
+  typecheck_command: ""
+  formatter_command: ""
+
 rules:
   proposal:
     - Include rollback plan for risky changes
@@ -83,8 +99,6 @@ rules:
     - Keep tasks completable in one session
   apply:
     - Follow existing code patterns
-    tdd: false           # Set to true to enable RED-GREEN-REFACTOR
-    test_command: ""
   verify:
     test_command: ""
     typecheck_command: ""

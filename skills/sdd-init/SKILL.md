@@ -156,6 +156,17 @@ context: |
 
 strict_tdd: {true/false}
 
+testing:
+  test_command: "{detected test command or empty}"
+  coverage_command: "{detected coverage command or empty}"
+  coverage_available: {true/false}
+  unit_available: {true/false}
+  integration_available: {true/false}
+  e2e_available: {true/false}
+  linter_command: "{detected linter command or empty}"
+  typecheck_command: "{detected typecheck command or empty}"
+  formatter_command: "{detected formatter command or empty}"
+
 rules:
   proposal:
     - Include rollback plan for risky changes
@@ -295,7 +306,9 @@ Project context persisted to Engram.
 - **Capabilities ID**: #{capabilities-observation-id}
 - **Capabilities key**: sdd/{project-name}/testing-capabilities
 
-No project files created.
+No SDD change artifact files created.
+
+Infrastructure note: `.atl/skill-registry.md` may still be written because the registry is mode-independent infrastructure.
 
 ### ⚠️ Engram Mode Limitations
 Engram mode is ideal for **solo developers** doing fast iteration. Be aware:
@@ -362,4 +375,4 @@ Ready for /sdd-explore <topic> or /sdd-new <change-name>.
 - ALWAYS detect testing capabilities — this is not optional
 - ALWAYS persist testing capabilities as a separate observation/section — downstream phases depend on it
 - If Strict TDD Mode is requested but no test runner exists, set strict_tdd: false and explain why
-- Return a structured envelope with: `status`, `executive_summary`, `detailed_report` (optional), `artifacts`, `next_recommended`, and `risks`
+- Return envelope per **Section E** from `skills/_shared/sdd-phase-common.md`

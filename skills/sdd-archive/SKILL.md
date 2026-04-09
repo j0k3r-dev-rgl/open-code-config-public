@@ -24,8 +24,8 @@ From the orchestrator:
 > Follow **Section C** (retrieval) and **Section D** (persistence) from `skills/_shared/sdd-phase-common.md`.
 
 - **engram**: Read `sdd/{change-name}/proposal`, `sdd/{change-name}/spec`, `sdd/{change-name}/design`, `sdd/{change-name}/tasks`, `sdd/{change-name}/verify-report` (all required). Record all observation IDs in the archive report for traceability. Save as `sdd/{change-name}/archive-report`.
-- **openspec**: Read and follow `skills/_shared/openspec-convention.md`. Perform merge and archive folder moves.
-- **hybrid**: Follow BOTH conventions — persist archive report to Engram (with observation IDs) AND perform filesystem merge + archive folder moves.
+- **openspec**: Read and follow `skills/_shared/openspec-convention.md`. Read `openspec/changes/{change-name}/verify-report.md` before any merge or archive move. Perform merge and archive folder moves.
+- **hybrid**: Follow BOTH conventions — persist archive report to Engram (with observation IDs) AND read filesystem `verify-report.md` before performing merge + archive folder moves.
 - **none**: Return closure summary only. Do not perform archive file operations.
 
 ## What to Do
@@ -39,7 +39,7 @@ Follow **Section B** from `skills/_shared/sdd-phase-common.md`.
 
 **IF mode is `none`:** Skip — no artifacts to sync.
 
-**IF mode is `openspec` or `hybrid`:** For each delta spec in `openspec/changes/{change-name}/specs/`:
+**IF mode is `openspec` or `hybrid`:** Read `openspec/changes/{change-name}/verify-report.md` first and stop if it contains CRITICAL issues. Then, for each delta spec in `openspec/changes/{change-name}/specs/`:
 
 #### If Main Spec Exists (`openspec/specs/{domain}/spec.md`)
 
@@ -87,7 +87,7 @@ Use today's date in ISO format (e.g., `2026-02-16`).
 **IF mode is `openspec` or `hybrid`:** Confirm:
 - [ ] Main specs updated correctly
 - [ ] Change folder moved to archive
-- [ ] Archive contains all artifacts (proposal, specs, design, tasks)
+- [ ] Archive contains all artifacts (proposal, specs, design, tasks, apply-progress, verify-report)
 - [ ] Active changes directory no longer has this change
 
 **IF mode is `engram`:** Confirm all artifact observation IDs are recorded in the archive report.
@@ -123,6 +123,8 @@ Return to the orchestrator:
 - specs/ ✅
 - design.md ✅
 - tasks.md ✅ ({N}/{N} tasks complete)
+- apply-progress.md ✅
+- verify-report.md ✅
 
 ### Source of Truth Updated
 The following specs now reflect the new behavior:

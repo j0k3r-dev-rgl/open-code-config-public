@@ -25,18 +25,19 @@ modules/[nombre]/
 ├── application/
 │   ├── ports/
 │   │   ├── input/           # Interfaces hacia el exterior (casos de uso)
+│   │   │   ├── Create*.java
 │   │   │   ├── Edit*.java
 │   │   │   ├── Get*.java
 │   │   │   └── Root*.java
 │   │   └── output/          # Interfaces hacia servicios externos
 │   │       └── *Repository.java
-│   └── use_cases/
-│       ├── command/          # Casos de uso que modifican estado
-│       │   └── *UseCase.java
-│       └── query/            # Casos de uso que solo leen
-│           └── *UseCase.java
 │
 └── infrastructure/
+    ├── use_cases/
+    │   ├── command/          # Implementaciones Spring de casos de uso
+    │   │   └── *UseCase.java
+    │   └── query/
+    │       └── *UseCase.java
     ├── persistence/
     │   ├── dao/              # Implementaciones de puertos output
     │   │   └── *Adapter.java
@@ -63,6 +64,7 @@ modules/[nombre]/
 | Elemento | Patrón | Ejemplo |
 |----------|--------|---------|
 | Puerto input (lectura) | `Get*` | `GetTitularById.java` |
+| Puerto input (creación) | `Create*` | `CreateTitular.java` |
 | Puerto input (edición) | `Edit*` | `EditTitular.java` |
 | Puerto input (root/admin) | `Root*` | `RootEditTitular.java` |
 | Puerto output | `*Repository` | `GetTitularByIdRepository.java` |
@@ -277,7 +279,7 @@ public class TitularRestController {
    ↓
 2. Puerto input (interface en application/ports/input) — contrato del caso de uso
    ↓
-3. UseCase (@Component en infrastructure) implementa el puerto
+3. UseCase (`@Component` en `infrastructure/use_cases`) implementa el puerto
    ↓
 4. UseCase llama puertos output y orquesta la lógica de negocio
    ↓
@@ -291,7 +293,7 @@ public class TitularRestController {
 
 ✅ **VA en `application`**:
 - Interfaces de puertos (input y output)
-- Casos de uso con lógica de orquestación y negocio
+- Contratos del dominio y de los casos de uso
 
 ❌ **NO VA en `application`**:
 - `@Component`, `@Service`, `@Repository`
@@ -299,6 +301,7 @@ public class TitularRestController {
 
 ✅ **VA en `infrastructure`**:
 - `@Component` en adapters y use cases
+- Implementaciones de casos de uso en `infrastructure/use_cases`
 - Toda la lógica de MongoDB (Template, Aggregation, Criteria, Update)
 - Controllers, DTOs, modelos, mappers
 

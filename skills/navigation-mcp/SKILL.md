@@ -26,8 +26,8 @@ metadata:
 3. After navigation narrows the scope, read only the files that were returned.
 4. Fall back to `read` / `glob` only when navigation returns no match or the task is outside its scope.
 5. Never use `bash grep` or `bash find` for code search while navigation tools are available.
-6. The stable public MCP contract is `code.*`, not `workspace.*`.
-7. Current public languages are `typescript`, `javascript`, `go`, `java`, `python`, and `rust`.
+6. The stable public MCP contract is `code.*`, not `workspace.*`. In this runtime, the concrete wrapper names are `navigation-agent_code_*`.
+7. Current public languages are `typescript`, `javascript`, `go`, `java`, `php`, `python`, and `rust`.
 8. Go is now usable through the public contract for `find_symbol`, `search_text`, `trace_flow`, and `trace_callers`, but `list_endpoints` is still limited on the current example app.
 9. `search_text` is compact by design: treat it as grouped match coordinates (`path`, `language`, `matchCount`, `line`, `spans`) plus `topFiles`, then read only the files you actually need.
 
@@ -35,22 +35,22 @@ metadata:
 
 | What you need | Tool to use first | Fallback |
 | --- | --- | --- |
-| Orient in an unknown module or directory | `navigation_code_inspect_tree` | `glob` |
-| Find where a class, function, or type is defined | `navigation_code_find_symbol` | `glob`, `read` |
-| Find all usages of a pattern, annotation, or import | `navigation_code_search_text` | `read` |
-| Get the full API or route surface | `navigation_code_list_endpoints` | `read` |
-| Follow what a symbol calls or depends on (forward) | `navigation_code_trace_flow` | `read` |
-| Find what calls a symbol — impact before a change (backward) | `navigation_code_trace_callers` | `read` |
+| Orient in an unknown module or directory | `navigation-agent_code_inspect_tree` | `glob` |
+| Find where a class, function, or type is defined | `navigation-agent_code_find_symbol` | `glob`, `read` |
+| Find all usages of a pattern, annotation, or import | `navigation-agent_code_search_text` | `read` |
+| Get the full API or route surface | `navigation-agent_code_list_endpoints` | `read` |
+| Follow what a symbol calls or depends on (forward) | `navigation-agent_code_trace_flow` | `read` |
+| Find what calls a symbol — impact before a change (backward) | `navigation-agent_code_trace_callers` | `read` |
 
 ## Semantic Distinction: trace_flow vs trace_callers
 
 These two tools are opposites. Confusing them produces wrong results.
 
-- **`navigation_code_trace_flow`** — traces **forward** (downstream).
+- **`navigation-agent_code_trace_flow`** — traces **forward** (downstream).
   Use it when you want to know: _"What does this function call? What files does it touch?"_
   Example: you have a controller and want to follow the full call chain into use cases, adapters, and repositories.
 
-- **`navigation_code_trace_callers`** — traces **backward** (upstream).
+- **`navigation-agent_code_trace_callers`** — traces **backward** (upstream).
   Use it when you want to know: _"Who calls this function? What will break if I change it?"_
   Example: you are about to rename a shared utility and need to know all callers before touching it.
 
@@ -87,7 +87,7 @@ find_symbol(symbol: "getTitularById", kind: "method", path: "modules/titular")
 
 ## Tool Reference
 
-### navigation_code_inspect_tree
+### navigation-agent_code_inspect_tree
 
 Inspect the workspace file tree without reading file contents.
 
@@ -100,21 +100,21 @@ Inspect the workspace file tree without reading file contents.
 | `include_stats` | `boolean` | `false` | Include file size, modified time, symlink info |
 | `include_hidden` | `boolean` | `false` | Include hidden files/directories |
 
-### navigation_code_find_symbol
+### navigation-agent_code_find_symbol
 
 Locate symbol definitions by name. Returns `items[].path` and `items[].line`.
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `symbol` | `string` | **required** | Symbol name to find |
-| `language` | `string \| null` | `null` | `typescript`, `javascript`, `java`, `python`, `rust` |
+| `language` | `string \| null` | `null` | `typescript`, `javascript`, `java`, `php`, `python`, `rust` |
 | `framework` | `string \| null` | `null` | `react-router`, `spring` |
 | `kind` | `string` | `"any"` | `any`, `class`, `interface`, `function`, `method`, `type`, `enum`, `constructor`, `annotation` |
 | `match` | `string` | `"exact"` | `exact` or `fuzzy` |
 | `path` | `string \| null` | `null` | Limit search to a specific path |
 | `limit` | `integer` | `50` | Max results (1–200) |
 
-### navigation_code_search_text
+### navigation-agent_code_search_text
 
 Search text or regex patterns across the workspace.
 
@@ -129,19 +129,19 @@ Search text or regex patterns across the workspace.
 | `context` | `integer` | `1` | Lines of context before/after each match (0–10) |
 | `limit` | `integer` | `50` | Max files returned (1–200) |
 
-### navigation_code_list_endpoints
+### navigation-agent_code_list_endpoints
 
 List backend endpoints and frontend routes in the workspace.
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `path` | `string \| null` | `null` | Limit to a path |
-| `language` | `string \| null` | `null` | `typescript`, `javascript`, `java`, `python`, `rust` |
+| `language` | `string \| null` | `null` | `typescript`, `javascript`, `java`, `php`, `python`, `rust` |
 | `framework` | `string \| null` | `null` | `react-router`, `spring` |
 | `kind` | `string` | `"any"` | `any`, `graphql`, `rest`, `route` |
 | `limit` | `integer` | `50` | Max results (1–200) |
 
-### navigation_code_trace_flow
+### navigation-agent_code_trace_flow
 
 Trace execution **forward** from a symbol — what it calls, what files it touches.
 `path` must be the file where the symbol is defined. Get it from `find_symbol` first.
@@ -150,10 +150,10 @@ Trace execution **forward** from a symbol — what it calls, what files it touch
 | --- | --- | --- | --- |
 | `path` | `string` | **required** | File where the symbol is defined (must exist in workspace) |
 | `symbol` | `string` | **required** | Symbol name to trace forward |
-| `language` | `string \| null` | `null` | `typescript`, `javascript`, `java`, `python`, `rust` |
+| `language` | `string \| null` | `null` | `typescript`, `javascript`, `java`, `php`, `python`, `rust` |
 | `framework` | `string \| null` | `null` | `react-router`, `spring` |
 
-### navigation_code_trace_callers
+### navigation-agent_code_trace_callers
 
 Trace incoming callers **backward** — who calls this symbol.
 `path` must be the file where the symbol is defined. Get it from `find_symbol` first.
@@ -163,7 +163,7 @@ Use `recursive: true` for full impact analysis before renaming shared code.
 | --- | --- | --- | --- |
 | `path` | `string` | **required** | File where the symbol is defined |
 | `symbol` | `string` | **required** | Symbol name to trace callers for |
-| `language` | `string \| null` | `null` | `typescript`, `javascript`, `java`, `python`, `rust` |
+| `language` | `string \| null` | `null` | `typescript`, `javascript`, `java`, `php`, `python`, `rust` |
 | `framework` | `string \| null` | `null` | `react-router`, `spring` |
 | `recursive` | `boolean` | `false` | Enable recursive reverse-traversal up the call tree |
 | `max_depth` | `integer \| null` | `null` | Max recursion depth (1–8). Only applies when `recursive: true` |
@@ -175,7 +175,7 @@ Use `recursive: true` for full impact analysis before renaming shared code.
 ```
 Goal: understand a module's structure before reading any file
 
-1. navigation_code_inspect_tree(path: "modules/titular", max_depth: 3)
+1. navigation-agent_code_inspect_tree(path: "modules/titular", max_depth: 3)
    → see directories and files without opening them
 
 2. read() only the specific files that matter
@@ -186,10 +186,10 @@ Goal: understand a module's structure before reading any file
 ```
 Goal: follow the call chain from a controller into the domain
 
-1. navigation_code_find_symbol(symbol: "CreateTitularUseCase", language: "java", kind: "class")
+1. navigation-agent_code_find_symbol(symbol: "CreateTitularUseCase", language: "java", kind: "class")
    → returns items[0].path = "modules/titular/infrastructure/..."
 
-2. navigation_code_trace_flow(
+2. navigation-agent_code_trace_flow(
      path: items[0].path,
      symbol: "CreateTitularUseCase",
      language: "java"
@@ -204,10 +204,10 @@ Goal: follow the call chain from a controller into the domain
 ```
 Goal: know who calls a utility before renaming or changing its signature
 
-1. navigation_code_find_symbol(symbol: "MongoIdUtils", language: "java", kind: "class")
+1. navigation-agent_code_find_symbol(symbol: "MongoIdUtils", language: "java", kind: "class")
    → returns items[0].path
 
-2. navigation_code_trace_callers(
+2. navigation-agent_code_trace_callers(
      path: items[0].path,
      symbol: "MongoIdUtils",
      language: "java",
@@ -224,10 +224,10 @@ Goal: know who calls a utility before renaming or changing its signature
 ```
 Goal: get a full map of REST or GraphQL endpoints before adding a new one
 
-1. navigation_code_list_endpoints(framework: "spring", kind: "rest")
+1. navigation-agent_code_list_endpoints(framework: "spring", kind: "rest")
    → full index of REST controllers without reading files
 
-2. navigation_code_list_endpoints(framework: "spring", kind: "graphql")
+2. navigation-agent_code_list_endpoints(framework: "spring", kind: "graphql")
    → full index of GraphQL resolvers
 ```
 
@@ -236,7 +236,7 @@ Goal: get a full map of REST or GraphQL endpoints before adding a new one
 ```
 Goal: find every file that imports or uses a specific decorator or annotation
 
-1. navigation_code_search_text(
+1. navigation-agent_code_search_text(
      query: "@QueryMapping",
      language: "java",
      context: 2

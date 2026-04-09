@@ -185,13 +185,13 @@ mem_save(
 | {file} | {path} |
 
 ### Next Steps
-The orchestrator reads this registry once per session and passes pre-resolved skill paths to sub-agents via their launch prompts.
+The orchestrator reads this registry once per session and passes pre-resolved compact rules to sub-agents via their launch prompts.
 To update after installing/removing skills, run this again.
 ```
 
 ## Rules
 
-- ALWAYS write `.atl/skill-registry.md` regardless of any SDD persistence mode
+- ALWAYS write `.atl/skill-registry.md` regardless of any SDD persistence mode — it is infrastructure, not an SDD change artifact
 - ALWAYS save to engram if the `mem_save` tool is available
 - SKIP `sdd-*`, `_shared`, and `skill-registry` directories when scanning
 - Read SKILL.md files (respecting the 200-line guard in Step 1) to generate accurate compact rules — this is a build-time cost, not a runtime cost

@@ -50,7 +50,7 @@ app/
 1. `requireUserToken(request)` is the FIRST protected line in every `loader` or `action`.
 2. `*.server.ts` files stay server-only. Never import them into client-rendered components.
 3. Reading goes in `*.query.server.ts`. Writing goes in `*.command.server.ts` or the module service expected by the codebase.
-4. Async route data SHOULD use deferred patterns: return the promise from `loader`, then resolve with `Suspense` + `Await`.
+4. Async route data used for UI rendering MUST use deferred patterns: return the promise from `loader`, then resolve with `Suspense` + `Await`. Only skip this for non-visual loaders or trivial responses with no loading state.
 5. Every async visual state MUST have a matching skeleton in `components/skeletons/`.
 6. No `any`. Use explicit `type` or `interface`.
 7. Use `satisfies` for configs and structurally checked objects when useful.

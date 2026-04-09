@@ -1,5 +1,7 @@
 # Persistence Contract (shared across all SDD skills)
 
+This contract belongs to the autonomous SDD system rooted at `prompts/sdd/sdd-orchestrator.md`. It is not governed by `AGENTS.md` unless an SDD prompt explicitly imports a rule from that separate agent.
+
 ## Mode Resolution
 
 The orchestrator passes `artifact_store.mode` with one of: `engram | openspec | hybrid | none`.
@@ -10,12 +12,21 @@ The orchestrator should resolve this from BOTH:
 
 The orchestrator ASKs the user which mode they want when `/sdd-new`, `/sdd-ff`, or `/sdd-continue` is invoked for the first time in a session. The choice is cached for the session.
 
-Default (if user doesn't specify): if Engram is available → `engram`. Otherwise → `none`.
+Default (if user doesn't specify): if Engram memory tools are available → `engram`. Otherwise → `none`.
 
 If the requested mode is unavailable, degrade explicitly instead of failing silently:
 - `hybrid` -> `openspec`
 - `engram` -> `openspec` or `none`
 - `openspec` -> `none`
+
+## Runtime Capability Guard
+
+`engram` and the Engram half of `hybrid` are valid only when the runtime exposes the required memory tools (`mem_search`, `mem_get_observation`, `mem_save`, and related helpers).
+
+If those tools are unavailable:
+- `engram` MUST degrade to `openspec` when filesystem artifacts are available, otherwise `none`
+- `hybrid` MUST degrade to `openspec`
+- phases MUST NOT describe or require fake `mem_*` calls
 
 ## Mode Roles
 
@@ -43,7 +54,7 @@ Engram uses `topic_key`-based upserts. Re-running a phase for the same change **
 
 | Mode | Read from | Write to | Project files |
 |------|-----------|----------|---------------|
-| `engram` | Engram | Engram | Never |
+| `engram` | Engram | Engram | Never (except `.atl/skill-registry.md`, see exception below) |
 | `openspec` | Filesystem | Filesystem | Yes |
 | `hybrid` | Engram (primary) + Filesystem (fallback) | Both | Yes |
 | `none` | Orchestrator prompt context | Nowhere | Never |
@@ -74,11 +85,15 @@ The orchestrator persists DAG state after each phase transition to enable SDD re
 ## Common Rules
 
 - `none` → do NOT create or modify any project files; return results inline only
-- `engram` → do NOT write any project files; persist to Engram and return observation IDs
+- `engram` → do NOT write SDD project artifacts; persist to Engram and return observation IDs
 - `openspec` → write files ONLY to paths defined in `openspec-convention.md`
 - `hybrid` → persist to BOTH Engram AND filesystem; follow both conventions
 - NEVER force `openspec/` creation unless orchestrator explicitly passed `openspec` or `hybrid`
 - If unsure which mode to use, default to `none`
+
+## Infrastructure Exception
+
+`.atl/skill-registry.md` is infrastructure, not an SDD change artifact. It MAY be written in any mode, including `engram` and `none`, by the `skill-registry` workflow or `sdd-init` when that workflow explicitly refreshes the registry.
 
 ## Sub-Agent Context Rules
 
@@ -105,7 +120,7 @@ If you make important discoveries, decisions, or fix bugs, you MUST save them to
 Do NOT return without saving what you learned. This is how the team builds persistent knowledge across sessions.
 ```
 
-SDD (with dependencies):
+SDD (with dependencies, Engram-capable runtime):
 ```
 Artifact store mode: {engram|openspec|hybrid|none}
 Read these artifacts before starting (search returns truncated previews):
@@ -124,7 +139,7 @@ After completing your work, you MUST call:
 If you return without calling mem_save, the next phase CANNOT find your artifact and the pipeline BREAKS.
 ```
 
-SDD (no dependencies):
+SDD (no dependencies, Engram-capable runtime):
 ```
 Artifact store mode: {engram|openspec|hybrid|none}
 
@@ -142,7 +157,7 @@ If you return without calling mem_save, the next phase CANNOT find your artifact
 
 ## Skill Registry
 
-The orchestrator pre-resolves compact rules from the skill registry and injects them as `## Project Standards (auto-resolved)` in your launch prompt. Sub-agents do NOT read the registry or individual SKILL.md files — rules arrive pre-digested.
+The orchestrator pre-resolves compact rules from the skill registry and injects them as `## Project Standards (auto-resolved)` in your launch prompt. Sub-agents do NOT read the registry or individual SKILL.md files when those compact rules are already present — rules arrive pre-digested.
 
 To generate/update: run the `skill-registry` skill, or run `sdd-init`.
 

@@ -25,8 +25,9 @@ When this skill is loaded during `sdd-apply`, it COMPLEMENTS the apply-phase wor
 ## Architecture Rules
 
 - Organize by module, not by technical layer at the repository root
-- `application` contains ports and business orchestration
+- `application` contains ports and use-case contracts only
 - `infrastructure` contains Spring wiring, adapters, persistence, controllers, DTOs, mappers
+- `infrastructure/use_cases` contains the Spring `@Component` use-case implementations
 - Controllers stay thin: receive input, delegate, return response
 - Prefer constructor injection with `@RequiredArgsConstructor`
 - Use `@Component` for use cases and adapters; avoid vague service layers
