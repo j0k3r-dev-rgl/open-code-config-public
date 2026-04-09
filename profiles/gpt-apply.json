@@ -1,0 +1,14 @@
+{
+  "sdd-apply": "opencode-go/kimi-k2.5",
+  "sdd-archive": "opencode-go/kimi-k2.5",
+  "sdd-design": "mistral/devstral-small-2505",
+  "sdd-explore": "opencode-go/kimi-k2.5",
+  "sdd-init": "opencode-go/glm-5",
+  "sdd-java-apply": "opencode-go/minimax-m2.5",
+  "sdd-orchestrator": "google/gemini-3.1-pro-preview",
+  "sdd-propose": "opencode-go/kimi-k2.5",
+  "sdd-react-router-7-apply": "google/gemini-3-flash-preview",
+  "sdd-spec": "opencode-go/kimi-k2.5",
+  "sdd-tasks": "opencode-go/kimi-k2.5",
+  "sdd-verify": "opencode-go/kimi-k2.5"
+}
