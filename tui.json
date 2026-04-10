@@ -1,17 +1,18 @@
 {
-	"$schema": "https://opencode.ai/tui.json",
-	"keybinds": {
-		"tool_details": "ctrl+alt+t"
-	},
-	"plugin": [
-		[
-			"/home/j0k3r/opencode-mask/",
-			{
-				"enabled": true,
-				"theme": "tokyo-night-dev",
-				"set_theme": true,
-				"show_sidebar": true
-			}
-		]
-	]
+  "$schema": "https://opencode.ai/tui.json",
+  "keybinds": {
+    "tool_details": "ctrl+alt+t"
+  },
+  "plugin": [
+    [
+      "/home/j0k3r/opencode-mask/",
+      {
+        "enabled": true,
+        "set_theme": true,
+        "show_sidebar": true,
+        "theme": "tokyo-night-dev"
+      }
+    ],
+    "./plugins/plugin-sdd-opencode/"
+  ]
 }

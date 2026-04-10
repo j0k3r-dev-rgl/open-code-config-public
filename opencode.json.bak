@@ -1,0 +1,483 @@
+{
+	"$schema": "https://opencode.ai/config.json",
+	"plugin": ["opencode-gemini-auth", "opencode-claude-auth@latest"],
+	"agent": {
+		"Pair-Programming": {
+			"model": "openai/gpt-5.4",
+			"prompt": "{file:./AGENTS.md}",
+			"description": "Senior Architect mentor - helpful first, challenging when it matters",
+			"mode": "primary",
+			"options": {},
+			"permission": {
+				"*": "deny",
+				"skill": "allow",
+				"question": "allow",
+				"bash": "allow",
+				"edit": "allow",
+				"glob": "allow",
+				"read": "allow",
+				"webfetch": "allow",
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_context": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"engram_mem_session_summary": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		},
+		"sdd-apply": {
+			"model": "opencode-go/kimi-k2.5",
+			"prompt": "{file:./prompts/sdd/sdd-apply.md}",
+			"description": "Implement code changes from task definitions",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"*": "deny",
+				"skill": "allow",
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow",
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		},
+		"sdd-archive": {
+			"model": "opencode-go/kimi-k2.5",
+			"prompt": "{file:./prompts/sdd/sdd-archive.md}",
+			"description": "Archive completed change artifacts",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"*": "deny",
+				"skill": "allow",
+				"bash": "allow",
+				"edit": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"glob": "allow",
+				"read": "allow",
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		},
+		"sdd-design": {
+			"model": "mistral/devstral-small-2505",
+			"prompt": "{file:./prompts/sdd/sdd-design.md}",
+			"description": "Create technical design from proposals",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"*": "deny",
+				"skill": "allow",
+				"bash": "allow",
+				"edit": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"glob": "allow",
+				"read": "allow",
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		},
+		"sdd-explore": {
+			"model": "opencode-go/kimi-k2.5",
+			"prompt": "{file:./prompts/sdd/sdd-explore.md}",
+			"description": "Investigate codebase and think through ideas",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"*": "deny",
+				"skill": "allow",
+				"bash": "allow",
+				"edit": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"glob": "allow",
+				"read": "allow",
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		},
+		"sdd-init": {
+			"model": "opencode-go/glm-5",
+			"prompt": "{file:./prompts/sdd/sdd-init.md}",
+			"description": "Bootstrap SDD context and project configuration",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"*": "deny",
+				"skill": "allow",
+				"bash": "allow",
+				"edit": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"glob": "allow",
+				"read": "allow",
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		},
+		"sdd-java-apply": {
+			"model": "opencode-go/minimax-m2.5",
+			"prompt": "{file:./prompts/sdd/sdd-java-apply.md}",
+			"description": "Implement Java Spring Mongo code changes from task definitions",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"*": "deny",
+				"skill": "allow",
+				"api_test": "allow",
+				"edit": "allow",
+				"read": "allow",
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		},
+		"sdd-onboard": {
+			"prompt": "{file:./prompts/sdd/sdd-onboard.md}",
+			"description": "Guide user through a complete SDD cycle using their real codebase",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"*": "deny",
+				"skill": "allow",
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow",
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		},
+		"sdd-orchestrator": {
+			"model": "google/gemini-3.1-pro-preview",
+			"prompt": "{file:./prompts/sdd/sdd-orchestrator.md}",
+			"description": "Agent Teams Orchestrator - coordinates sub-agents, never does work inline",
+			"mode": "primary",
+			"options": {},
+			"permission": {
+				"skill": "allow",
+				"question": "allow",
+				"bash": "allow",
+				"delegate": "allow",
+				"delegation_list": "allow",
+				"delegation_read": "allow",
+				"edit": "allow",
+				"engram_mem_context": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"engram_mem_session_summary": "allow",
+				"glob": "allow",
+				"read": "allow",
+				"task": {
+					"*": "deny",
+					"sdd-*": "allow"
+				},
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		},
+		"sdd-propose": {
+			"model": "opencode-go/kimi-k2.5",
+			"prompt": "{file:./prompts/sdd/sdd-propose.md}",
+			"description": "Create change proposals from explorations",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"*": "deny",
+				"skill": "allow",
+				"bash": "allow",
+				"edit": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"glob": "allow",
+				"read": "allow",
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		},
+		"sdd-react-router-7-apply": {
+			"model": "google/gemini-3-flash-preview",
+			"prompt": "{file:./prompts/sdd/sdd-react-router-7-apply.md}",
+			"description": "Implement React Router 7 code changes from task definitions",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"*": "deny",
+				"skill": "allow",
+				"edit": "allow",
+				"read": "allow",
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		},
+		"sdd-spec": {
+			"model": "opencode-go/kimi-k2.5",
+			"prompt": "{file:./prompts/sdd/sdd-spec.md}",
+			"description": "Write detailed specifications from proposals",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"*": "deny",
+				"skill": "allow",
+				"bash": "allow",
+				"edit": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"glob": "allow",
+				"read": "allow",
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		},
+		"sdd-tasks": {
+			"model": "opencode-go/kimi-k2.5",
+			"prompt": "{file:./prompts/sdd/sdd-tasks.md}",
+			"description": "Break down specs and designs into implementation tasks",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"*": "deny",
+				"skill": "allow",
+				"bash": "allow",
+				"edit": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"glob": "allow",
+				"read": "allow",
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		},
+		"sdd-verify": {
+			"model": "opencode-go/kimi-k2.5",
+			"prompt": "{file:./prompts/sdd/sdd-verify.md}",
+			"description": "Validate implementation against specs",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"*": "deny",
+				"skill": "allow",
+				"api_test": "allow",
+				"bash": "allow",
+				"edit": "allow",
+				"engram_mem_get_observation": "allow",
+				"engram_mem_save": "allow",
+				"engram_mem_search": "allow",
+				"glob": "allow",
+				"read": "allow",
+				"navigation-agent_code_inspect_tree": "allow",
+				"navigation-agent_code_list_endpoints": "allow",
+				"navigation-agent_code_find_symbol": "allow",
+				"navigation-agent_code_search_text": "allow",
+				"navigation-agent_code_trace_flow": "allow",
+				"navigation-agent_code_trace_callers": "allow",
+				"engram_mem_suggest_topic_key": "allow",
+				"engram_mem_update": "allow",
+				"external_directory": {
+					"*": "ask"
+				}
+			}
+		}
+	},
+	"mcp": {
+		"context7": {
+			"type": "remote",
+			"url": "https://mcp.context7.com/mcp",
+			"enabled": true,
+			"headers": {
+				"CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+			}
+		},
+		"engram": {
+			"type": "local",
+			"command": [
+				"/home/linuxbrew/.linuxbrew/bin/engram",
+				"mcp",
+				"--tools=agent"
+			]
+		},
+		"metronous": {
+			"type": "local",
+			"command": ["/usr/local/bin/metronous", "mcp"]
+		},
+		"navigation-agent": {
+			"type": "local",
+			"command": ["npx", "-y", "@navigation-agent/mcp-server@latest"],
+			"enabled": true
+		}
+	},
+	"instructions": ["/home/j0k3r/.config/opencode/rules/*.md"],
+	"permission": {
+		"bash": {
+			"*": "allow",
+			"git commit *": "ask",
+			"git push": "ask",
+			"git push *": "ask",
+			"git push --force *": "ask",
+			"git rebase *": "ask",
+			"git reset --hard *": "ask"
+		},
+		"read": {
+			"*": "allow",
+			"**/.env": "deny",
+			"**/.env.*": "deny",
+			"**/credentials.json": "deny",
+			"**/secrets/**": "deny",
+			"*.env": "deny",
+			"*.env.*": "deny"
+		},
+		"external_directory": {
+			"*": "ask"
+		}
+	}
+}
