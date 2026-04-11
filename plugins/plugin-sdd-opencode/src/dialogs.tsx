@@ -15,7 +15,7 @@ import {
   parseActiveProfileFromRaw,
   formatContext,
 } from "./utils";
-import { resolvePaths, ensureProfilesDir, resolveProjectName } from "./config";
+import { resolvePaths, ensureProfilesDir } from "./config";
 import {
   listProfileFiles,
   readProfileModels,
@@ -466,7 +466,7 @@ function updateAgentModel(api: any, profileOpt: any, agentName: string, fullMode
 }
 
 export function showProjectMemoriesMenu(api: any) {
-  const projectName = resolveProjectName(api) || "project";
+  const projectName = api?.state?.path?.directory ? path.basename(api.state.path.directory) : "project";
 
   try {
     const memories = listProjectMemories(api);
