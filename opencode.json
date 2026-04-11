@@ -238,11 +238,13 @@
     },
     "sdd-java-apply": {
       "model": "openai/gpt-5.3-codex",
+      "mode": "subagent",
       "options": {},
       "permission": {}
     },
     "sdd-react-router-7-apply": {
       "model": "github-copilot/gpt-5.3-codex",
+      "mode": "subagent",
       "options": {},
       "permission": {}
     }
