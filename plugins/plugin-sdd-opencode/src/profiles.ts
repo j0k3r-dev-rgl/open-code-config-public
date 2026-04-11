@@ -103,8 +103,17 @@ export async function activateProfileFile(api: any, profilePath: string, profile
       return;
     }
 
-    const globalConfigResult = await api.client.global.config.get();
-    const currentConfig = globalConfigResult?.data || JSON.parse(fs.readFileSync(configPath, "utf-8"));
+    // IMPORTANT:
+    // Use on-disk config as source-of-truth to preserve declarative links like
+    // {file:...}. Runtime `global.config.get()` may return resolved content,
+    // and sending that back can materialize/inline file contents.
+    let currentConfig: any;
+    if (fs.existsSync(configPath)) {
+      currentConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+    } else {
+      const globalConfigResult = await api.client.global.config.get();
+      currentConfig = globalConfigResult?.data || {};
+    }
     const nextConfig = applyProfileModelsToConfig(currentConfig, profileModels);
 
     const result = await api.client.global.config.update({

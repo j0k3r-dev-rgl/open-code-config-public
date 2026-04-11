@@ -8,7 +8,7 @@
   "sdd-orchestrator": "github-copilot/gpt-5.3-codex",
   "sdd-propose": "opencode-go/glm-5.1",
   "sdd-react-router-7-apply": "github-copilot/gpt-5.3-codex",
-  "sdd-spec": "google/gemini-3-flash-preview",
+  "sdd-spec": "anthropic/claude-sonnet-4-6",
   "sdd-tasks": "anthropic/claude-sonnet-4-6",
   "sdd-verify": "opencode-go/glm-5"
 }
