@@ -3,16 +3,5 @@
 	"keybinds": {
 		"tool_details": "ctrl+alt+t"
 	},
-	"plugin": [
-		[
-			"./plugins/opencode-mask/",
-			{
-				"enabled": true,
-				"set_theme": true,
-				"show_sidebar": true,
-				"theme": "tokyo-night-dev"
-			}
-		],
-		"./plugins/plugin-sdd-opencode/"
-	]
+	"plugin": ["./plugins/opencode-mask/", "./plugins/plugin-sdd-opencode/"]
 }
