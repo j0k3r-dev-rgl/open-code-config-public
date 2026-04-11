@@ -133,7 +133,7 @@
       }
     },
     "sdd-orchestrator": {
-      "model": "github-copilot/gpt-5.3-codex",
+      "model": "openai/gpt-5.4",
       "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-orchestrator.md}",
       "tools": {
         "bash": true,
