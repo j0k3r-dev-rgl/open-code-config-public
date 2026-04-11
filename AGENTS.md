@@ -90,6 +90,8 @@ Topic update rules:
 - Same topic evolving → use same `topic_key` (upsert)
 - Unsure about key → call `mem_suggest_topic_key` first
 - Know exact ID to fix → use `mem_update`
+- ALL `mem_*` calls MUST use the `project` value resolved by the runtime/orchestrator as the single source of truth
+- NEVER recalculate `project` locally from cwd, basename, or ad-hoc detection when the runtime/orchestrator already provides it
 
 ### WHEN TO SEARCH MEMORY
 

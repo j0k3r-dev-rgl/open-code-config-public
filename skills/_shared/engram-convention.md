@@ -10,7 +10,7 @@ ALL SDD artifacts persisted to Engram MUST follow this deterministic naming:
 title:     sdd/{change-name}/{artifact-type}
 topic_key: sdd/{change-name}/{artifact-type}
 type:      architecture
-project:   {detected or current project name}
+project:   {project}  # resolved by runtime/orchestrator; do not recalculate locally
 scope:     project
 ```
 
@@ -28,7 +28,7 @@ scope:     project
 | `archive-report` | sdd-archive | Archive closure with lineage |
 | `state` | orchestrator | DAG state for recovery after compaction |
 
-Exception: `sdd-init` uses `sdd-init/{project-name}` as both title and topic_key.
+Exception: `sdd-init` uses `sdd-init/{project}` as both title and topic_key.
 
 ### State Artifact
 
@@ -90,7 +90,7 @@ mem_save(
   title: "sdd/add-dark-mode/proposal",
   topic_key: "sdd/add-dark-mode/proposal",
   type: "architecture",
-  project: "my-app",
+  project: "{project}",
   content: "## Proposal\n\nAdd dark mode toggle..."
 )
 ```
@@ -111,7 +111,7 @@ mem_search(query: "sdd/{change-name}/", project: "{project}")
 
 ## Project Name Resolution (engram v1.11.0+)
 
-Engram auto-detects the project name from the git remote at MCP startup. The `--project` flag and `ENGRAM_PROJECT` env var can override detection. All project names are normalized to lowercase and trimmed.
+Engram/runtime resolves the canonical project name before agent mem_* usage. Agents MUST reuse that resolved `{project}` value exactly; they MUST NOT recalculate it locally from cwd, basename, or custom heuristics. The `--project` flag and `ENGRAM_PROJECT` env var can override plugin detection. All project names are normalized to lowercase and trimmed.
 
 If the agent saves a memory under a project name that doesn't match existing observations, engram warns about potential name drift. Use `mem_merge_projects` (MCP tool) or `engram projects consolidate` (CLI) to merge variants.
 

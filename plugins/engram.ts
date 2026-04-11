@@ -41,6 +41,9 @@ const ENGRAM_TOOLS = new Set([
 
 // ─── Memory Instructions ─────────────────────────────────────────────────────
 // These get injected into the agent's context so it knows to call mem_save.
+// IMPORTANT: the plugin resolves the canonical `project` at runtime and agents
+// must treat that value as authoritative for every mem_* call. Agents must NOT
+// derive project locally from cwd, basename, or custom heuristics.
 
 const MEMORY_INSTRUCTIONS = `## Engram Persistent Memory — Protocol
 
@@ -72,6 +75,8 @@ Topic rules:
 - Reuse the same \`topic_key\` to update an evolving topic instead of creating new observations
 - If unsure about the key, call \`mem_suggest_topic_key\` first and then reuse it
 - Use \`mem_update\` when you have an exact observation ID to correct
+- For EVERY \`mem_*\` call, use the runtime-resolved \`project\` value as-is
+- NEVER recompute \`project\` locally from cwd, basename, or ad-hoc detection inside the agent
 
 ### WHEN TO SEARCH MEMORY
 

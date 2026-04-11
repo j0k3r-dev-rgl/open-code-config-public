@@ -29,7 +29,7 @@ title: "[PENDING] {brief description}"
 type: "manual"        # manual | tech-debt | bug | feature
 status: "pending"     # pending | in_progress | blocked | completed
 priority: "medium"    # low | medium | high | critical
-project: "{project-name}"
+project: "{project}"
 topic_key: "pending/{kebab-case-description}"
 content: |
   **Description**: {what needs to be done}
@@ -49,7 +49,7 @@ To avoid broad or random searches, maintain a project-scoped index artifact.
 title: "pending-index/{project}"
 topic_key: "pending-index/{project}"
 type: "pattern"
-project: "{project-name}"
+project: "{project}"
 scope: "project"
 content: |
   ## Open Tasks
@@ -133,6 +133,7 @@ When user says:
 mem_save({
   title: "[PENDING] Review auth middleware",
   type: "manual",
+  project: "{project}",
   topic_key: "pending/review-auth-middleware",
   content: `
 **Description**: Review auth middleware implementation
@@ -147,9 +148,10 @@ mem_save({
 
 // Then upsert the project index
 mem_save({
-  title: "pending-index/{auto-detected-project}",
-  topic_key: "pending-index/{auto-detected-project}",
+  title: "pending-index/{project}",
+  topic_key: "pending-index/{project}",
   type: "pattern",
+  project: "{project}",
   content: `
 ## Open Tasks
 - topic_key: pending/review-auth-middleware
@@ -172,7 +174,8 @@ mem_save({
 
 // 1. Search the deterministic project index first
 const index = await mem_search({
-  query: "pending-index/{auto-detected-project}"
+  query: "pending-index/{project}",
+  project: "{project}"
 })
 
 // 2. Read the full index content
@@ -191,7 +194,8 @@ const fullIndex = await mem_get_observation({ id: index[0].id })
 
 // 1. Find the task
 const results = await mem_search({
-  query: "pending/review-auth-middleware"
+  query: "pending/review-auth-middleware",
+  project: "{project}"
 });
 
 // 2. Update it
@@ -212,9 +216,10 @@ if (results && results[0]) {
 
 // 3. Update the project index too
 mem_save({
-  title: "pending-index/{auto-detected-project}",
-  topic_key: "pending-index/{auto-detected-project}",
+  title: "pending-index/{project}",
+  topic_key: "pending-index/{project}",
   type: "pattern",
+  project: "{project}",
   content: `
 ## Open Tasks
 
@@ -312,7 +317,7 @@ User mentions "pending", "pendiente", "TODO", "tech-debt"?
 mem_save({
   title: "[PENDING] Refactor database queries",
   type: "tech-debt",
-  project: "my-app",
+  project: "{project}",
   topic_key: "pending/refactor-database-queries",
   content: `
 **Description**: Refactor database queries for better performance
@@ -326,10 +331,10 @@ mem_save({
 })
 
 mem_save({
-  title: "pending-index/my-app",
-  topic_key: "pending-index/my-app",
+  title: "pending-index/{project}",
+  topic_key: "pending-index/{project}",
   type: "pattern",
-  project: "my-app",
+  project: "{project}",
   content: `
 ## Open Tasks
 - topic_key: pending/refactor-database-queries
@@ -352,8 +357,8 @@ mem_save({
 ```typescript
 // 1. Read the project index
 const tasksIndex = await mem_search({
-  query: "pending-index/my-app",
-  project: "my-app"
+  query: "pending-index/{project}",
+  project: "{project}"
 });
 
 // 2. Get the full index observation
@@ -369,7 +374,7 @@ const pending = await mem_get_observation({ id: tasksIndex[0].id });
 // 1. Find
 const results = await mem_search({
   query: "pending/refactor-database-queries",
-  project: "my-app"
+  project: "{project}"
 });
 
 // 2. Update
@@ -381,10 +386,10 @@ if (results[0]) {
 }
 
 await mem_save({
-  title: "pending-index/my-app",
-  topic_key: "pending-index/my-app",
+  title: "pending-index/{project}",
+  topic_key: "pending-index/{project}",
   type: "pattern",
-  project: "my-app",
+  project: "{project}",
   content: `
 ## Open Tasks
 
