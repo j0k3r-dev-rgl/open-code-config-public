@@ -23,9 +23,7 @@ Use this skill when:
 1. **Blank issues are disabled** — MUST use a template (bug report or feature request)
 2. **Every issue gets `status:needs-review` automatically** on creation
 3. **A maintainer MUST add `status:approved`** before any PR can be opened
-4. **Questions go to the repository's Discussions area when available**, not issues
-5. **Never run GitHub write operations unless the user explicitly asked for them in this message and confirmed immediately before execution**
-6. **Verify issue templates, labels, and Discussions support exist before relying on them**
+4. **Questions go to [Discussions](https://github.com/Gentleman-Programming/agent-teams-lite/discussions)**, not issues
 
 ---
 
@@ -33,14 +31,12 @@ Use this skill when:
 
 ```
 1. Search existing issues for duplicates
-2. Verify the repository has the expected issue templates and labels
-3. Ask for confirmation before any GitHub write command
-4. Choose the correct template (Bug Report or Feature Request)
-5. Fill in ALL required fields
-6. Check pre-flight checkboxes
-7. Submit → issue gets status:needs-review automatically
-8. Wait for maintainer to add status:approved
-9. Only then open a PR linking this issue
+2. Choose the correct template (Bug Report or Feature Request)
+3. Fill in ALL required fields
+4. Check pre-flight checkboxes
+5. Submit → issue gets status:needs-review automatically
+6. Wait for maintainer to add status:approved
+7. Only then open a PR linking this issue
 ```
 
 ---
@@ -49,7 +45,7 @@ Use this skill when:
 
 ### Bug Report
 
-Template: `.github/ISSUE_TEMPLATE/bug_report.yml` if present in the current repository
+Template: `.github/ISSUE_TEMPLATE/bug_report.yml`
 Auto-labels: `bug`, `status:needs-review`
 
 #### Required Fields
@@ -116,7 +112,7 @@ zsh: no matches found: skills/*
 
 ### Feature Request
 
-Template: `.github/ISSUE_TEMPLATE/feature_request.yml` if present in the current repository
+Template: `.github/ISSUE_TEMPLATE/feature_request.yml`
 Auto-labels: `enhancement`, `status:needs-review`
 
 #### Required Fields

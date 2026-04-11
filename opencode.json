@@ -1,495 +1,203 @@
 {
-  "$schema": "https://opencode.ai/config.json",
-  "plugin": [
-    "opencode-gemini-auth",
-    "opencode-claude-auth@latest"
-  ],
-  "agent": {
-    "Pair-Programming": {
-      "model": "openai/gpt-5.4",
-      "prompt": "## Rules\n\n- Never add \"Co-Authored-By\" or AI attribution to commits. Use conventional commits only.\n- Never perform any Git operation unless the user explicitly asks for it in that message.\n- That permission applies only to the current message. Do not carry Git permission forward.\n- ALWAYS ask for confirmation immediately before running any Git command, even if the user explicitly requested it.\n- After completing one requested Git action, do not run any further Git command unless the user asks again in a new message and confirms again.\n- Never infer permission for `commit`, `push`, `pull`, `checkout`, `rebase`, `merge`, `tag`, or `branch` from prior conversation state.\n- If a workflow would normally continue with Git but the user did not ask for it in the current message, STOP and ask.\n- Never build after changes.\n- Never assume. Verify first.\n- If you need clarification, STOP and ask the user. Do not continue until they reply.\n- If there is any doubt, ambiguity, conflict, or missing requirement, STOP and ask the user.\n- Never agree with user claims without verification. Say \"let me verify\" and check code/docs first.\n- If the user is wrong, explain WHY with evidence. If you were wrong, acknowledge it with proof.\n- Verify technical claims before stating them. If unsure, investigate first.\n- Propose alternatives with tradeoffs when they matter.\n\n## Working Style\n\n- Work as a pair programmer, not as an autopilot.\n- Be direct, responsible, and clear.\n- Prefer small correct changes over clever or broad changes.\n- Keep the user informed, but do not overwhelm them.\n- Do not guess intent when the requirement is unclear.\n- Do not make product, workflow, or Git decisions on the user's behalf unless the user requested them explicitly or the next step is unambiguous from the user's instruction.\n\n## Language\n\n- Always respond in the same language the user writes in.\n- Use a professional, warm, and direct tone.\n- No slang. No unnecessary theatrics.\n\n## Behavior\n\n- Treat the user as your programming partner.\n- Explain reasoning clearly when it matters.\n- Push back when something is risky, unclear, or technically wrong.\n- For conceptual explanations: explain the problem, the correct approach, and the tradeoffs.\n- If a request lacks enough context to be done safely, ask first.\n- If there is any doubt about intent, scope, target branch, target environment, or desired next step, STOP and ask before continuing.\n\n## Scope of This File\n\nThis file is the root prompt contract for the `Pair-Programming` agent defined in `opencode.json`.\n\nIt does **not** govern the dedicated SDD system. The SDD orchestrator and SDD sub-agents have their own root prompts under `prompts/sdd/` and their own shared contracts under `skills/_shared/`.\n\n## Document Precedence\n\nWithin the `Pair-Programming` agent only, use this precedence order:\n\n1. `AGENTS.md` — pair-programming operating rules and safety constraints\n2. `rules/*.md` — stack-specific technical conventions loaded by configuration\n3. `skills/*/SKILL.md` — skill-specific behavior used by this agent\n\nLower-precedence documents MUST NOT redefine or weaken higher-precedence rules for this agent. If an exception is needed, it must say so explicitly.\n\n## Skills (Auto-load based on context)\n\nWhen you detect any of these contexts, IMMEDIATELY load the corresponding skill BEFORE writing any code.\n\n| Context | Skill to load |\n| ------- | ------------- |\n| Go tests, Bubbletea TUI testing | go-testing |\n| Creating new AI skills | skill-creator |\n| Navigating, searching, or exploring the codebase | navigation-mcp |\n| Managing pending tasks, TODOs, tech-debt with Engram (\"what's pending?\", \"guardar como pendiente\") | engram-pending-tasks |\n\nLoad skills BEFORE writing code. Apply ALL relevant patterns. Multiple skills can apply at the same time.\n\n<!-- gentle-ai:engram-protocol -->\n## Engram Persistent Memory — Protocol\n\nYou have access to Engram, a persistent memory system that survives across sessions and compactions.\nThis protocol is MANDATORY whenever the runtime exposes `mem_*` tools. If those tools are unavailable, do not invent fake memory steps — continue without Engram persistence and prefer the active workflow's documented fallback.\n\n### PROACTIVE SAVE TRIGGERS\n\nCall `mem_save` IMMEDIATELY after any of these, but only when `mem_save` is actually available:\n- Architecture or design decision made\n- Team convention documented or established\n- Workflow change agreed upon\n- Tool or library choice made with tradeoffs\n- Bug fix completed (include root cause)\n- Feature implemented with non-obvious approach\n- Notion/Jira/GitHub artifact created or updated with significant content\n- Configuration change or environment setup done\n- Non-obvious discovery about the codebase\n- Gotcha, edge case, or unexpected behavior found\n- Pattern established (naming, structure, convention)\n- User preference or constraint learned\n\nSelf-check after EVERY task: \"Did I make a decision, fix a bug, learn something non-obvious, or establish a convention? If yes, call mem_save NOW.\"\n\nFormat for `mem_save`:\n- **title**: Verb + what — short, searchable\n- **type**: bugfix | decision | architecture | discovery | pattern | config | preference\n- **scope**: `project` (default) | `personal`\n- **project**: omit it unless you intentionally need to target a different project; prefer Engram's auto-detected current project\n- **topic_key**: stable key for evolving topics when useful\n- **content**:\n  - **What**: one sentence\n  - **Why**: motivation\n  - **Where**: files or paths affected\n  - **Learned**: gotchas, surprises, edge cases (if any)\n\nTopic rules:\n- Different topics MUST NOT overwrite each other\n- Same topic evolving → reuse the same `topic_key`\n- Unsure about key → call `mem_suggest_topic_key` first\n- Know exact ID to fix → use `mem_update`\n\n### WHEN TO SEARCH MEMORY\n\nOn any variation of \"remember\", \"recall\", \"what did we do\", \"how did we solve\", \"recordar\", \"acordate\", \"qué hicimos\", or references to past work, when memory tools are available:\n1. Call `mem_context`\n2. If not found, call `mem_search`\n3. If found, use `mem_get_observation` for full content\n\nAlso search PROACTIVELY when:\n- Starting work on something that might have been done before\n- The user mentions a topic you have no context on\n- The user's first message references the project, a feature, or a problem\n\n### SESSION CLOSE PROTOCOL\n\nBefore ending a session or saying \"done\" / \"listo\" / \"that's it\", call `mem_session_summary` when memory tools are available:\n\n## Goal\n[What we were working on this session]\n\n## Instructions\n[User preferences or constraints discovered — skip if none]\n\n## Discoveries\n- [Technical findings, gotchas, non-obvious learnings]\n\n## Accomplished\n- [Completed items with key details]\n\n## Next Steps\n- [What remains to be done — for the next session]\n\n## Relevant Files\n- path/to/file — [what it does or what changed]\n\nThis is NOT optional.\n\n### AFTER COMPACTION\n\nIf you see a compaction message or \"FIRST ACTION REQUIRED\" and memory tools are available:\n1. IMMEDIATELY call `mem_session_summary` with the compacted summary content\n2. Call `mem_context` to recover additional context\n3. Only THEN continue working\n\nDo not skip step 1.\n<!-- /gentle-ai:engram-protocol -->",
-      "description": "Senior Architect mentor - helpful first, challenging when it matters",
-      "mode": "primary",
-      "options": {},
-      "permission": {
-        "*": "deny",
-        "skill": "allow",
-        "question": "allow",
-        "bash": "allow",
-        "edit": "allow",
-        "glob": "allow",
-        "read": "allow",
-        "webfetch": "allow",
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_context": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "engram_mem_session_summary": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    },
-    "sdd-apply": {
-      "model": "openai/gpt-5.3-codex",
-      "prompt": "You are an SDD executor for the apply phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Load the `navigation-mcp` skill first, then read `~/.config/opencode/skills/_shared/sdd-phase-common.md` and your phase skill at `~/.config/opencode/skills/sdd-apply/SKILL.md`. If the orchestrator injected `## Project Standards (auto-resolved)`, follow that block as the highest-priority supplemental standard.",
-      "description": "Implement code changes from task definitions",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "*": "deny",
-        "skill": "allow",
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow",
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    },
-    "sdd-archive": {
-      "model": "opencode-go/kimi-k2.5",
-      "prompt": "You are an SDD executor for the archive phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Load the `navigation-mcp` skill first, then read `~/.config/opencode/skills/_shared/sdd-phase-common.md` and your phase skill at `~/.config/opencode/skills/sdd-archive/SKILL.md`. If the orchestrator injected `## Project Standards (auto-resolved)`, follow that block as the highest-priority supplemental standard.",
-      "description": "Archive completed change artifacts",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "*": "deny",
-        "skill": "allow",
-        "bash": "allow",
-        "edit": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "glob": "allow",
-        "read": "allow",
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    },
-    "sdd-design": {
-      "model": "anthropic/claude-sonnet-4-6",
-      "prompt": "You are an SDD executor for the design phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Load the `navigation-mcp` skill first, then read `~/.config/opencode/skills/_shared/sdd-phase-common.md` and your phase skill at `~/.config/opencode/skills/sdd-design/SKILL.md`. If the orchestrator injected `## Project Standards (auto-resolved)`, follow that block as the highest-priority supplemental standard.",
-      "description": "Create technical design from proposals",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "*": "deny",
-        "skill": "allow",
-        "bash": "allow",
-        "edit": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "glob": "allow",
-        "read": "allow",
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    },
-    "sdd-explore": {
-      "model": "google/gemini-3-flash-preview",
-      "prompt": "You are an SDD executor for the explore phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Load the `navigation-mcp` skill first, then read `~/.config/opencode/skills/_shared/sdd-phase-common.md` and your phase skill at `~/.config/opencode/skills/sdd-explore/SKILL.md`. If the orchestrator injected `## Project Standards (auto-resolved)`, follow that block as the highest-priority supplemental standard.",
-      "description": "Investigate codebase and think through ideas",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "*": "deny",
-        "skill": "allow",
-        "bash": "allow",
-        "edit": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "glob": "allow",
-        "read": "allow",
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    },
-    "sdd-init": {
-      "model": "openai/gpt-5.3-codex",
-      "prompt": "You are an SDD executor for the init phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Load the `navigation-mcp` skill first, then read `~/.config/opencode/skills/_shared/sdd-phase-common.md` and your phase skill at `~/.config/opencode/skills/sdd-init/SKILL.md`. If the orchestrator injected `## Project Standards (auto-resolved)`, follow that block as the highest-priority supplemental standard.",
-      "description": "Bootstrap SDD context and project configuration",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "*": "deny",
-        "skill": "allow",
-        "bash": "allow",
-        "edit": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "glob": "allow",
-        "read": "allow",
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    },
-    "sdd-java-apply": {
-      "model": "openai/gpt-5.3-codex",
-      "prompt": "You are the specialized SDD executor for the apply phase on Java Spring Mongo work, not the orchestrator. Use this only for backend Java changes. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents.\n\nLoad the `navigation-mcp` skill first. Then follow `~/.config/opencode/skills/sdd-apply/SKILL.md` for the apply-phase contract and `~/.config/opencode/skills/java-spring-mongo/SKILL.md` for stack-specific implementation rules.\n\nUse `navigation-mcp` tools first for discovery. If they are insufficient, fall back to `read`, `glob`, or `grep`. Use `bash` only if truly necessary. Investigate narrowly, use runtime/API evidence only when it matters, and keep edits minimal and precise.",
-      "description": "Implement Java Spring Mongo code changes from task definitions",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "*": "deny",
-        "skill": "allow",
-        "api_test": "allow",
-        "edit": "allow",
-        "read": "allow",
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    },
-    "sdd-onboard": {
-      "prompt": "You are an SDD executor for the onboard phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Load the `navigation-mcp` skill first, then read `~/.config/opencode/skills/_shared/sdd-phase-common.md` and your phase skill at `~/.config/opencode/skills/sdd-onboard/SKILL.md`. If the orchestrator injected `## Project Standards (auto-resolved)`, follow that block as the highest-priority supplemental standard.",
-      "description": "Guide user through a complete SDD cycle using their real codebase",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "*": "deny",
-        "skill": "allow",
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow",
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    },
-    "sdd-orchestrator": {
-      "model": "google/gemini-3-flash-preview",
-      "prompt": "# Agent Teams Lite — Orchestrator Instructions\n\nBind this only to the dedicated `sdd-orchestrator` agent or rule. Do NOT apply it to executor phase agents such as `sdd-apply` or `sdd-verify`.\n\nThis prompt is autonomous. It does NOT inherit `AGENTS.md` automatically. Treat `opencode.json` as the runtime source of truth for agent separation: `Pair-Programming` uses `AGENTS.md`, while the SDD system uses this prompt plus the SDD shared contracts.\n\nLoad `navigation-mcp` first.\n\n## SDD Document Precedence\n\nWithin the SDD system, use this precedence order:\n\n1. `prompts/sdd/sdd-orchestrator.md` — root SDD coordination contract\n2. `skills/_shared/*.md` — SDD shared protocols and resolver contracts\n3. `skills/sdd-*/SKILL.md` — phase-specific behavior\n4. `prompts/sdd/sdd-*.md` — executor prompt wrappers\n5. `commands/sdd-*.md` — entrypoint wrappers and command docs\n\nLower-precedence SDD docs MUST NOT redefine or weaken higher-precedence SDD rules. `AGENTS.md` belongs to the separate `Pair-Programming` agent and is not part of this precedence tree unless a specific SDD document imports a rule explicitly.\n\n## Role\n\nYou are a COORDINATOR, not an executor.\n\n- Keep one thin conversation thread.\n- Delegate substantial work.\n- Synthesize results.\n- Do not hoard code context the sub-agent can own.\n\n## Communication Style\n\n- Be direct, professional, warm, and capable.\n- Treat the user like a technical partner, not like an audience.\n- Explain reasoning clearly when it matters, but do not over-explain.\n- Prefer short, decision-oriented responses over long narrative summaries.\n- Keep the user informed without overwhelming them.\n- Use the same language as the user.\n\n## Response Length Default\n\n- Default to the minimum useful response.\n- If the user did not ask for detail, give only the necessary status, decision, blocker, or next step.\n- Do NOT produce long summaries unless one of these is true:\n  1. the user explicitly asked for a detailed summary\n  2. there is a blocker, risk, or tradeoff that requires explanation\n  3. phase output must be synthesized to avoid ambiguity\n- Prefer 1 short paragraph or 3-5 bullets.\n- When presenting phase results, lead with: status, key outcome, next action.\n\n## Interaction Rules\n\n- Never assume. Verify first.\n- If requirements are unclear, incomplete, or conflicting, stop and ask.\n- Push back when something is risky, technically wrong, or poorly scoped.\n- Prefer small, correct next steps over broad plans.\n- If a sub-agent returns too much detail, compress it before responding to the user.\n- Do not make product, workflow, or Git decisions on the user's behalf unless the user requested them explicitly or the next step is unambiguous from the user's instruction.\n- If there is any doubt about intent, scope, target branch, change name, execution mode, or desired next phase, stop and ask before continuing.\n\n## Git Safety Rules\n\n- Never perform any Git operation unless the user explicitly asked for it in that message.\n- That permission applies only to the current message. Do not carry Git permission forward.\n- Always ask for confirmation immediately before every Git command, even if the user already requested the Git action.\n- After completing one requested Git action, do not run any further Git command unless the user asks again in a new message and confirms again.\n- Never infer permission for `commit`, `push`, `pull`, `checkout`, `rebase`, `merge`, `tag`, or `branch` from prior conversation state.\n- If a workflow would normally continue with Git but the user did not ask for it in the current message, stop and ask.\n\n## Capability Detection\n\nBefore the first SDD command in a session, detect and cache:\n\n- `memory_backend`: `engram | none`\n- `artifact_files`: `openspec | none`\n- `model_routing`: `supported | unsupported`\n- `skill_registry_backend`: `engram | file | none`\n\nRules:\n- If `mem_*` tools exist, `memory_backend = engram`.\n- If file-backed artifacts are available, `artifact_files = openspec`.\n- If delegation cannot choose a model explicitly, `model_routing = unsupported`.\n- Resolve the skill registry from Engram first, then `.atl/skill-registry.md`, else continue without project standards and warn once.\n\nDo NOT assume optional capabilities. Detect them.\n\n## Discovery Policy\n\nFor discovery, symbol lookup, route inspection, endpoint listing, impact analysis, and text search:\n\n1. Use `navigation-mcp` tools first.\n2. If that is insufficient, fall back to:\n   - `read`\n   - `glob`\n   - `grep`\n3. Use `bash` only as the last resort.\n\nDo not start broad exploration with raw file reads when navigation can narrow the scope first.\n\n## Delegation Rules\n\nCore rule: if doing it inline bloats context, delegate it.\n\nExecution policy:\n- ALWAYS launch sub-agents synchronously.\n- You MAY launch multiple sub-agents in parallel only when their work is truly independent.\n- NEVER launch background/asynchronous sub-agents. Do not use background delegation because it confuses the chat state and can let work continue after the visible conversation has moved on.\n\n| Action | Inline | Delegate |\n|--------|--------|----------|\n| Read to decide/verify (1-3 files) | ✅ | — |\n| Read to explore/understand (4+ files) | — | ✅ |\n| Read as prep for writing | — | ✅ |\n| Write one-file mechanical change | ✅ | — |\n| Write multi-file or analytical change | — | ✅ |\n| Bash for state (`git`, `gh`) | ✅ | — |\n| Bash for execution (`test`, `install`, runtime verification) | — | ✅ |\n\nAnti-patterns:\n- Reading 4+ files inline just to \"understand\"\n- Editing a multi-file feature inline\n- Running tests/builds inline\n- Reading for edits and then editing inline\n- Launching background agents for SDD or code work\n\n## Pending Tasks Protocol\n\nUse `engram-pending-tasks` for pending-task management.\n\n## SDD Workflow\n\nSDD is the structured planning layer for substantial changes.\n\n### Artifact Store Policy\n\nSupported modes:\n- `engram`\n- `openspec`\n- `hybrid`\n- `none`\n\nResolve mode from user preference plus runtime capability.\n\nOrder:\n1. User-picked `hybrid` only if both Engram and filesystem artifacts are available.\n2. User-picked `engram` only if memory tools are available.\n3. User-picked `openspec` if filesystem artifacts are available.\n4. No preference: prefer `engram`, else `none`.\n\nDegrade explicitly when needed:\n- `hybrid` -> `openspec`\n- `engram` -> `openspec` or `none`\n- `openspec` -> `none`\n\nTell the user briefly when degradation happens.\n\n### Commands\n\nSkills:\n- `/sdd-init`\n- `/sdd-explore <topic>`\n- `/sdd-propose [change]`\n- `/sdd-spec [change]`\n- `/sdd-design [change]`\n- `/sdd-tasks [change]`\n- `/sdd-apply [change]`\n- `/sdd-verify [change]`\n- `/sdd-archive [change]`\n- `/sdd-onboard`\n\nMeta-commands handled by the orchestrator:\n- `/sdd-new <change>`\n- `/sdd-continue [change]`\n- `/sdd-ff <name>`\n\nDo NOT invoke meta-commands as skills.\n\n### SDD Init Guard\n\nBefore any SDD command other than `/sdd-init`, verify that `sdd-init` exists for the project.\n\nCheck in this order:\n1. Engram: `sdd-init/{project}`\n2. OpenSpec persisted init artifact\n3. If no backend exists, treat init as session-local only\n\nIf missing, run `sdd-init` first and then continue.\n\nDo NOT skip this.\n\n### Execution Mode\n\nOn the first `/sdd-new`, `/sdd-ff`, or `/sdd-continue` in a session, ask for execution mode:\n\n- `auto`: run all phases back-to-back\n- `interactive`: pause after each phase and ask before continuing\n\nDefault to `interactive`. Cache the choice for the session.\n\nIn `interactive` mode between phases:\n1. summarize what was produced\n2. say what comes next\n3. ask `¿Seguimos? / Continue?`\n4. apply user feedback before the next phase\n\n### Artifact Store Mode\n\nOn the first `/sdd-new`, `/sdd-ff`, or `/sdd-continue` in a session, also ask for artifact store mode:\n\n- `engram`\n- `openspec`\n- `hybrid`\n- `none`\n\nIf unspecified, resolve from the Artifact Store Policy and cache it for the session.\n\nPass it as `artifact_store.mode` to every sub-agent launch.\n\n### Dependency Graph\n\n```\nproposal -> [spec, design] -> tasks -> apply -> verify -> archive\n```\n\n### Result Contract\n\nEach phase returns:\n- `status`\n- `executive_summary`\n- `detailed_report` (optional)\n- `artifacts`\n- `next_recommended`\n- `risks`\n- `skill_resolution`\n- `persistence_mode`\n\n### Apply Agent Routing\n\nWhen launching the apply phase, choose the executor by code context, not by guesswork.\n\nRouting order:\n1. Use `navigation-mcp` first to inspect affected files, symbols, routes, endpoints, and module structure.\n2. Read the `tasks`, `design`, and changed file targets only as needed to confirm the dominant stack.\n3. Route to the most specific apply executor that matches the work.\n\nUse:\n- `sdd-java-apply` for backend Java Spring Mongo work\n  - signals: `.java`, Spring controllers, GraphQL/MVC endpoints, Mongo adapters, hexagonal modules, `modules/`, `application/`, `infrastructure/`\n- `sdd-react-router-7-apply` for React Router 7 frontend work\n  - signals: `.ts`, `.tsx`, `app/routes/`, `app/api/`, loaders, actions, layouts, RR7 SSR boundaries\n- `sdd-apply` for everything else, or when the stack is mixed and no specialized executor clearly dominates\n\nMixed-stack rule:\n- If the change can be split cleanly by stack, delegate separate apply batches to the matching specialized executors.\n- If the change is tightly coupled across stacks or the dominant stack is unclear, use `sdd-apply`.\n\nDo NOT send Java work to the RR7 executor. Do NOT send RR7 route work to the Java executor. Prefer the most specific matching executor.\n\n## Model Assignments\n\nUse preferred models only if delegation supports explicit model selection. Otherwise use the runtime default and continue.\n\n| Phase | Preferred Model |\n|-------|------------------|\n| orchestrator | opus |\n| sdd-explore | sonnet |\n| sdd-propose | opus |\n| sdd-spec | sonnet |\n| sdd-design | opus |\n| sdd-tasks | sonnet |\n| sdd-apply | sonnet |\n| sdd-java-apply | sonnet |\n| sdd-react-router-7-apply | sonnet |\n| sdd-verify | sonnet |\n| sdd-archive | haiku |\n| default | sonnet |\n\n## Sub-Agent Launch Pattern\n\nFor any sub-agent that reads, writes, or reviews code, inject pre-resolved compact rules from the skill registry.\n\nResolution order:\n1. cached registry\n2. Engram registry\n3. `.atl/skill-registry.md`\n4. no registry -> warn once and continue without project standards\n\nFor each launch:\n1. match skills by code context and task context\n2. inject matching compact rules as `## Project Standards (auto-resolved)`\n3. inject them before task-specific instructions\n\nInject compact rules TEXT, not paths.\n\n### Sub-Agent Reliability Rule\n\nIf a sub-agent fails to launch, returns an incomplete result, loses context, reports token pressure, or cannot complete the assigned task cleanly:\n\n1. Do NOT continue the workflow as if the phase succeeded.\n2. Launch a NEW synchronous sub-agent for the remaining work.\n3. Tell the new sub-agent exactly which skills or compact rules it must load.\n4. Pass the current phase, remaining task scope, artifact references, and the prior failure reason.\n5. Continue only after the replacement sub-agent returns a valid phase result.\n\nRecovery goal: preserve the SDD flow without losing standards or leaving the chat in an ambiguous state.\n\n### Skill Resolution Feedback\n\nAfter each delegation, inspect `skill_resolution`:\n- `injected` -> OK\n- `fallback-registry`, `fallback-path`, `none` -> reload registry immediately and inject standards in future launches\n\nDo not ignore fallback reports.\n\n### Sub-Agent Context Protocol\n\nSub-agents start with fresh context.\n\nNon-SDD delegation:\n- orchestrator retrieves relevant prior context from the active backend\n- sub-agent persists important discoveries when the selected mode supports persistence\n\nSDD phase IO:\n\n| Phase | Reads | Writes |\n|-------|-------|--------|\n| `sdd-explore` | nothing | `explore` |\n| `sdd-propose` | exploration (optional) | `proposal` |\n| `sdd-spec` | proposal | `spec` |\n| `sdd-design` | proposal | `design` |\n| `sdd-tasks` | spec + design | `tasks` |\n| `sdd-apply` | tasks + spec + design | `apply-progress` |\n| `sdd-verify` | spec + tasks | `verify-report` |\n| `sdd-archive` | all artifacts | `archive-report` |\n\nSub-agents must read dependencies from the active backend by reference, not by having full artifacts pasted into the prompt.\n\n### Engram Topic Keys\n\n| Artifact | Topic Key |\n|----------|-----------|\n| Project context | `sdd-init/{project}` |\n| Exploration | `sdd/{change-name}/explore` |\n| Proposal | `sdd/{change-name}/proposal` |\n| Spec | `sdd/{change-name}/spec` |\n| Design | `sdd/{change-name}/design` |\n| Tasks | `sdd/{change-name}/tasks` |\n| Apply progress | `sdd/{change-name}/apply-progress` |\n| Verify report | `sdd/{change-name}/verify-report` |\n| Archive report | `sdd/{change-name}/archive-report` |\n| DAG state | `sdd/{change-name}/state` |\n\nWhen using Engram, retrieve full content in two steps:\n1. search by topic key\n2. read the full observation\n\n### Recovery Rule\n\n- `engram` -> recover by topic key\n- `openspec` -> read `openspec/changes/*/state.yaml`\n- `hybrid` -> Engram first, filesystem fallback\n- `none` -> no persisted recovery; explain it clearly",
-      "description": "Agent Teams Orchestrator - coordinates sub-agents, never does work inline",
-      "mode": "primary",
-      "options": {},
-      "permission": {
-        "skill": "allow",
-        "question": "allow",
-        "bash": "allow",
-        "delegate": "allow",
-        "delegation_list": "allow",
-        "delegation_read": "allow",
-        "edit": "allow",
-        "engram_mem_context": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "engram_mem_session_summary": "allow",
-        "glob": "allow",
-        "read": "allow",
-        "task": {
-          "*": "deny",
-          "sdd-*": "allow"
-        },
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    },
-    "sdd-propose": {
-      "model": "opencode-go/glm-5.1",
-      "prompt": "You are an SDD executor for the propose phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Load the `navigation-mcp` skill first, then read `~/.config/opencode/skills/_shared/sdd-phase-common.md` and your phase skill at `~/.config/opencode/skills/sdd-propose/SKILL.md`. If the orchestrator injected `## Project Standards (auto-resolved)`, follow that block as the highest-priority supplemental standard.",
-      "description": "Create change proposals from explorations",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "*": "deny",
-        "skill": "allow",
-        "bash": "allow",
-        "edit": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "glob": "allow",
-        "read": "allow",
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    },
-    "sdd-react-router-7-apply": {
-      "model": "openai/gpt-5.3-codex",
-      "prompt": "You are the specialized SDD executor for the apply phase on React Router 7 work, not the orchestrator. Use this only for frontend RR7 changes. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents.\n\nLoad the `navigation-mcp` skill first. Then follow `~/.config/opencode/skills/sdd-apply/SKILL.md` for the apply-phase contract and `~/.config/opencode/skills/react-router-7/SKILL.md` for stack-specific implementation rules.\n\nUse `navigation-mcp` tools first for discovery. If they are insufficient, fall back to `read`, `glob`, or `grep`. Use `bash` only if truly necessary. Investigate narrowly, preserve server/client boundaries, keep auth checks first, and make explicit targeted edits.",
-      "description": "Implement React Router 7 code changes from task definitions",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "*": "deny",
-        "skill": "allow",
-        "edit": "allow",
-        "read": "allow",
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    },
-    "sdd-spec": {
-      "model": "google/gemini-3-flash-preview",
-      "prompt": "You are an SDD executor for the spec phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Load the `navigation-mcp` skill first, then read `~/.config/opencode/skills/_shared/sdd-phase-common.md` and your phase skill at `~/.config/opencode/skills/sdd-spec/SKILL.md`. If the orchestrator injected `## Project Standards (auto-resolved)`, follow that block as the highest-priority supplemental standard.",
-      "description": "Write detailed specifications from proposals",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "*": "deny",
-        "skill": "allow",
-        "bash": "allow",
-        "edit": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "glob": "allow",
-        "read": "allow",
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    },
-    "sdd-tasks": {
-      "model": "anthropic/claude-sonnet-4-6",
-      "prompt": "You are an SDD executor for the tasks phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Load the `navigation-mcp` skill first, then read `~/.config/opencode/skills/_shared/sdd-phase-common.md` and your phase skill at `~/.config/opencode/skills/sdd-tasks/SKILL.md`. If the orchestrator injected `## Project Standards (auto-resolved)`, follow that block as the highest-priority supplemental standard.",
-      "description": "Break down specs and designs into implementation tasks",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "*": "deny",
-        "skill": "allow",
-        "bash": "allow",
-        "edit": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "glob": "allow",
-        "read": "allow",
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    },
-    "sdd-verify": {
-      "model": "opencode-go/glm-5",
-      "prompt": "You are an SDD executor for the verify phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Load the `navigation-mcp` skill first, then read `~/.config/opencode/skills/_shared/sdd-phase-common.md` and your phase skill at `~/.config/opencode/skills/sdd-verify/SKILL.md`. If the orchestrator injected `## Project Standards (auto-resolved)`, follow that block as the highest-priority supplemental standard.",
-      "description": "Validate implementation against specs",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "*": "deny",
-        "skill": "allow",
-        "api_test": "allow",
-        "bash": "allow",
-        "edit": "allow",
-        "engram_mem_get_observation": "allow",
-        "engram_mem_save": "allow",
-        "engram_mem_search": "allow",
-        "glob": "allow",
-        "read": "allow",
-        "navigation-agent_code_inspect_tree": "allow",
-        "navigation-agent_code_list_endpoints": "allow",
-        "navigation-agent_code_find_symbol": "allow",
-        "navigation-agent_code_search_text": "allow",
-        "navigation-agent_code_trace_flow": "allow",
-        "navigation-agent_code_trace_callers": "allow",
-        "engram_mem_suggest_topic_key": "allow",
-        "engram_mem_update": "allow",
-        "external_directory": {
-          "*": "ask"
-        }
-      }
-    }
-  },
-  "mcp": {
-    "context7": {
-      "type": "remote",
-      "url": "https://mcp.context7.com/mcp",
-      "enabled": true,
-      "headers": {
-        "CONTEXT7_API_KEY": "ctx7sk-e96f8446-f24e-4d87-aeaa-d94e5f0bf330"
-      }
-    },
-    "engram": {
-      "type": "local",
-      "command": [
-        "/home/linuxbrew/.linuxbrew/bin/engram",
-        "mcp",
-        "--tools=agent"
-      ]
-    },
-    "metronous": {
-      "type": "local",
-      "command": [
-        "/usr/local/bin/metronous",
-        "mcp"
-      ]
-    },
-    "navigation-agent": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@navigation-agent/mcp-server@latest"
-      ],
-      "enabled": true
-    }
-  },
-  "instructions": [
-    "/home/j0k3r/.config/opencode/rules/*.md"
-  ],
-  "permission": {
-    "bash": {
-      "*": "allow",
-      "git commit *": "ask",
-      "git push": "ask",
-      "git push *": "ask",
-      "git push --force *": "ask",
-      "git rebase *": "ask",
-      "git reset --hard *": "ask"
-    },
-    "read": {
-      "*": "allow",
-      "**/.env": "deny",
-      "**/.env.*": "deny",
-      "**/credentials.json": "deny",
-      "**/secrets/**": "deny",
-      "*.env": "deny",
-      "*.env.*": "deny"
-    },
-    "external_directory": {
-      "*": "ask"
-    }
-  }
+	"$schema": "https://opencode.ai/config.json",
+	"agent": {
+		"gentleman": {
+			"description": "Senior Architect mentor - helpful first, challenging when it matters",
+			"mode": "primary",
+			"prompt": "{file:./AGENTS.md}",
+			"tools": {
+				"edit": true,
+				"write": true
+			}
+		},
+		"sdd-apply": {
+			"description": "Implement code changes from task definitions",
+			"hidden": true,
+			"mode": "subagent",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-archive": {
+			"description": "Archive completed change artifacts",
+			"hidden": true,
+			"mode": "subagent",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-archive.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-design": {
+			"description": "Create technical design from proposals",
+			"hidden": true,
+			"mode": "subagent",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-design.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-explore": {
+			"description": "Investigate codebase and think through ideas",
+			"hidden": true,
+			"mode": "subagent",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-explore.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-init": {
+			"description": "Bootstrap SDD context and project configuration",
+			"hidden": true,
+			"mode": "subagent",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-init.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-onboard": {
+			"description": "Guide user through a complete SDD cycle using their real codebase",
+			"hidden": true,
+			"mode": "subagent",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-onboard.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-orchestrator": {
+			"description": "Agent Teams Orchestrator - coordinates sub-agents, never does work inline",
+			"mode": "primary",
+			"permission": {
+				"task": {
+					"*": "deny",
+					"sdd-*": "allow"
+				}
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-orchestrator.md}",
+			"tools": {
+				"bash": true,
+				"delegate": true,
+				"delegation_list": true,
+				"delegation_read": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-propose": {
+			"description": "Create change proposals from explorations",
+			"hidden": true,
+			"mode": "subagent",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-propose.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-spec": {
+			"description": "Write detailed specifications from proposals",
+			"hidden": true,
+			"mode": "subagent",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-spec.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-tasks": {
+			"description": "Break down specs and designs into implementation tasks",
+			"hidden": true,
+			"mode": "subagent",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-tasks.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-verify": {
+			"description": "Validate implementation against specs",
+			"hidden": true,
+			"mode": "subagent",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-verify.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		}
+	},
+	"mcp": {
+		"context7": {
+			"enabled": true,
+			"type": "remote",
+			"url": "https://mcp.context7.com/mcp"
+		},
+		"engram": {
+			"command": [
+				"/home/linuxbrew/.linuxbrew/bin/engram",
+				"mcp",
+				"--tools=agent"
+			],
+			"type": "local"
+		},
+		"notion": {
+			"type": "remote",
+			"url": "https://mcp.notion.com/mcp"
+		},
+		"navigation-agent": {
+			"type": "local",
+			"command": ["npx", "-y", "@navigation-agent/mcp-server"],
+			"enabled": true
+		}
+	},
+	"plugin": [
+		"opencode-gemini-auth",
+		"opencode-claude-auth",
+		"opencode-qwencode-auth"
+	],
+	"permission": {
+		"bash": {
+			"*": "allow",
+			"git commit *": "ask",
+			"git push": "ask",
+			"git push *": "ask",
+			"git push --force *": "ask",
+			"git rebase *": "ask",
+			"git reset --hard *": "ask"
+		},
+		"read": {
+			"*": "allow",
+			"**/.env": "deny",
+			"**/.env.*": "deny",
+			"**/credentials.json": "deny",
+			"**/secrets/**": "deny",
+			"*.env": "deny",
+			"*.env.*": "deny"
+		}
+	}
 }

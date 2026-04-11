@@ -22,17 +22,17 @@ From the orchestrator:
 
 ## Execution and Persistence Contract
 
-> Follow **Section C** (retrieval) and **Section D** (persistence) from `skills/_shared/sdd-phase-common.md`.
+> Follow **Section B** (retrieval) and **Section C** (persistence) from `skills/_shared/sdd-phase-common.md`.
 
 - **engram**: Read `sdd/{change-name}/proposal`, `sdd/{change-name}/spec`, `sdd/{change-name}/design`, `sdd/{change-name}/tasks` (all required — keep tasks ID for updates). Mark tasks complete via `mem_update(id: {tasks-observation-id}, content: "...")`. Save progress as `sdd/{change-name}/apply-progress`.
-- **openspec**: Read and follow `skills/_shared/openspec-convention.md`. Update `tasks.md` with `[x]` marks and persist `openspec/changes/{change-name}/apply-progress.md`.
-- **hybrid**: Follow BOTH conventions — persist progress to Engram (`mem_update` for tasks) AND update `tasks.md` with `[x]` marks plus `apply-progress.md` on the filesystem.
+- **openspec**: Read and follow `skills/_shared/openspec-convention.md`. Update `tasks.md` with `[x]` marks.
+- **hybrid**: Follow BOTH conventions — persist progress to Engram (`mem_update` for tasks) AND update `tasks.md` with `[x]` marks on filesystem.
 - **none**: Return progress only. Do not update project artifacts.
 
 ## What to Do
 
 ### Step 1: Load Skills
-Follow **Section B** from `skills/_shared/sdd-phase-common.md`.
+Follow **Section A** from `skills/_shared/sdd-phase-common.md`.
 
 ### Step 2: Read Context
 
@@ -41,6 +41,18 @@ Before writing ANY code:
 2. Read the design — understand HOW to structure the code
 3. Read existing code in affected files — understand current patterns
 4. Check the project's coding conventions from `config.yaml`
+
+#### Step 2b: Read Previous Apply-Progress (if exists)
+
+Before starting work, check for existing apply-progress:
+
+1. `mem_search(query: "sdd/{change-name}/apply-progress", project: "{project}")`
+2. If found: `mem_get_observation(id)` → read the full content
+3. Parse which tasks are already marked complete
+4. Skip those tasks — start from the first incomplete task
+5. When saving your apply-progress in Step 6, MERGE: include all previously completed tasks PLUS your newly completed tasks in a single combined artifact
+
+**CRITICAL**: If the orchestrator told you previous progress exists, you MUST read it. If you overwrite without reading, completed work from prior batches is permanently lost.
 
 ### Step 3: Read Testing Capabilities and Resolve Mode
 
@@ -64,6 +76,16 @@ Resolve mode:
 ```
 
 **Key principle**: If Strict TDD Mode is not active, ZERO TDD instructions are loaded. The `strict-tdd.md` module is never read, never processed, never consumes tokens.
+
+#### Hard Gate (Strict TDD Only)
+
+If Strict TDD Mode is active (either from orchestrator injection or self-discovery):
+- You MUST produce a **TDD Cycle Evidence** table in your apply-progress artifact
+- Each task row MUST have: RED (test written first) → GREEN (implementation passes) → REFACTOR columns
+- If you complete a task WITHOUT writing tests first, mark it as FAILED in the evidence table
+- The verify phase WILL reject your work if the TDD Evidence table is missing or incomplete
+
+**There is no silent fallback.** If you resolved Strict TDD as active, you follow it or you report failure. You do NOT quietly switch to Standard Mode.
 
 ### Step 4: Implement Tasks (Standard Workflow)
 
@@ -96,12 +118,18 @@ Update `tasks.md` — change `- [ ]` to `- [x]` for completed tasks:
 
 **This step is MANDATORY — do NOT skip it.**
 
-Follow **Section D** from `skills/_shared/sdd-phase-common.md`.
+Follow **Section C** from `skills/_shared/sdd-phase-common.md`.
 - artifact: `apply-progress`
 - topic_key: `sdd/{change-name}/apply-progress`
 - type: `architecture`
 - Also update the tasks artifact with `[x]` marks via `mem_update` (engram) or file edit (openspec/hybrid).
-- In `openspec` or `hybrid`, `apply-progress` maps to `openspec/changes/{change-name}/apply-progress.md`.
+
+#### Merge Protocol
+
+When saving apply-progress:
+1. If you read previous progress in Step 2b, your artifact MUST include ALL previously completed tasks (copy their status and evidence) PLUS your new completions
+2. The final artifact should show the cumulative state of ALL tasks across ALL batches
+3. Format: keep the same structure but ensure no completed task is lost from prior batches
 
 ### Step 7: Return Summary
 
@@ -154,4 +182,4 @@ If none, say "None."}
 - Apply any `rules.apply` from `openspec/config.yaml`
 - If Strict TDD Mode is active (Step 3), load `strict-tdd.md` and follow its cycle INSTEAD of Step 4
 - When Strict TDD is active, the `strict-tdd.md` module's rules OVERRIDE Step 4 entirely
-- Return envelope per **Section E** from `skills/_shared/sdd-phase-common.md`.
+- Return envelope per **Section D** from `skills/_shared/sdd-phase-common.md`.

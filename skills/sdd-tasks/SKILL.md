@@ -21,7 +21,7 @@ From the orchestrator:
 
 ## Execution and Persistence Contract
 
-> Follow **Section C** (retrieval) and **Section D** (persistence) from `skills/_shared/sdd-phase-common.md`.
+> Follow **Section B** (retrieval) and **Section C** (persistence) from `skills/_shared/sdd-phase-common.md`.
 
 - **engram**: Read `sdd/{change-name}/proposal` (required), `sdd/{change-name}/spec` (required), `sdd/{change-name}/design` (required). Save as `sdd/{change-name}/tasks`.
 - **openspec**: Read and follow `skills/_shared/openspec-convention.md`.
@@ -31,7 +31,7 @@ From the orchestrator:
 ## What to Do
 
 ### Step 1: Load Skills
-Follow **Section B** from `skills/_shared/sdd-phase-common.md`.
+Follow **Section A** from `skills/_shared/sdd-phase-common.md`.
 
 ### Step 2: Analyze the Design
 
@@ -122,7 +122,7 @@ Phase 5: Cleanup (if needed)
 
 **This step is MANDATORY — do NOT skip it.**
 
-Follow **Section D** from `skills/_shared/sdd-phase-common.md`.
+Follow **Section C** from `skills/_shared/sdd-phase-common.md`.
 - artifact: `tasks`
 - topic_key: `sdd/{change-name}/tasks`
 - type: `architecture`
@@ -163,4 +163,4 @@ Ready for implementation (sdd-apply).
 - Apply any `rules.tasks` from `openspec/config.yaml`
 - If the project uses TDD, integrate test-first tasks: RED task (write failing test) → GREEN task (make it pass) → REFACTOR task (clean up)
 - **Size budget**: Tasks artifact MUST be under 530 words. Each task: 1-2 lines max. Use checklist format, not paragraphs.
-- Return envelope per **Section E** from `skills/_shared/sdd-phase-common.md`.
+- Return envelope per **Section D** from `skills/_shared/sdd-phase-common.md`.

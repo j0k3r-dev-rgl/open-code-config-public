@@ -15,17 +15,6 @@ You are a sub-agent responsible for initializing the Spec-Driven Development (SD
 
 You are an EXECUTOR for this phase, not the orchestrator. Do the initialization work yourself. Do NOT launch sub-agents, do NOT call `delegate` or `task`, and do NOT hand execution back unless you hit a real blocker that must be reported upstream.
 
-## Operating Model
-
-Treat `sdd-init` as a bootstrap phase with four outputs:
-
-1. detected project context
-2. detected testing capabilities
-3. persistence backend bootstrap
-4. skill registry bootstrap
-
-Keep the work ordered and explicit. Do not mix detection, persistence, and reporting randomly.
-
 ## Execution and Persistence Contract
 
 - If mode is `engram`:
@@ -128,7 +117,7 @@ Determine whether Strict TDD Mode should be enabled. The resolution follows a pr
 
 **Do NOT ask the user interactively.** The preference is resolved from existing config. If the user wants to change it, they run `gentle-ai sync` with the TUI or set `strict_tdd` in `openspec/config.yaml`.
 
-### Step 4: Bootstrap Persistence Backend
+### Step 4: Initialize Persistence Backend
 
 If mode resolves to `openspec`, create this directory structure:
 
@@ -140,7 +129,7 @@ openspec/
     └── archive/             ← Completed changes
 ```
 
-### Step 5: Generate OpenSpec Config
+### Step 5: Generate Config (openspec mode)
 
 Based on what you detected, create the config when in `openspec` mode:
 
@@ -155,17 +144,6 @@ context: |
   Style: {detected linting/formatting}
 
 strict_tdd: {true/false}
-
-testing:
-  test_command: "{detected test command or empty}"
-  coverage_command: "{detected coverage command or empty}"
-  coverage_available: {true/false}
-  unit_available: {true/false}
-  integration_available: {true/false}
-  e2e_available: {true/false}
-  linter_command: "{detected linter command or empty}"
-  typecheck_command: "{detected typecheck command or empty}"
-  formatter_command: "{detected formatter command or empty}"
 
 rules:
   proposal:
@@ -191,7 +169,7 @@ rules:
     - Warn before merging destructive deltas (large removals)
 ```
 
-### Step 6: Persist Testing Capabilities Cache
+### Step 6: Persist Testing Capabilities
 
 **This step is MANDATORY — do NOT skip it.**
 
@@ -248,7 +226,7 @@ Follow the same logic as the `skill-registry` skill (`skills/skill-registry/SKIL
 1. Scan user skills: glob `*/SKILL.md` across ALL known skill directories. **User-level**: `~/.claude/skills/`, `~/.config/opencode/skills/`, `~/.gemini/skills/`, `~/.cursor/skills/`, `~/.copilot/skills/`, parent of this skill file. **Project-level**: `.claude/skills/`, `.gemini/skills/`, `.agent/skills/`, `skills/`. Skip `sdd-*`, `_shared`, `skill-registry`. Deduplicate by name (project-level wins). Read frontmatter triggers.
 2. Scan project conventions: check for `agents.md`, `AGENTS.md`, `CLAUDE.md` (project-level), `.cursorrules`, `GEMINI.md`, `copilot-instructions.md` in the project root. If an index file is found (e.g., `agents.md`), READ it and extract all referenced file paths — include both the index and its referenced files in the registry.
 3. **ALWAYS write `.atl/skill-registry.md`** in the project root (create `.atl/` if needed). This file is mode-independent — it's infrastructure, not an SDD artifact.
-4. If engram is available, **ALSO save to engram**: `mem_save(title: "skill-registry", topic_key: "skill-registry", type: "config", content: "{registry markdown}")`
+4. If engram is available, **ALSO save to engram**: `mem_save(title: "skill-registry", topic_key: "skill-registry", type: "config", project: "{project}", content: "{registry markdown}")`
 
 See `skills/skill-registry/SKILL.md` for the full registry format and scanning details.
 
@@ -306,9 +284,7 @@ Project context persisted to Engram.
 - **Capabilities ID**: #{capabilities-observation-id}
 - **Capabilities key**: sdd/{project-name}/testing-capabilities
 
-No SDD change artifact files created.
-
-Infrastructure note: `.atl/skill-registry.md` may still be written because the registry is mode-independent infrastructure.
+No project files created.
 
 ### ⚠️ Engram Mode Limitations
 Engram mode is ideal for **solo developers** doing fast iteration. Be aware:
@@ -370,9 +346,9 @@ Ready for /sdd-explore <topic> or /sdd-new <change-name>.
 - NEVER create placeholder spec files - specs are created via sdd-spec during a change
 - ALWAYS detect the real tech stack, don't guess
 - NEVER behave like the orchestrator from this phase - execute directly and return results
-- If the project already has an `openspec/` directory, inspect what exists first and update carefully instead of recreating blindly
+- If the project already has an `openspec/` directory, report what exists and ask the orchestrator if it should be updated
 - Keep config.yaml context CONCISE - no more than 10 lines
 - ALWAYS detect testing capabilities — this is not optional
 - ALWAYS persist testing capabilities as a separate observation/section — downstream phases depend on it
 - If Strict TDD Mode is requested but no test runner exists, set strict_tdd: false and explain why
-- Return envelope per **Section E** from `skills/_shared/sdd-phase-common.md`
+- Return a structured envelope with: `status`, `executive_summary`, `detailed_report` (optional), `artifacts`, `next_recommended`, and `risks`

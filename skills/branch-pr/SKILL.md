@@ -24,23 +24,19 @@ Use this skill when:
 2. **Every PR MUST have exactly one `type:*` label**
 3. **Automated checks must pass** before merge is possible
 4. **Blank PRs without issue linkage will be blocked** by GitHub Actions
-5. **Never run Git or GitHub write operations unless the user explicitly asked for them in this message and confirmed immediately before execution**
-6. **Verify repository-specific templates, labels, and checks exist before relying on them**
 
 ---
 
 ## Workflow
 
 ```
-1. Verify the repository supports this workflow (issue labels, PR template, required checks)
-2. Verify issue has `status:approved` label
-3. Ask for confirmation before any Git/GitHub write command
-4. Create branch: type/description (see Branch Naming below)
-5. Implement changes with conventional commits
-6. Run repository-relevant validation commands only if the referenced files/checks exist
-7. Open PR using the template if the repository has one; otherwise build an equivalent body manually
-8. Add exactly one type:* label
-9. Wait for automated checks to pass
+1. Verify issue has `status:approved` label
+2. Create branch: type/description (see Branch Naming below)
+3. Implement changes with conventional commits
+4. Run shellcheck on modified scripts
+5. Open PR using the template
+6. Add exactly one type:* label
+7. Wait for automated checks to pass
 ```
 
 ---
@@ -73,7 +69,7 @@ Branch names MUST match this regex:
 
 ## PR Body Format
 
-If the repository has `.github/PULL_REQUEST_TEMPLATE.md`, use it. Otherwise, build an equivalent PR body manually. Every PR body MUST contain:
+The PR template is at `.github/PULL_REQUEST_TEMPLATE.md`. Every PR body MUST contain:
 
 ### 1. Linked Issue (REQUIRED)
 
@@ -112,7 +108,7 @@ Check exactly ONE in the template and add the matching label:
 ### 5. Test Plan
 
 ```markdown
-- [x] Repository-specific validation commands were run for the changed areas
+- [x] Scripts run without errors: `shellcheck scripts/*.sh`
 - [x] Manually tested the affected functionality
 - [x] Skills load correctly in target agent
 ```
@@ -137,7 +133,7 @@ All boxes must be checked:
 | PR Validation | `Check Issue Reference` | Body contains `Closes/Fixes/Resolves #N` |
 | PR Validation | `Check Issue Has status:approved` | Linked issue has `status:approved` |
 | PR Validation | `Check PR Has type:* Label` | PR has exactly one `type:*` label |
-| CI | `Shellcheck` | Shell scripts pass `shellcheck` (only if the repo actually contains shell scripts/check) |
+| CI | `Shellcheck` | Shell scripts pass `shellcheck` |
 
 ---
 
@@ -193,13 +189,16 @@ feat!: redesign skill loading system
 ## Commands
 
 ```bash
-# Verify repository support first
-gh label list
-gh pr view --json number >/dev/null 2>&1 || true
-
-# Then, only after explicit user request and immediate confirmation:
+# Create branch
 git checkout -b feat/my-feature main
+
+# Run shellcheck before pushing
+shellcheck scripts/*.sh
+
+# Push and create PR
 git push -u origin feat/my-feature
 gh pr create --title "feat(scope): description" --body "Closes #N"
+
+# Add type label to PR
 gh pr edit <pr-number> --add-label "type:feature"
 ```

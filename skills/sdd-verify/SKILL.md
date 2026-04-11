@@ -23,17 +23,17 @@ From the orchestrator:
 
 ## Execution and Persistence Contract
 
-> Follow **Section C** (retrieval) and **Section D** (persistence) from `skills/_shared/sdd-phase-common.md`.
+> Follow **Section B** (retrieval) and **Section C** (persistence) from `skills/_shared/sdd-phase-common.md`.
 
-- **engram**: Read `sdd/{change-name}/proposal`, `sdd/{change-name}/spec` (required for compliance matrix), `sdd/{change-name}/design`, `sdd/{change-name}/tasks`, and `sdd/{change-name}/apply-progress` when present (required for Strict TDD verification). Save as `sdd/{change-name}/verify-report`.
-- **openspec**: Read and follow `skills/_shared/openspec-convention.md`. Read `openspec/changes/{change-name}/apply-progress.md` when present or required by Strict TDD. Save to `openspec/changes/{change-name}/verify-report.md`.
+- **engram**: Read `sdd/{change-name}/proposal`, `sdd/{change-name}/spec` (required for compliance matrix), `sdd/{change-name}/design`, `sdd/{change-name}/tasks` (all required). Save as `sdd/{change-name}/verify-report`.
+- **openspec**: Read and follow `skills/_shared/openspec-convention.md`. Save to `openspec/changes/{change-name}/verify-report.md`.
 - **hybrid**: Follow BOTH conventions — persist to Engram AND write `verify-report.md` to filesystem.
 - **none**: Return the verification report inline only. Never write files.
 
 ## What to Do
 
 ### Step 1: Load Skills
-Follow **Section B** from `skills/_shared/sdd-phase-common.md`.
+Follow **Section A** from `skills/_shared/sdd-phase-common.md`.
 
 ### Step 2: Read Testing Capabilities and Resolve TDD Mode
 
@@ -57,6 +57,10 @@ Resolve mode:
 │
 └── Cache the resolved mode for the report header
 ```
+
+#### Orchestrator-Injected TDD Mode
+
+If the orchestrator's launch prompt contains "STRICT TDD MODE IS ACTIVE", treat this as authoritative — do NOT override it with a failed engram search. The orchestrator already verified TDD status. Proceed directly to Strict TDD verification in Step 5a.
 
 ### Step 3: Check Completeness
 
@@ -145,29 +149,27 @@ Flag: CRITICAL if exit code != 0 (any test failed)
 Flag: WARNING if skipped tests relate to changed areas
 ```
 
-#### Step 6c: Type Check / Quality Check (Real Execution)
+#### Step 6c: Build & Type Check (Real Execution)
 
-Do NOT run full project builds from this phase. Run focused type-check or static quality commands only.
-
-Detect and run the best available verification command:
+Detect and run the build/type-check command:
 
 ```
-Detect quality command from:
+Detect build command from:
 ├── Cached testing capabilities → quality_tools.type_checker (fastest)
-├── openspec/config.yaml → rules.verify.typecheck_command (override)
-├── package.json → typecheck / lint scripts, or `tsc --noEmit` if tsconfig.json exists
-├── pyproject.toml → mypy / pyright / ruff check
-├── Makefile → make typecheck / make lint
+├── openspec/config.yaml → rules.verify.build_command (override)
+├── package.json → scripts.build → also run tsc --noEmit if tsconfig.json exists
+├── pyproject.toml → python -m build or equivalent
+├── Makefile → make build
 └── Fallback: skip and report as WARNING (not CRITICAL)
 
-Execute: {quality_command}
+Execute: {build_command}
 Capture:
 ├── Exit code
 ├── Errors (if any)
 └── Warnings (if significant)
 
-Flag: CRITICAL if the selected type-check command fails
-Flag: WARNING if only lint-style issues are found
+Flag: CRITICAL if build fails (exit code != 0)
+Flag: WARNING if there are type errors even with passing build
 ```
 
 #### Step 6d: Coverage Validation (Real Execution — if available)
@@ -224,7 +226,7 @@ If Strict TDD is active, follow the instructions in `strict-tdd-verify.md` (Step
 
 ### Step 8: Persist Verification Report
 
-Follow **Section D** from `skills/_shared/sdd-phase-common.md`.
+Follow **Section C** from `skills/_shared/sdd-phase-common.md`.
 - artifact: `verify-report`
 - topic_key: `sdd/{change-name}/verify-report`
 - type: `architecture`
@@ -253,11 +255,11 @@ Return to the orchestrator the same content you wrote to `verify-report.md`:
 
 ---
 
-### Runtime Verification
+### Build & Tests Execution
 
-**Type Check / Quality**: ✅ Passed / ❌ Failed / ➖ Not available
+**Build**: ✅ Passed / ❌ Failed
 ```
-{type-check or quality command output if run}
+{build command output or error if failed}
 ```
 
 **Tests**: ✅ {N} passed / ❌ {N} failed / ⚠️ {N} skipped
@@ -327,7 +329,6 @@ Return to the orchestrator the same content you wrote to `verify-report.md`:
 
 - ALWAYS read the actual source code — don't trust summaries
 - ALWAYS execute tests — static analysis alone is not verification
-- NEVER run full builds from this phase; use focused type-check or quality commands instead
 - A spec scenario is only COMPLIANT when a test that covers it has PASSED
 - Compare against SPECS first (behavioral correctness), DESIGN second (structural correctness)
 - Be objective — report what IS, not what should be
@@ -340,4 +341,4 @@ Return to the orchestrator the same content you wrote to `verify-report.md`:
 - If Strict TDD is active, load `strict-tdd-verify.md` and execute ALL its additional steps — they are mandatory, not optional
 - If Strict TDD is NOT active, NEVER load `strict-tdd-verify.md` — zero tokens wasted on TDD checks
 - Use cached testing capabilities from Engram/config whenever possible — avoid re-detecting
-- Return envelope per **Section E** from `skills/_shared/sdd-phase-common.md`.
+- Return envelope per **Section D** from `skills/_shared/sdd-phase-common.md`.

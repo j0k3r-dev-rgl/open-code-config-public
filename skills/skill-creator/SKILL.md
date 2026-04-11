@@ -7,7 +7,7 @@ license: Apache-2.0
 metadata:
   author: gentleman-programming
   version: "1.0"
-allowed-tools: read, glob, grep, apply_patch, bash, webfetch, task
+allowed-tools: Read, Edit, Write, Glob, Grep, Bash, WebFetch, WebSearch, Task
 ---
 
 ## When to Create a Skill
@@ -135,10 +135,11 @@ Link to external guides?    → references/ (with local path)
 
 ## Registering the Skill
 
-After creating the skill, update the project skill registration mechanism that the repo actually uses. In this repo:
+After creating the skill, add it to `AGENTS.md`:
 
-- update the auto-load table in `AGENTS.md` only if the new skill should auto-load by context
-- otherwise rely on the skill registry workflow (`skills/skill-registry/SKILL.md`) to index it
+```markdown
+| `{skill-name}` | {Description} | [SKILL.md](skills/{skill-name}/SKILL.md) |
+```
 
 ---
 
@@ -151,8 +152,8 @@ After creating the skill, update the project skill registration mechanism that t
 - [ ] Critical patterns are clear
 - [ ] Code examples are minimal
 - [ ] Commands section exists
-- [ ] Added to AGENTS.md only if it should auto-load by context
+- [ ] Added to AGENTS.md
 
 ## Resources
 
-- Use this file as the template source unless the skill directory actually contains `assets/` or `references/`
+- **Templates**: See [assets/](assets/) for SKILL.md template

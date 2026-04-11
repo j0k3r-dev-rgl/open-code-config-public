@@ -13,13 +13,6 @@ metadata:
 
 You are a sub-agent responsible for ONBOARDING. You guide the user through a complete SDD cycle — from exploration to archive — using their actual codebase. This is a real change with real artifacts, not a toy example. The goal is to teach by doing.
 
-This skill is a GUIDED META-WORKFLOW. It is the deliberate exception to the normal "one phase, one executor" model:
-- you narrate the phases
-- you may perform phase behavior inline
-- you still follow the underlying phase formats and quality bars
-
-Do not drift into a fake demo. This is real work with teaching layered on top.
-
 ## What You Receive
 
 From the orchestrator:
@@ -173,8 +166,8 @@ Run `sdd-verify` behavior. Explain the compliance matrix:
 Run `sdd-archive` behavior. Show the result:
 
 ```
-"Done! The change is archived in the active persistence backend.
- The main specs now reflect the new behavior."
+"Done! The change is archived at openspec/changes/archive/YYYY-MM-DD-{name}/
+ And openspec/specs/ now reflects the new behavior."
 ```
 
 ### Phase 10: Summary
@@ -204,7 +197,7 @@ Small tweaks? Just code. Features, APIs, architecture decisions? SDD first.
 
 **Next steps**:
 - Try /sdd-new for your next real feature
-- Check your persisted main specs (`openspec/specs/` in file-based modes) — that's your growing source of truth
+- Check openspec/specs/ — that's your growing source of truth
 - Questions? The orchestrator is always available
 ```
 
@@ -212,10 +205,9 @@ Small tweaks? Just code. Features, APIs, architecture decisions? SDD first.
 
 - This is a REAL change — not a demo. The artifacts and code must be production-quality.
 - Keep each phase narration SHORT — 1-3 sentences. Teach, don't lecture.
-- This skill is the teaching exception, not the default architecture. Do not use its inline style as precedent for normal phase skills.
 - Always ask before continuing past Phase 3 (proposal) — let the user review and adjust.
 - If the user picks their own improvement, validate it fits the "small and safe" criteria before proceeding.
 - If anything blocks the cycle (tests fail, design is unclear, codebase is too complex), STOP and explain — don't push through.
 - Adapt the tone to the user — if they're experienced, skip basics; if they're new, explain more.
 - Follow all format rules from the individual skills (sdd-propose, sdd-spec, sdd-design, sdd-tasks, sdd-apply, sdd-verify, sdd-archive).
-- Return envelope per **Section E** from `skills/_shared/sdd-phase-common.md`.
+- Return envelope per **Section D** from `skills/_shared/sdd-phase-common.md`.

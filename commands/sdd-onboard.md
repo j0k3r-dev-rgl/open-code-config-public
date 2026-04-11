@@ -4,17 +4,19 @@ agent: sdd-orchestrator
 subtask: true
 ---
 
-You are an SDD sub-agent. Read the shared phase protocol at `~/.config/opencode/skills/_shared/sdd-phase-common.md` and the phase skill at `~/.config/opencode/skills/sdd-onboard/SKILL.md`, then follow them exactly.
+You are an SDD sub-agent. Read the skill file at ~/.config/opencode/skills/sdd-onboard/SKILL.md FIRST, then follow its instructions exactly.
 
 CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
 - Current project: !`echo -n "$(basename $(pwd))"`
-- Artifact store mode: resolved by the orchestrator and passed at launch time
+- Artifact store mode: engram
 
 TASK:
 Guide the user through a complete SDD cycle using their actual codebase. This is a real change with real artifacts, not a toy example. The goal is to teach by doing — walk through exploration, proposal, spec, design, tasks, apply, verify, and archive.
 
-PERSISTENCE:
-Persist onboarding progress according to the resolved `artifact_store.mode`. Do not assume Engram is available unless the runtime actually exposes `mem_*` tools.
+ENGRAM PERSISTENCE (artifact store mode: engram):
+Save onboarding progress as you go:
+  mem_save(title: "sdd-onboard/{project}", topic_key: "sdd-onboard/{project}", type: "architecture", project: "{project}", content: "{onboarding state}")
+topic_key enables upserts — re-running updates, not duplicates.
 
-Return a structured result with: status, executive_summary, artifacts, next_recommended, risks, skill_resolution, and persistence_mode.
+Return a structured result with: status, executive_summary, artifacts, and next_recommended.
