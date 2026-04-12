@@ -17,14 +17,18 @@ TASK:
 Implement the remaining incomplete tasks for the active SDD change.
 
 ENGRAM PERSISTENCE (artifact store mode: engram):
-CRITICAL: mem_search returns 300-char PREVIEWS, not full content. You MUST call mem_get_observation(id) for EVERY artifact.
+CRITICAL: mem_search returns 300-char PREVIEWS, not full content. Prefer mem_recall_resolved_projects first; if you fall back to mem_search, you MUST call mem_get_observation(id) for EVERY artifact.
 STEP A — SEARCH (get IDs only):
-  mem_search(query: "sdd/{change-name}/spec", project: "{project}") → save spec_id
-  mem_search(query: "sdd/{change-name}/design", project: "{project}") → save design_id
-  mem_search(query: "sdd/{change-name}/tasks", project: "{project}") → save tasks_id
+  prefer mem_recall_resolved_projects(query: "sdd/{change-name}/spec")
+  prefer mem_recall_resolved_projects(query: "sdd/{change-name}/design")
+  prefer mem_recall_resolved_projects(query: "sdd/{change-name}/tasks")
+  fallback: mem_search(query: "sdd/{change-name}/spec", project: "{project}") → save spec_id
+  fallback: mem_search(query: "sdd/{change-name}/design", project: "{project}") → save design_id
+  fallback: mem_search(query: "sdd/{change-name}/tasks", project: "{project}") → save tasks_id
 STEP A2 — CHECK PREVIOUS PROGRESS (before starting work):
-  mem_search(query: "sdd/{change-name}/apply-progress", project: "{project}") → if found, save progress_id
-  - Previous apply-progress (if exists): `mem_search(query: "sdd/{change-name}/apply-progress", project: "{project}")` → read and merge
+  prefer mem_recall_resolved_projects(query: "sdd/{change-name}/apply-progress")
+  fallback: mem_search(query: "sdd/{change-name}/apply-progress", project: "{project}") → if found, save progress_id
+  - Previous apply-progress (if exists): prefer `mem_recall_resolved_projects(query: "sdd/{change-name}/apply-progress")`; fallback `mem_search(query: "sdd/{change-name}/apply-progress", project: "{project}")` → read and merge
 STEP B — RETRIEVE FULL CONTENT (mandatory):
   mem_get_observation(id: spec_id) → full spec
   mem_get_observation(id: design_id) → full design

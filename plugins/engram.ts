@@ -14,13 +14,17 @@
  *   hooks (input.sessionID) rather than relying on a session.created event.
  */
 
-import type { Plugin } from "@opencode-ai/plugin"
+import * as os from "node:os"
+import * as path from "node:path"
+import { execFileSync } from "node:child_process"
+import { tool, type Plugin } from "@opencode-ai/plugin"
 
 // ─── Configuration ───────────────────────────────────────────────────────────
 
 const ENGRAM_PORT = parseInt(process.env.ENGRAM_PORT ?? "7437")
 const ENGRAM_URL = `http://127.0.0.1:${ENGRAM_PORT}`
 const ENGRAM_BIN = process.env.ENGRAM_BIN ?? Bun.which("engram") ?? "/home/linuxbrew/.linuxbrew/Cellar/engram/1.12.0-beta.1/bin/engram"
+const ENGRAM_DB = path.join(os.homedir(), ".engram", "engram.db")
 
 // Engram's own MCP tools — don't count these as "tool calls" for session stats
 const ENGRAM_TOOLS = new Set([
@@ -83,13 +87,13 @@ Topic rules:
 When the user asks to recall something — any variation of "remember", "recall", "what did we do",
 "how did we solve", "recordar", "acordate", "qué hicimos", or references to past work:
 1. First call \`mem_context\` — checks recent session history (fast, cheap)
-2. If not found, call \`mem_search\` with relevant keywords (FTS5 full-text search)
-3. If you find a match, use \`mem_get_observation\` for full untruncated content
+2. Then prefer \`mem_recall_resolved_projects\` to search across the resolved project aliases (git remote, git root, cwd) and get hydrated results in one step
+3. Use \`mem_search\` + \`mem_get_observation\` only as fallback when you need more targeted recovery
 
 Also search memory PROACTIVELY when:
 - Starting work on something that might have been done before
 - The user mentions a topic you have no context on — check if past sessions covered it
-- The user's FIRST message references the project, a feature, or a problem — call \`mem_search\` with keywords from their message to check for prior work before responding
+- The user's FIRST message references the project, a feature, or a problem — prefer \`mem_recall_resolved_projects\` with keywords from their message to check for prior work before responding
 
 ### SESSION CLOSE PROTOCOL (mandatory)
 
@@ -184,6 +188,37 @@ function extractProjectName(directory: string): string {
   return directory.split("/").pop() ?? "unknown"
 }
 
+function resolveProjectCandidates(directory: string): string[] {
+  const candidates: string[] = []
+
+  try {
+    const result = Bun.spawnSync(["git", "-C", directory, "remote", "get-url", "origin"])
+    if (result.exitCode === 0) {
+      const url = result.stdout?.toString().trim()
+      if (url) {
+        const name = url.replace(/\.git$/, "").split(/[/:]/).pop()?.trim().toLowerCase()
+        if (name) candidates.push(name)
+      }
+    }
+  } catch {}
+
+  try {
+    const result = Bun.spawnSync(["git", "-C", directory, "rev-parse", "--show-toplevel"])
+    if (result.exitCode === 0) {
+      const root = result.stdout?.toString().trim()
+      if (root) {
+        const name = path.basename(root).trim().toLowerCase()
+        if (name) candidates.push(name)
+      }
+    }
+  } catch {}
+
+  const cwdName = path.basename(directory).trim().toLowerCase()
+  if (cwdName) candidates.push(cwdName)
+
+  return [...new Set(candidates.filter(Boolean))]
+}
+
 function truncate(str: string, max: number): string {
   if (!str) return ""
   return str.length > max ? str.slice(0, max) + "..." : str
@@ -197,6 +232,192 @@ function truncate(str: string, max: number): string {
 function stripPrivateTags(str: string): string {
   if (!str) return ""
   return str.replace(/<private>[\s\S]*?<\/private>/gi, "[REDACTED]").trim()
+}
+
+function toArrayOutput(output: string): any[] {
+  const trimmed = output?.trim()
+  if (!trimmed) return []
+
+  try {
+    const parsed = JSON.parse(trimmed)
+    if (Array.isArray(parsed)) return parsed
+    if (parsed && typeof parsed === "object") return [parsed]
+  } catch {}
+
+  const rows: any[] = []
+  for (const line of trimmed.split(/\r?\n/)) {
+    const row = line.trim()
+    if (!row) continue
+    try {
+      const parsed = JSON.parse(row)
+      if (Array.isArray(parsed)) rows.push(...parsed)
+      else if (parsed && typeof parsed === "object") rows.push(parsed)
+    } catch {}
+  }
+  return rows
+}
+
+function execSQLiteJson(query: string): any[] {
+  try {
+    const output = execFileSync("sqlite3", ["-json", ENGRAM_DB, query], {
+      encoding: "utf-8",
+      timeout: 5000,
+      stdio: ["ignore", "pipe", "ignore"],
+    })
+    return toArrayOutput(output)
+  } catch {
+    return []
+  }
+}
+
+function escapeSqlite(value: string): string {
+  return value.replace(/'/g, "''")
+}
+
+function sanitizeFTSQuery(value: string): string {
+  return value
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((term) => `"${term.replace(/"/g, '""')}"`)
+    .join(" AND ")
+}
+
+function truncateForRecall(str: string, max: number): string {
+  if (!str) return ""
+  return str.length > max ? str.slice(0, max) + "..." : str
+}
+
+function createRecallResolvedProjectsTool(
+  project: string,
+  directory: string,
+  migrateProject: (oldProject: string, newProject: string) => Promise<boolean>,
+) {
+  return tool({
+    description: `Search Engram memories across all resolved project aliases (git remote, git root, cwd) and return hydrated results. If matches are found under multiple aliases, it can auto-migrate them into the canonical project.`,
+    args: {
+      query: tool.schema.string().describe("Full-text query to search in memory. Use natural language or keywords. Pass empty string to list recent memories."),
+      limit: tool.schema.number().optional().describe("Maximum number of memories to return (default 8, max 20)."),
+      auto_migrate: tool.schema.boolean().optional().describe("When true, migrate matching alias projects into the canonical project if hits are found in 2 or more project names."),
+    },
+    async execute(args: { query?: string; limit?: number; auto_migrate?: boolean }): Promise<string> {
+      const aliases = resolveProjectCandidates(directory)
+      const canonicalProject = aliases[0] || project
+      const limit = Math.max(1, Math.min(Number(args.limit ?? 8) || 8, 20))
+      const autoMigrate = args.auto_migrate ?? true
+      const escapedProjects = aliases
+        .map((name) => name.toLowerCase())
+        .map(escapeSqlite)
+        .map((name) => `'${name}'`)
+        .join(", ")
+
+      if (!escapedProjects) {
+        return "No project aliases could be resolved for Engram recall."
+      }
+
+      const rawQuery = String(args.query ?? "").trim()
+      const rows = rawQuery
+        ? execSQLiteJson(`
+            SELECT
+              o.id,
+              o.type,
+              o.title,
+              o.content,
+              o.project,
+              o.scope,
+              o.topic_key,
+              o.created_at,
+              o.updated_at,
+              bm25(observations_fts) AS score
+            FROM observations_fts
+            JOIN observations o ON o.id = observations_fts.rowid
+            WHERE observations_fts MATCH '${escapeSqlite(sanitizeFTSQuery(rawQuery))}'
+              AND lower(o.project) IN (${escapedProjects})
+              AND o.deleted_at IS NULL
+            ORDER BY score ASC, o.updated_at DESC
+            LIMIT ${limit};
+          `)
+        : execSQLiteJson(`
+            SELECT
+              id,
+              type,
+              title,
+              content,
+              project,
+              scope,
+              topic_key,
+              created_at,
+              updated_at,
+              0 AS score
+            FROM observations
+            WHERE lower(project) IN (${escapedProjects})
+              AND deleted_at IS NULL
+            ORDER BY updated_at DESC
+            LIMIT ${limit};
+          `)
+
+      const hitsByProject = [...new Set(rows.map((row) => String(row.project || "").toLowerCase()).filter(Boolean))]
+
+      const migrated: string[] = []
+      if (autoMigrate && hitsByProject.length >= 2) {
+        for (const alias of hitsByProject) {
+          if (alias === canonicalProject.toLowerCase()) continue
+          const ok = await migrateProject(alias, canonicalProject)
+          if (ok) migrated.push(alias)
+        }
+      }
+
+      const displayProjectFor = (rowProject: unknown): string => {
+        const normalized = String(rowProject || "").toLowerCase()
+        if (migrated.includes(normalized)) return canonicalProject
+        return String(rowProject || canonicalProject)
+      }
+
+      if (rows.length === 0) {
+        return [
+          `## Engram Recall`,
+          `- Canonical project: ${canonicalProject}`,
+          `- Aliases searched: ${aliases.join(", ")}`,
+          rawQuery ? `- Query: ${rawQuery}` : `- Query: <recent memories>`,
+          ``,
+          `No memories found across the resolved project aliases.`,
+        ].join("\n")
+      }
+
+      const items = rows.map((row, index) => {
+        const title = row.title || row.topic_key || `Observation #${row.id}`
+        const content = truncateForRecall(String(row.content || ""), 1600)
+        return [
+          `### ${index + 1}. ${title}`,
+          `- id: ${row.id}`,
+          `- project: ${displayProjectFor(row.project)}`,
+          `- type: ${row.type || "manual"}`,
+          `- scope: ${row.scope || "project"}`,
+          row.topic_key ? `- topic_key: ${row.topic_key}` : null,
+          `- updated_at: ${row.updated_at || row.created_at || ""}`,
+          ``,
+          content,
+        ].filter(Boolean).join("\n")
+      })
+
+      const migrationSummary = migrated.length > 0
+        ? `- Auto-migrated aliases into canonical project: ${migrated.join(", ")} -> ${canonicalProject}`
+        : hitsByProject.length >= 2
+          ? `- Multiple project aliases detected: ${hitsByProject.join(", ")}`
+          : null
+
+      return [
+        `## Engram Recall`,
+        `- Canonical project: ${canonicalProject}`,
+        `- Aliases searched: ${aliases.join(", ")}`,
+        rawQuery ? `- Query: ${rawQuery}` : `- Query: <recent memories>`,
+        `- Results: ${rows.length}`,
+        migrationSummary,
+        ``,
+        ...items,
+      ].filter(Boolean).join("\n")
+    },
+  })
 }
 
 // ─── Plugin Export ───────────────────────────────────────────────────────────
@@ -238,6 +459,16 @@ export const Engram: Plugin = async (ctx) => {
     })
   }
 
+  async function migrateProject(oldProject: string, newProject: string): Promise<boolean> {
+    if (!oldProject || !newProject) return false
+    if (oldProject === newProject) return false
+    const result = await engramFetch("/projects/migrate", {
+      method: "POST",
+      body: { old_project: oldProject, new_project: newProject },
+    })
+    return result !== null
+  }
+
   // Try to start engram server if not running
   const running = await isEngramRunning()
   if (!running) {
@@ -256,10 +487,7 @@ export const Engram: Plugin = async (ctx) => {
   // Migrate project name if it changed (one-time, idempotent)
   // Must run AFTER server startup to ensure the endpoint is available
   if (oldProject !== project) {
-    await engramFetch("/projects/migrate", {
-      method: "POST",
-      body: { old_project: oldProject, new_project: project },
-    })
+    await migrateProject(oldProject, project)
   }
 
   // Auto-import: if .engram/manifest.json exists in the project repo,
@@ -282,6 +510,10 @@ export const Engram: Plugin = async (ctx) => {
   }
 
   return {
+    tool: {
+      mem_recall_resolved_projects: createRecallResolvedProjectsTool(project, ctx.directory, migrateProject),
+    },
+
     // ─── Event Listeners ───────────────────────────────────────────
 
     event: async ({ event }) => {

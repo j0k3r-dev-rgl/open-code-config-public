@@ -15,13 +15,18 @@ TASK:
 Archive the active SDD change. Read the verification report first to confirm the change is ready. Then:
 
 ENGRAM PERSISTENCE (artifact store mode: engram):
-CRITICAL: mem_search returns 300-char PREVIEWS, not full content. You MUST call mem_get_observation(id) for EVERY artifact.
+CRITICAL: mem_search returns 300-char PREVIEWS, not full content. Prefer mem_recall_resolved_projects first; if you fall back to mem_search, you MUST call mem_get_observation(id) for EVERY artifact.
 STEP A — SEARCH (get IDs only):
-  mem_search(query: "sdd/{change-name}/proposal", project: "{project}") → save proposal_id
-  mem_search(query: "sdd/{change-name}/spec", project: "{project}") → save spec_id
-  mem_search(query: "sdd/{change-name}/design", project: "{project}") → save design_id
-  mem_search(query: "sdd/{change-name}/tasks", project: "{project}") → save tasks_id
-  mem_search(query: "sdd/{change-name}/verify-report", project: "{project}") → save verify_id
+  prefer mem_recall_resolved_projects(query: "sdd/{change-name}/proposal")
+  prefer mem_recall_resolved_projects(query: "sdd/{change-name}/spec")
+  prefer mem_recall_resolved_projects(query: "sdd/{change-name}/design")
+  prefer mem_recall_resolved_projects(query: "sdd/{change-name}/tasks")
+  prefer mem_recall_resolved_projects(query: "sdd/{change-name}/verify-report")
+  fallback: mem_search(query: "sdd/{change-name}/proposal", project: "{project}") → save proposal_id
+  fallback: mem_search(query: "sdd/{change-name}/spec", project: "{project}") → save spec_id
+  fallback: mem_search(query: "sdd/{change-name}/design", project: "{project}") → save design_id
+  fallback: mem_search(query: "sdd/{change-name}/tasks", project: "{project}") → save tasks_id
+  fallback: mem_search(query: "sdd/{change-name}/verify-report", project: "{project}") → save verify_id
 STEP B — RETRIEVE FULL CONTENT (mandatory):
   mem_get_observation(id: proposal_id) → full proposal
   mem_get_observation(id: spec_id) → full spec

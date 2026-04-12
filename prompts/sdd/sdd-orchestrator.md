@@ -68,7 +68,7 @@ Meta-commands (type directly — orchestrator handles them, won't appear in auto
 
 Before executing ANY SDD command (`/sdd-new`, `/sdd-ff`, `/sdd-continue`, `/sdd-explore`, `/sdd-apply`, `/sdd-verify`, `/sdd-archive`), check if `sdd-init` has been run for this project:
 
-1. Search Engram: `mem_search(query: \"sdd-init/{project}\", project: \"{project}\")`
+1. Search Engram: prefer `mem_recall_resolved_projects(query: \"sdd-init/{project}\")`; fallback to `mem_search(query: \"sdd-init/{project}\", project: \"{project}\")` if needed
 2. If found → init was done, proceed normally
 3. If NOT found → run `sdd-init` FIRST (delegate to sdd-init sub-agent), THEN proceed with the requested command
 
@@ -150,7 +150,7 @@ ALL sub-agent launch prompts that involve reading, writing, or reviewing code MU
 The orchestrator resolves skills from the registry ONCE (at session start or first delegation), caches the compact rules, and injects matching rules into each sub-agent's prompt. Also reads the Model Assignments table once per session, caches `phase → alias`, includes that alias in every Agent tool call via `model`.
 
 Orchestrator skill resolution (do once per session):
-1. `mem_search(query: \"skill-registry\", project: \"{project}\")` → `mem_get_observation(id)` for full registry content
+1. Prefer `mem_recall_resolved_projects(query: \"skill-registry\")` to search across resolved project aliases; fallback to `mem_search(query: \"skill-registry\", project: \"{project}\")` → `mem_get_observation(id)` if needed
 2. Fallback: read `.atl/skill-registry.md` if engram not available
 3. Cache the **Compact Rules** section and the **User Skills** trigger table
 4. If no registry exists, warn user and proceed without project-specific standards
@@ -176,7 +176,7 @@ Sub-agents get a fresh context with NO memory. The orchestrator controls context
 
 #### Non-SDD Tasks (general delegation)
 
-- Read context: orchestrator searches engram (`mem_search`) for relevant prior context and passes it in the sub-agent prompt. Sub-agent does NOT search engram itself.
+- Read context: orchestrator should prefer `mem_recall_resolved_projects` for relevant prior context so recall spans resolved project aliases; use `mem_search` only as fallback. Sub-agent does NOT search engram itself.
 - Write context: sub-agent MUST save significant discoveries, decisions, or bug fixes to engram via `mem_save` before returning. Sub-agent has full detail — save before returning, not after.
 - Always add to sub-agent prompt: `\"If you make important discoveries, decisions, or fix bugs, save them to engram via mem_save with project: '{project}'.\"`
 - Skills: orchestrator resolves compact rules from the registry and injects them as `## Project Standards (auto-resolved)` in the sub-agent prompt. Sub-agents do NOT read SKILL.md files or the registry — they receive rules pre-digested.
@@ -240,7 +240,7 @@ Fallback rule:
 
 When launching `sdd-apply`, `sdd-java-apply`, `sdd-react-router-7-apply`, or `sdd-verify` sub-agents, the orchestrator MUST:
 
-1. Search for testing capabilities: `mem_search(query: \"sdd-init/{project}\", project: \"{project}\")`
+1. Search for testing capabilities: prefer `mem_recall_resolved_projects(query: \"sdd-init/{project}\")`; fallback to `mem_search(query: \"sdd-init/{project}\", project: \"{project}\")`
 2. If the result contains `strict_tdd: true`:
    - Add to the sub-agent prompt: `\"STRICT TDD MODE IS ACTIVE. Test runner: {test_command}. You MUST follow strict-tdd.md or the executor's equivalent strict TDD workflow. Do NOT fall back to Standard Mode.\"`
    - This is NON-NEGOTIABLE. Do not rely on the sub-agent discovering this independently.
@@ -252,7 +252,7 @@ The orchestrator resolves TDD status ONCE per session (at first apply/verify lau
 
 When launching `sdd-apply`, `sdd-java-apply`, or `sdd-react-router-7-apply` for a continuation batch (not the first batch):
 
-1. Search for existing apply-progress: `mem_search(query: \"sdd/{change-name}/apply-progress\", project: \"{project}\")`
+1. Search for existing apply-progress: prefer `mem_recall_resolved_projects(query: \"sdd/{change-name}/apply-progress\")`; fallback to `mem_search(query: \"sdd/{change-name}/apply-progress\", project: \"{project}\")`
 2. If found, add to the sub-agent prompt: `\"PREVIOUS APPLY-PROGRESS EXISTS at topic_key 'sdd/{change-name}/apply-progress'. You MUST read it first via mem_search + mem_get_observation, merge your new progress with the existing progress, and save the combined result. Do NOT overwrite — MERGE.\"`
 3. If not found (first batch), no special instruction needed.
 
@@ -279,7 +279,7 @@ For mixed batches:
 | DAG state | `sdd/{change-name}/state` |
 
 Sub-agents retrieve full content via two steps:
-1. `mem_search(query: \"{topic_key}\", project: \"{project}\")` → get observation ID
+1. Prefer `mem_recall_resolved_projects(query: \"{topic_key}\")` when orchestrator is recovering artifacts across possible project aliases; otherwise `mem_search(query: \"{topic_key}\", project: \"{project}\")` → get observation ID
 2. `mem_get_observation(id: {id})` → full content (REQUIRED — search results are truncated)
 
 ### State and Conventions
@@ -288,6 +288,6 @@ Convention files under the agent's global skills directory (global) or `.agent/s
 
 ### Recovery Rule
 
-- `engram` → `mem_search(...)` → `mem_get_observation(...)`
+- `engram` → prefer `mem_recall_resolved_projects(...)`; fallback to `mem_search(...)` → `mem_get_observation(...)`
 - `openspec` → read `openspec/changes/*/state.yaml`
 - `none` → state not persisted — explain to user

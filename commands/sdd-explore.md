@@ -17,7 +17,8 @@ Explore the topic "$ARGUMENTS" in this codebase. Investigate the current state, 
 
 ENGRAM PERSISTENCE (artifact store mode: engram):
 Read project context (optional):
-  mem_search(query: "sdd-init/{project}", project: "{project}") → if found, mem_get_observation(id) for full content
+  prefer mem_recall_resolved_projects(query: "sdd-init/{project}")
+  fallback: mem_search(query: "sdd-init/{project}", project: "{project}") → if found, mem_get_observation(id) for full content
 Save exploration:
   mem_save(title: "sdd/$ARGUMENTS/explore", topic_key: "sdd/$ARGUMENTS/explore", type: "architecture", project: "{project}", content: "{exploration}")
 

@@ -32,7 +32,7 @@ The orchestrator will give you:
 
 > Follow **Section B** from `skills/_shared/sdd-phase-common.md` for retrieval.
 
-- **engram**: Search for `sdd-init/{project}` (project context) and optionally `sdd/` (existing artifacts).
+- **engram**: Prefer `mem_recall_resolved_projects` when searching for `sdd-init/{project}` (project context) and optionally `sdd/` (existing artifacts), with `mem_search` as fallback.
 - **openspec**: Read `openspec/config.yaml` and `openspec/specs/`.
 - **none**: Use whatever context the orchestrator passed in the prompt.
 

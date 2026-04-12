@@ -42,22 +42,26 @@ mem_save(
 )
 ```
 
-Recovery: `mem_search("sdd/{change-name}/state")` → `mem_get_observation(id)` → parse YAML → restore state.
+Recovery: prefer `mem_recall_resolved_projects("sdd/{change-name}/state")`; fallback `mem_search("sdd/{change-name}/state")` → `mem_get_observation(id)` → parse YAML → restore state.
 
-## Recovery Protocol (2 steps)
+## Recovery Protocol
 
 ```
-Step 1: mem_search(query: "sdd/{change-name}/{artifact-type}", project: "{project}") → truncated preview + ID
-Step 2: mem_get_observation(id: {observation-id}) → complete content
+Preferred: mem_recall_resolved_projects(query: "sdd/{change-name}/{artifact-type}") → hydrated results across aliases
+Fallback Step 1: mem_search(query: "sdd/{change-name}/{artifact-type}", project: "{project}") → truncated preview + ID
+Fallback Step 2: mem_get_observation(id: {observation-id}) → complete content
 ```
 
 When retrieving multiple artifacts, group all searches first, then all retrievals:
 
 ```
 STEP A — SEARCH (get IDs only):
-  mem_search(query: "sdd/{change-name}/proposal", ...) → save ID
-  mem_search(query: "sdd/{change-name}/spec", ...) → save ID
-  mem_search(query: "sdd/{change-name}/design", ...) → save ID
+  prefer mem_recall_resolved_projects(query: "sdd/{change-name}/proposal")
+  prefer mem_recall_resolved_projects(query: "sdd/{change-name}/spec")
+  prefer mem_recall_resolved_projects(query: "sdd/{change-name}/design")
+  fallback: mem_search(query: "sdd/{change-name}/proposal", ...) → save ID
+  fallback: mem_search(query: "sdd/{change-name}/spec", ...) → save ID
+  fallback: mem_search(query: "sdd/{change-name}/design", ...) → save ID
 
 STEP B — RETRIEVE FULL CONTENT (mandatory):
   mem_get_observation(id: {proposal_id})
@@ -67,7 +71,8 @@ STEP B — RETRIEVE FULL CONTENT (mandatory):
 
 Loading project context:
 ```
-mem_search(query: "sdd-init/{project}", project: "{project}") → get ID
+prefer mem_recall_resolved_projects(query: "sdd-init/{project}")
+fallback: mem_search(query: "sdd-init/{project}", project: "{project}") → get ID
 mem_get_observation(id) → full project context
 ```
 
@@ -105,7 +110,8 @@ Use `mem_update` when you have the exact ID. Use `mem_save` with same `topic_key
 ### Browsing All Artifacts for a Change
 
 ```
-mem_search(query: "sdd/{change-name}/", project: "{project}")
+prefer mem_recall_resolved_projects(query: "sdd/{change-name}/")
+fallback: mem_search(query: "sdd/{change-name}/", project: "{project}")
 → Returns all artifacts for that change
 ```
 
@@ -114,6 +120,8 @@ mem_search(query: "sdd/{change-name}/", project: "{project}")
 Engram/runtime resolves the canonical project name before agent mem_* usage. Agents MUST reuse that resolved `{project}` value exactly; they MUST NOT recalculate it locally from cwd, basename, or custom heuristics. The `--project` flag and `ENGRAM_PROJECT` env var can override plugin detection. All project names are normalized to lowercase and trimmed.
 
 If the agent saves a memory under a project name that doesn't match existing observations, engram warns about potential name drift. Use `mem_merge_projects` (MCP tool) or `engram projects consolidate` (CLI) to merge variants.
+
+For recall in OpenCode, prefer `mem_recall_resolved_projects` before raw `mem_search`. This helper searches across the resolved alias set (git remote name, git root basename, cwd basename), returns hydrated results, and may auto-migrate alias hits into the canonical project when multiple project names are found.
 
 ## Upsert Behavior
 

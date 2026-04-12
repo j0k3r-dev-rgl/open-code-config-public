@@ -96,13 +96,14 @@ Topic update rules:
 
 On any variation of "remember", "recall", "what did we do", "how did we solve", "recordar", "qué hicimos", or references to past work:
 1. Call `mem_context` — checks recent session history (fast, cheap)
-2. If not found, call `mem_search` with relevant keywords
-3. If found, use `mem_get_observation` for full untruncated content
+2. Then prefer `mem_recall_resolved_projects` — searches across resolved project aliases (git remote, git root, cwd), returns hydrated results, and may auto-migrate matching alias projects into the canonical project
+3. Use `mem_search` with relevant keywords only as fallback
+4. If needed, use `mem_get_observation` for full untruncated content
 
 Also search PROACTIVELY when:
 - Starting work on something that might have been done before
 - User mentions a topic you have no context on
-- User's FIRST message references the project, a feature, or a problem — call `mem_search` with keywords from their message to check for prior work before responding
+- User's FIRST message references the project, a feature, or a problem — prefer `mem_recall_resolved_projects` with keywords from their message to check for prior work before responding
 
 ### SESSION CLOSE PROTOCOL (mandatory)
 

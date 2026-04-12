@@ -57,7 +57,7 @@ The orchestrator persists DAG state after each phase transition to enable SDD re
 
 | Mode | Persist State | Recover State |
 |------|--------------|---------------|
-| `engram` | `mem_save(topic_key: "sdd/{change-name}/state")` | `mem_search("sdd/*/state")` → `mem_get_observation(id)` |
+| `engram` | `mem_save(topic_key: "sdd/{change-name}/state")` | prefer `mem_recall_resolved_projects("sdd/*/state")`; fallback `mem_search("sdd/*/state")` → `mem_get_observation(id)` |
 | `openspec` | Write `openspec/changes/{change-name}/state.yaml` | Read `openspec/changes/{change-name}/state.yaml` |
 | `hybrid` | Both: `mem_save` AND write `state.yaml` | Engram first; filesystem fallback |
 | `none` | Not possible — warn user | Not possible |
@@ -100,8 +100,9 @@ SDD (with dependencies):
 ```
 Artifact store mode: {engram|openspec|hybrid|none}
 Read these artifacts before starting (search returns truncated previews):
-  mem_search(query: "sdd/{change-name}/{type}", project: "{project}") → get ID
-  mem_get_observation(id: {id}) → full content (REQUIRED)
+  prefer mem_recall_resolved_projects(query: "sdd/{change-name}/{type}") when alias drift is possible
+  fallback: mem_search(query: "sdd/{change-name}/{type}", project: "{project}") → get ID
+  mem_get_observation(id: {id}) → full content (REQUIRED when using mem_search)
 
 PERSISTENCE (MANDATORY — do NOT skip):
 After completing your work, you MUST call:
