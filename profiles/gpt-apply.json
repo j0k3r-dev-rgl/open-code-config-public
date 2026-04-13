@@ -1,6 +1,6 @@
 {
   "sdd-apply": "github-copilot/gpt-5.3-codex",
-  "sdd-archive": "opencode-go/kimi-k2.5",
+  "sdd-archive": "github-copilot/claude-haiku-4.5",
   "sdd-design": "anthropic/claude-sonnet-4-6",
   "sdd-explore": "google/gemini-3-flash-preview",
   "sdd-init": "github-copilot/gpt-5.3-codex",
