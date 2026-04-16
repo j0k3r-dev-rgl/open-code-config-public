@@ -38,6 +38,31 @@ Anti-patterns — these ALWAYS inflate context without need:
 
 ## SDD Workflow (Spec-Driven Development)
 
+<!-- gentle-ai:sdd-fallback-policy -->
+### Sub-Agent Fallback Policy (MANDATORY)
+
+When delegating to any base SDD executor (`sdd-*`, excluding `sdd-orchestrator` and excluding agents that already end with `-fallback`), you MUST apply this fallback policy:
+
+1. Launch the primary executor first (for example: `sdd-apply`, `sdd-spec`, `sdd-java-apply`, `sdd-react-router-7-apply`).
+2. If the primary delegation fails, returns no usable result, or times out, launch its fallback executor exactly once using the same phase context and task slice:
+   - Fallback agent name = `<primary-agent>-fallback`
+   - Example: `sdd-apply` -> `sdd-apply-fallback`
+3. A result is considered NOT usable when any of these is true:
+   - Delegation/tool error
+   - Timeout or interrupted execution
+   - Empty or missing payload
+   - Missing required phase contract fields (`status`, `executive_summary`, `artifacts`, `next_recommended`, `risks`, `skill_resolution`)
+4. When launching a fallback agent, DO NOT override the model at orchestration-time. Let the fallback agent use the model configured in `opencode.json` for that `*-fallback` agent.
+5. If the fallback succeeds, continue the workflow normally and explicitly report that fallback was used.
+6. If both primary and fallback fail, stop that phase and return a clear failure summary with both errors.
+
+Safety rules:
+- Never chain fallback-to-fallback (`*-fallback-fallback`).
+- Maximum retries per phase: 1 primary + 1 fallback.
+- Keep all other routing rules unchanged (executor routing, strict TDD forwarding, apply-progress continuity).
+<!-- /gentle-ai:sdd-fallback-policy -->
+
+
 SDD is the structured planning layer for substantial changes.
 
 ### Artifact Store Policy
@@ -120,28 +145,6 @@ proposal -\u003e specs --\u003e tasks -\u003e apply -\u003e verify -\u003e archi
 
 ### Result Contract
 Each phase returns: `status`, `executive_summary`, `artifacts`, `next_recommended`, `risks`, `skill_resolution`.
-
-\u003c!-- gentle-ai:sdd-model-assignments --\u003e
-## Model Assignments
-
-Read this table at session start (or before first delegation), cache it for the session, and pass the mapped alias in every Agent tool call via the `model` parameter. If a phase is missing, use the `default` row. If you lack access to the assigned model, substitute `sonnet` and continue.
-
-| Phase | Default Model | Reason |
-|-------|---------------|--------|
-| orchestrator | opus | Coordinates, makes decisions |
-| sdd-explore | sonnet | Reads code, structural - not architectural |
-| sdd-propose | opus | Architectural decisions |
-| sdd-spec | sonnet | Structured writing |
-| sdd-design | opus | Architecture decisions |
-| sdd-tasks | sonnet | Mechanical breakdown |
-| sdd-apply | sonnet | Implementation |
-| sdd-java-apply | sonnet | Specialized Java implementation |
-| sdd-react-router-7-apply | sonnet | Specialized React Router 7 implementation |
-| sdd-verify | sonnet | Validation against spec |
-| sdd-archive | haiku | Copy and close |
-| default | sonnet | Non-SDD general delegation |
-
-\u003c!-- /gentle-ai:sdd-model-assignments --\u003e
 
 ### Sub-Agent Launch Pattern
 

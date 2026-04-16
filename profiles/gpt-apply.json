@@ -1,14 +1,19 @@
 {
-  "sdd-apply": "github-copilot/gpt-5.3-codex",
-  "sdd-archive": "github-copilot/claude-haiku-4.5",
-  "sdd-design": "anthropic/claude-sonnet-4-6",
-  "sdd-explore": "google/gemini-3-flash-preview",
-  "sdd-init": "github-copilot/gpt-5.3-codex",
-  "sdd-java-apply": "openai/gpt-5.3-codex",
-  "sdd-orchestrator": "openai/gpt-5.4",
-  "sdd-propose": "opencode-go/glm-5.1",
-  "sdd-react-router-7-apply": "github-copilot/gpt-5.3-codex",
-  "sdd-spec": "anthropic/claude-sonnet-4-6",
-  "sdd-tasks": "anthropic/claude-sonnet-4-6",
-  "sdd-verify": "openai/gpt-5.4"
+  "models": {
+    "sdd-apply": "github-copilot/gemini-3-flash-preview",
+    "sdd-archive": "anthropic/claude-haiku-4-5",
+    "sdd-design": "anthropic/claude-sonnet-4-6",
+    "sdd-explore": "google/gemini-3-flash-preview",
+    "sdd-init": "opencode-go/mimo-v2-pro",
+    "sdd-java-apply": "github-copilot/gemini-3-flash-preview",
+    "sdd-orchestrator": "openai/gpt-5.4",
+    "sdd-propose": "google/gemini-3.1-pro-preview",
+    "sdd-react-router-7-apply": "github-copilot/gemini-3-flash-preview",
+    "sdd-spec": "anthropic/claude-sonnet-4-6",
+    "sdd-tasks": "google/gemini-3-flash-preview",
+    "sdd-verify": "openai/gpt-5.3-codex"
+  },
+  "fallback": {
+    "sdd-apply": "github-copilot/gemini-3-flash-preview"
+  }
 }
