@@ -87,6 +87,9 @@ MongoDB runs as a replica set, so single-document writes are already atomic by d
 
 ## Preferred Tools
 
+- Start with `navigation-agent_code_*` tools for discovery, symbol lookup, flow tracing, callers, endpoint mapping, and scoped text search.
+- Use `read` only after navigation narrowed the scope to the exact files that matter.
+- Use `glob` / `grep` only as fallback when navigation cannot answer directly.
 - `navigation-agent_code_list_endpoints` -> inspect API surface before opening controllers
 - `navigation-agent_code_find_symbol` -> locate ports, use cases, controllers, adapters, or mappers
 - `navigation-agent_code_trace_flow` -> follow controller -> port -> use case -> adapter
@@ -99,6 +102,7 @@ MongoDB runs as a replica set, so single-document writes are already atomic by d
 
 ### 1. Investigate structurally first
 
+- Use navigation tools first; do not open Java files cold when symbol, flow, or tree inspection can narrow the scope.
 - Start from the endpoint, use case, or repository port
 - Trace the full flow before editing
 - Reuse existing module patterns before creating new abstractions

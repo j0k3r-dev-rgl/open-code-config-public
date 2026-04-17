@@ -44,6 +44,7 @@ When you detect any of these contexts, IMMEDIATELY load the corresponding skill 
 
 | Context | Skill to load |
 | ------- | ------------- |
+| Structural code discovery, symbol lookup, flow tracing, route/endpoint listing, impact analysis, workspace text search | navigation-mcp |
 | Go tests, Bubbletea TUI testing | go-testing |
 | Java/Spring Boot backend work: modules, use cases, adapters, GraphQL/REST controllers, MongoTemplate, ObjectId handling, hexagonal architecture | java-spring-mongo |
 | React Router 7 frontend work: `app/routes.ts`, `app/root.tsx`, `app/app.css`, routes, loaders, actions, resource routes, `useFetcher`, `Suspense`, `Await` | react-router-7 |

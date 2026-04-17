@@ -76,6 +76,9 @@ Project routing convention:
 
 ## Preferred Tools
 
+- Start with `navigation-agent_code_*` tools for route discovery, symbol lookup, flow tracing, endpoint listing, and scoped text search.
+- Use `read` only after navigation narrowed the scope to the exact route or API files that matter.
+- Use `glob` / `grep` only as fallback when navigation cannot answer directly.
 - `navigation-agent_code_list_endpoints` → inspect existing routes/loaders/actions before opening files
 - `navigation-agent_code_find_symbol` → locate route helpers, loaders, actions, hooks, or shared utilities
 - `navigation-agent_code_trace_flow` → follow route → loader/action → API layer flow
@@ -87,6 +90,7 @@ Project routing convention:
 
 ### 1. Investigate narrowly
 
+- Use navigation tools first; do not open route or API files cold when route listing, symbol lookup, flow tracing, or text search can narrow the scope.
 - Inspect route surface first
 - Read only the route module and the API layer files actually involved
 - Reuse existing route and layout patterns before inventing new ones
