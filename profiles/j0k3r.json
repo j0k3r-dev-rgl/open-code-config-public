@@ -1,7 +1,7 @@
 {
   "models": {
     "sdd-apply": "google/gemini-flash-latest",
-    "sdd-archive": "github-copilot/claude-haiku-4.5",
+    "sdd-archive": "google/gemini-flash-latest",
     "sdd-design": "github-copilot/gemini-3.1-pro-preview",
     "sdd-explore": "google/gemini-3-flash-preview",
     "sdd-init": "opencode-go/mimo-v2-pro",
@@ -14,6 +14,7 @@
     "sdd-verify": "openai/gpt-5.3-codex"
   },
   "fallback": {
-    "sdd-apply": "github-copilot/gemini-3-flash-preview"
+    "sdd-apply": "google/gemini-3-flash-preview",
+    "sdd-archive": "openai/gpt-5.3-codex"
   }
 }

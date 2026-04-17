@@ -36,7 +36,7 @@
 			}
 		},
 		"sdd-archive": {
-			"model": "github-copilot/claude-haiku-4.5",
+			"model": "google/gemini-flash-latest",
 			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-archive.md}",
 			"tools": {
 				"bash": true,
@@ -73,7 +73,6 @@
 				"read": "allow"
 			}
 		},
-
 		"sdd-explore": {
 			"model": "google/gemini-3-flash-preview",
 			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-explore.md}",
@@ -93,7 +92,6 @@
 				"read": "allow"
 			}
 		},
-
 		"sdd-init": {
 			"model": "opencode-go/mimo-v2-pro",
 			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-init.md}",
@@ -229,6 +227,189 @@
 			}
 		},
 		"sdd-verify": {
+			"model": "openai/gpt-5.3-codex",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-verify.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			},
+			"description": "Validate implementation against specs",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			}
+		},
+		"sdd-apply-fallback": {
+			"model": "google/gemini-3-flash-preview",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			},
+			"description": "Implement code changes from task definitions",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			}
+		},
+		"sdd-archive-fallback": {
+			"model": "openai/gpt-5.3-codex",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-archive.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			},
+			"description": "Archive completed change artifacts",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			}
+		},
+		"sdd-design-fallback": {
+			"model": "github-copilot/gemini-3.1-pro-preview",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-design.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			},
+			"description": "Create technical design from proposals",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			}
+		},
+		"sdd-explore-fallback": {
+			"model": "google/gemini-3-flash-preview",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-explore.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			},
+			"description": "Investigate codebase and think through ideas",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			}
+		},
+		"sdd-init-fallback": {
+			"model": "opencode-go/mimo-v2-pro",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-init.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			},
+			"description": "Bootstrap SDD context and project configuration",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			}
+		},
+		"sdd-java-apply-fallback": {
+			"model": "google/gemini-3-flash-preview",
+			"mode": "subagent",
+			"options": {},
+			"permission": {}
+		},
+		"sdd-propose-fallback": {
+			"model": "google/gemini-3-flash-preview",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-propose.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			},
+			"description": "Create change proposals from explorations",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			}
+		},
+		"sdd-react-router-7-apply-fallback": {
+			"model": "google/gemini-3-flash-preview",
+			"mode": "subagent",
+			"options": {},
+			"permission": {}
+		},
+		"sdd-spec-fallback": {
+			"model": "opencode-go/mimo-v2-pro",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-spec.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			},
+			"description": "Write detailed specifications from proposals",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			}
+		},
+		"sdd-tasks-fallback": {
+			"model": "google/gemini-3-flash-preview",
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-tasks.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			},
+			"description": "Break down specs and designs into implementation tasks",
+			"mode": "subagent",
+			"hidden": true,
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			}
+		},
+		"sdd-verify-fallback": {
 			"model": "openai/gpt-5.3-codex",
 			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-verify.md}",
 			"tools": {
