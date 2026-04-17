@@ -41,7 +41,7 @@ Read the cached testing capabilities to determine if Strict TDD verification app
 
 ```
 Read testing capabilities from:
-├── engram: prefer mem_recall_resolved_projects("sdd/{project}/testing-capabilities"); fallback mem_search("sdd/{project}/testing-capabilities") → mem_get_observation(id)
+├── engram: mem_search("sdd/{project}/testing-capabilities") → mem_get_observation(id)
 ├── openspec: openspec/config.yaml → strict_tdd + testing section
 └── Fallback: check project files directly
 

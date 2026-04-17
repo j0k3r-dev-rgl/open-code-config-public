@@ -16,7 +16,7 @@ Present a combined summary after ALL phases complete (not between each one).
 
 CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
-- Resolved project: {project} (provided by runtime/orchestrator; do not recalculate locally)
+- Current project: !`echo -n "$(basename $(pwd))"`
 - Change name: $ARGUMENTS
 - Artifact store mode: engram
 

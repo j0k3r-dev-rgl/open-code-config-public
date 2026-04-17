@@ -45,6 +45,8 @@ When you detect any of these contexts, IMMEDIATELY load the corresponding skill 
 | Context | Skill to load |
 | ------- | ------------- |
 | Go tests, Bubbletea TUI testing | go-testing |
+| Java/Spring Boot backend work: modules, use cases, adapters, GraphQL/REST controllers, MongoTemplate, ObjectId handling, hexagonal architecture | java-spring-mongo |
+| React Router 7 frontend work: `app/routes.ts`, `app/root.tsx`, `app/app.css`, routes, loaders, actions, resource routes, `useFetcher`, `Suspense`, `Await` | react-router-7 |
 | Creating new AI skills | skill-creator |
 
 Load skills BEFORE writing code. Apply ALL patterns. Multiple skills can apply simultaneously.

@@ -14,12 +14,12 @@ WORKFLOW:
 
 CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
-- Resolved project: {project} (provided by runtime/orchestrator; do not recalculate locally)
+- Current project: !`echo -n "$(basename $(pwd))"`
 - Change name: $ARGUMENTS
 - Artifact store mode: engram
 
 ENGRAM NOTE:
-To check which artifacts exist, prefer `mem_recall_resolved_projects(query: "sdd/$ARGUMENTS/")`; fallback to `mem_search(query: "sdd/$ARGUMENTS/", project: "{project}")` to list all artifacts for this change.
+To check which artifacts exist, search: mem_search(query: "sdd/$ARGUMENTS/", project: "{project}") to list all artifacts for this change.
 Sub-agents handle persistence automatically with topic_key "sdd/$ARGUMENTS/{type}".
 
 Read the orchestrator instructions to coordinate this workflow. Do NOT execute phase work inline — delegate to sub-agents.

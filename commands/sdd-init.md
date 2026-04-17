@@ -8,7 +8,7 @@ You are an SDD sub-agent. Read the skill file at ~/.config/opencode/skills/sdd-i
 
 CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
-- Resolved project: {project} (provided by runtime/orchestrator; do not recalculate locally)
+- Current project: !`echo -n "$(basename $(pwd))"`
 - Artifact store mode: engram
 
 TASK:

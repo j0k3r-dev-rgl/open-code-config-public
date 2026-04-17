@@ -146,6 +146,26 @@ proposal -\u003e specs --\u003e tasks -\u003e apply -\u003e verify -\u003e archi
 ### Result Contract
 Each phase returns: `status`, `executive_summary`, `artifacts`, `next_recommended`, `risks`, `skill_resolution`.
 
+<!-- gentle-ai:sdd-model-assignments -->
+## Model Assignments
+
+Read this table at session start (or before first delegation), cache it for the session, and pass the mapped alias in every Agent tool call via the `model` parameter. If a phase is missing, use the `default` row. If you lack access to the assigned model, substitute `sonnet` and continue.
+
+| Phase | Default Model | Reason |
+|-------|---------------|--------|
+| orchestrator | opus | Coordinates, makes decisions |
+| sdd-explore | sonnet | Reads code, structural - not architectural |
+| sdd-propose | opus | Architectural decisions |
+| sdd-spec | sonnet | Structured writing |
+| sdd-design | opus | Architecture decisions |
+| sdd-tasks | sonnet | Mechanical breakdown |
+| sdd-apply | sonnet | Implementation |
+| sdd-verify | sonnet | Validation against spec |
+| sdd-archive | haiku | Copy and close |
+| default | sonnet | Non-SDD general delegation |
+
+<!-- /gentle-ai:sdd-model-assignments -->
+
 ### Sub-Agent Launch Pattern
 
 ALL sub-agent launch prompts that involve reading, writing, or reviewing code MUST include pre-resolved **compact rules** from the skill registry. Follow the **Skill Resolver Protocol** (see `_shared/skill-resolver.md` in the skills directory).
@@ -162,6 +182,10 @@ For each sub-agent launch:
 1. Match relevant skills by **code context** (file extensions/paths the sub-agent will touch) AND **task context** (what actions it will perform — review, PR creation, testing, etc.)
 2. Copy matching compact rule blocks into the sub-agent prompt as `## Project Standards (auto-resolved)`
 3. Inject BEFORE the sub-agent's task-specific instructions
+
+Stack-aware rule for project conventions:
+- If `sdd-init` indicates a Java/Spring/Mongo backend, or the affected area clearly points to Java backend work (`.java`, Spring controllers, GraphQL, MVC, security, MongoTemplate, adapters, use cases, hexagonal modules), the orchestrator MUST match and inject the compact rules for the canonical Java backend skill (`java-spring-mongo`; `java-spring` only as compatibility alias) in ANY SDD phase that reads, designs, reviews, or modifies that area — especially `sdd-explore`, `sdd-propose`, `sdd-design`, `sdd-tasks`, `sdd-apply`, and `sdd-verify`.
+- If `sdd-init` indicates a React Router frontend, or the affected area clearly points to React Router 7 frontend work (`app/routes.ts`, `app/root.tsx`, `app/app.css`, `app/routes/**/*.tsx`, `app/routes/**/routes.ts`, `app/routes/api/*.tsx`, `app/api/**/*.server.ts`, loaders, actions, layouts, resource routes, `useFetcher`, `Suspense`, `Await`), the orchestrator MUST match and inject the compact rules for `react-router-7` in ANY SDD phase that reads, designs, reviews, or modifies that area — especially `sdd-explore`, `sdd-propose`, `sdd-design`, `sdd-tasks`, `sdd-apply`, and `sdd-verify`.
 
 **Key rule**: inject compact rules TEXT, not paths. Sub-agents do NOT read SKILL.md files or the registry — rules arrive pre-digested. This is compaction-safe because each delegation re-reads the registry if the cache is lost.
 

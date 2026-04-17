@@ -1,485 +1,475 @@
 {
-  "$schema": "https://opencode.ai/config.json",
-  "plugin": [
-    "opencode-gemini-auth",
-    "opencode-claude-auth"
-  ],
-  "agent": {
-    "gentleman": {
-      "prompt": "{file:./AGENTS.md}",
-      "tools": {
-        "edit": true,
-        "write": true
-      },
-      "description": "Senior Architect mentor - helpful first, challenging when it matters",
-      "mode": "primary",
-      "options": {},
-      "permission": {
-        "edit": "allow"
-      }
-    },
-    "sdd-apply": {
-      "model": "openai/gpt-5.3-codex",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Implement code changes from task definitions",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-archive": {
-      "model": "opencode-go/kimi-k2.5",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-archive.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Archive completed change artifacts",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-design": {
-      "model": "anthropic/claude-sonnet-4-6",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-design.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Create technical design from proposals",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-explore": {
-      "model": "google/gemini-3-flash-preview",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-explore.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Investigate codebase and think through ideas",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-init": {
-      "model": "opencode-go/glm-5",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-init.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Bootstrap SDD context and project configuration",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-onboard": {
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-onboard.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Guide user through a complete SDD cycle using their real codebase",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-orchestrator": {
-      "model": "google/gemini-3-flash-preview",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-orchestrator.md}",
-      "tools": {
-        "bash": true,
-        "delegate": true,
-        "delegation_list": true,
-        "delegation_read": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Agent Teams Orchestrator - coordinates sub-agents, never does work inline",
-      "mode": "primary",
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "delegate": "allow",
-        "delegation_list": "allow",
-        "delegation_read": "allow",
-        "edit": "allow",
-        "read": "allow",
-        "task": {
-          "*": "deny",
-          "sdd-*": "allow"
-        }
-      }
-    },
-    "sdd-propose": {
-      "model": "anthropic/claude-sonnet-4-6",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-propose.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Create change proposals from explorations",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-spec": {
-      "model": "anthropic/claude-sonnet-4-6",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-spec.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Write detailed specifications from proposals",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-tasks": {
-      "model": "opencode-go/glm-5",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-tasks.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Break down specs and designs into implementation tasks",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-verify": {
-      "model": "opencode-go/glm-5.1",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-verify.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Validate implementation against specs",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-java-apply": {
-      "model": "openai/gpt-5.3-codex",
-      "mode": "subagent",
-      "options": {},
-      "permission": {}
-    },
-    "sdd-react-router-7-apply": {
-      "model": "openai/gpt-5.3-codex",
-      "mode": "subagent",
-      "options": {},
-      "permission": {}
-    },
-    "sdd-apply-fallback": {
-      "model": "openai/gpt-5.3-codex",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Implement code changes from task definitions",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-archive-fallback": {
-      "model": "opencode-go/kimi-k2.5",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-archive.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Archive completed change artifacts",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-design-fallback": {
-      "model": "anthropic/claude-sonnet-4-6",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-design.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Create technical design from proposals",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-explore-fallback": {
-      "model": "google/gemini-3-flash-preview",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-explore.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Investigate codebase and think through ideas",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-init-fallback": {
-      "model": "opencode-go/glm-5",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-init.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Bootstrap SDD context and project configuration",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-propose-fallback": {
-      "model": "anthropic/claude-sonnet-4-6",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-propose.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Create change proposals from explorations",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-spec-fallback": {
-      "model": "anthropic/claude-sonnet-4-6",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-spec.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Write detailed specifications from proposals",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-tasks-fallback": {
-      "model": "opencode-go/glm-5",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-tasks.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Break down specs and designs into implementation tasks",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-verify-fallback": {
-      "model": "opencode-go/glm-5.1",
-      "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-verify.md}",
-      "tools": {
-        "bash": true,
-        "edit": true,
-        "read": true,
-        "write": true
-      },
-      "description": "Validate implementation against specs",
-      "mode": "subagent",
-      "hidden": true,
-      "options": {},
-      "permission": {
-        "bash": "allow",
-        "edit": "allow",
-        "read": "allow"
-      }
-    },
-    "sdd-java-apply-fallback": {
-      "model": "openai/gpt-5.3-codex",
-      "mode": "subagent",
-      "options": {},
-      "permission": {}
-    },
-    "sdd-react-router-7-apply-fallback": {
-      "model": "openai/gpt-5.3-codex",
-      "mode": "subagent",
-      "options": {},
-      "permission": {}
-    }
-  },
-  "mcp": {
-    "context7": {
-      "type": "remote",
-      "url": "https://mcp.context7.com/mcp",
-      "enabled": true,
-      "headers": {
-        "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
-      }
-    },
-    "engram": {
-      "type": "local",
-      "command": [
-        "/home/linuxbrew/.linuxbrew/bin/engram",
-        "mcp",
-        "--tools=agent"
-      ]
-    },
-    "notion": {
-      "type": "remote",
-      "url": "https://mcp.notion.com/mcp"
-    },
-    "navigation-agent": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@navigation-agent/mcp-server"
-      ],
-      "enabled": true
-    }
-  },
-  "permission": {
-    "bash": {
-      "*": "allow",
-      "git commit *": "ask",
-      "git push": "ask",
-      "git push *": "ask",
-      "git push --force *": "ask",
-      "git rebase *": "ask",
-      "git reset --hard *": "ask"
-    },
-    "read": {
-      "*": "allow",
-      "**/.env": "deny",
-      "**/.env.*": "deny",
-      "**/credentials.json": "deny",
-      "**/secrets/**": "deny",
-      "*.env": "deny",
-      "*.env.*": "deny"
-    }
-  }
+	"$schema": "https://opencode.ai/config.json",
+	"agent": {
+		"gentleman": {
+			"description": "Senior Architect mentor - helpful first, challenging when it matters",
+			"mode": "primary",
+			"model": "openai/codex-mini-latest",
+			"options": {},
+			"permission": {
+				"edit": "allow"
+			},
+			"prompt": "{file:./AGENTS.md}",
+			"tools": {
+				"edit": true,
+				"write": true
+			}
+		},
+		"sdd-apply": {
+			"description": "Implement code changes from task definitions",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "openai/codex-mini-latest",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-apply-fallback": {
+			"description": "Implement code changes from task definitions",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "openai/gpt-5.3-codex",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-archive": {
+			"description": "Archive completed change artifacts",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "openai/codex-mini-latest",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-archive.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-archive-fallback": {
+			"description": "Archive completed change artifacts",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/kimi-k2.5",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-archive.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-design": {
+			"description": "Create technical design from proposals",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "openai/codex-mini-latest",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-design.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-design-fallback": {
+			"description": "Create technical design from proposals",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "anthropic/claude-sonnet-4-6",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-design.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-explore": {
+			"description": "Investigate codebase and think through ideas",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "openai/codex-mini-latest",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-explore.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-explore-fallback": {
+			"description": "Investigate codebase and think through ideas",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "google/gemini-3-flash-preview",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-explore.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-init": {
+			"description": "Bootstrap SDD context and project configuration",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "openai/codex-mini-latest",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-init.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-init-fallback": {
+			"description": "Bootstrap SDD context and project configuration",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/glm-5",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-init.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-java-apply": {
+			"mode": "subagent",
+			"model": "openai/gpt-5.3-codex",
+			"options": {},
+			"permission": {}
+		},
+		"sdd-java-apply-fallback": {
+			"mode": "subagent",
+			"model": "openai/gpt-5.3-codex",
+			"options": {},
+			"permission": {}
+		},
+		"sdd-onboard": {
+			"description": "Guide user through a complete SDD cycle using their real codebase",
+			"hidden": true,
+			"mode": "subagent",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-onboard.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-orchestrator": {
+			"description": "Agent Teams Orchestrator - coordinates sub-agents, never does work inline",
+			"mode": "primary",
+			"model": "openai/codex-mini-latest",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"delegate": "allow",
+				"delegation_list": "allow",
+				"delegation_read": "allow",
+				"edit": "allow",
+				"read": "allow",
+				"task": {
+					"*": "deny",
+					"sdd-*": "allow"
+				}
+			},
+			"prompt": "${file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-orchestrator.md}",
+			"tools": {
+				"bash": true,
+				"delegate": true,
+				"delegation_list": true,
+				"delegation_read": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-propose": {
+			"description": "Create change proposals from explorations",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "openai/codex-mini-latest",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-propose.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-propose-fallback": {
+			"description": "Create change proposals from explorations",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "anthropic/claude-sonnet-4-6",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-propose.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-react-router-7-apply": {
+			"mode": "subagent",
+			"model": "openai/gpt-5.3-codex",
+			"options": {},
+			"permission": {}
+		},
+		"sdd-react-router-7-apply-fallback": {
+			"mode": "subagent",
+			"model": "openai/gpt-5.3-codex",
+			"options": {},
+			"permission": {}
+		},
+		"sdd-spec": {
+			"description": "Write detailed specifications from proposals",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "openai/codex-mini-latest",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-spec.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-spec-fallback": {
+			"description": "Write detailed specifications from proposals",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "anthropic/claude-sonnet-4-6",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-spec.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-tasks": {
+			"description": "Break down specs and designs into implementation tasks",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "openai/codex-mini-latest",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-tasks.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-tasks-fallback": {
+			"description": "Break down specs and designs into implementation tasks",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/glm-5",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-tasks.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-verify": {
+			"description": "Validate implementation against specs",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "openai/codex-mini-latest",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-verify.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		},
+		"sdd-verify-fallback": {
+			"description": "Validate implementation against specs",
+			"hidden": true,
+			"mode": "subagent",
+			"model": "opencode-go/glm-5.1",
+			"options": {},
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-verify.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
+		}
+	},
+	"mcp": {
+		"context7": {
+			"enabled": true,
+			"headers": {
+				"CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+			},
+			"type": "remote",
+			"url": "https://mcp.context7.com/mcp"
+		},
+		"engram": {
+			"command": ["engram", "mcp", "--tools=agent"],
+			"type": "local"
+		},
+		"navigation-agent": {
+			"command": ["npx", "-y", "@navigation-agent/mcp-server"],
+			"enabled": true,
+			"type": "local"
+		},
+		"notion": {
+			"type": "remote",
+			"url": "https://mcp.notion.com/mcp"
+		}
+	},
+	"permission": {
+		"bash": {
+			"*": "allow",
+			"git commit *": "ask",
+			"git push": "ask",
+			"git push *": "ask",
+			"git push --force *": "ask",
+			"git rebase *": "ask",
+			"git reset --hard *": "ask"
+		},
+		"read": {
+			"*": "allow",
+			"**/.env": "deny",
+			"**/.env.*": "deny",
+			"**/credentials.json": "deny",
+			"**/secrets/**": "deny",
+			"*.env": "deny",
+			"*.env.*": "deny"
+		}
+	},
+	"plugin": ["opencode-gemini-auth", "opencode-claude-auth"]
 }

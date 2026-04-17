@@ -46,7 +46,7 @@ Before writing ANY code:
 
 Before starting work, check for existing apply-progress:
 
-1. Prefer `mem_recall_resolved_projects(query: "sdd/{change-name}/apply-progress")`; fallback to `mem_search(query: "sdd/{change-name}/apply-progress", project: "{project}")`
+1. `mem_search(query: "sdd/{change-name}/apply-progress", project: "{project}")`
 2. If found: `mem_get_observation(id)` → read the full content
 3. Parse which tasks are already marked complete
 4. Skip those tasks — start from the first incomplete task
@@ -60,7 +60,7 @@ Read the cached testing capabilities to determine implementation mode:
 
 ```
 Read testing capabilities from:
-├── engram: prefer mem_recall_resolved_projects("sdd/{project}/testing-capabilities"); fallback mem_search("sdd/{project}/testing-capabilities") → mem_get_observation(id)
+├── engram: mem_search("sdd/{project}/testing-capabilities") → mem_get_observation(id)
 ├── openspec: openspec/config.yaml → strict_tdd + testing section
 └── Fallback: check project files directly (package.json, go.mod, etc.)
 

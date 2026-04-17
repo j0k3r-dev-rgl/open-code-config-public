@@ -157,7 +157,7 @@ mem_save(
   title: "skill-registry",
   topic_key: "skill-registry",
   type: "config",
-  project: "{project}",  // runtime/orchestrator resolved; do not derive locally
+  project: "{project}",
   content: "{registry markdown from Step 3}"
 )
 ```

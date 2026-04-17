@@ -14,7 +14,6 @@
  *   hooks (input.sessionID) rather than relying on a session.created event.
  */
 
-import * as os from "node:os"
 import * as path from "node:path"
 import { execFileSync } from "node:child_process"
 import { tool, type Plugin } from "@opencode-ai/plugin"
@@ -23,8 +22,7 @@ import { tool, type Plugin } from "@opencode-ai/plugin"
 
 const ENGRAM_PORT = parseInt(process.env.ENGRAM_PORT ?? "7437")
 const ENGRAM_URL = `http://127.0.0.1:${ENGRAM_PORT}`
-const ENGRAM_BIN = process.env.ENGRAM_BIN ?? Bun.which("engram") ?? "/home/linuxbrew/.linuxbrew/Cellar/engram/1.12.0-beta.1/bin/engram"
-const ENGRAM_DB = path.join(os.homedir(), ".engram", "engram.db")
+const ENGRAM_BIN = process.env.ENGRAM_BIN ?? Bun.which("engram") ?? "/home/j0k3r/.linuxbrew/Cellar/engram/1.12.0/bin/engram"
 
 // Engram's own MCP tools — don't count these as "tool calls" for session stats
 const ENGRAM_TOOLS = new Set([
@@ -45,9 +43,6 @@ const ENGRAM_TOOLS = new Set([
 
 // ─── Memory Instructions ─────────────────────────────────────────────────────
 // These get injected into the agent's context so it knows to call mem_save.
-// IMPORTANT: the plugin resolves the canonical `project` at runtime and agents
-// must treat that value as authoritative for every mem_* call. Agents must NOT
-// derive project locally from cwd, basename, or custom heuristics.
 
 const MEMORY_INSTRUCTIONS = `## Engram Persistent Memory — Protocol
 
@@ -257,9 +252,9 @@ function toArrayOutput(output: string): any[] {
   return rows
 }
 
-function execSQLiteJson(query: string): any[] {
+function execSQLiteJson(dbPath: string, query: string): any[] {
   try {
-    const output = execFileSync("sqlite3", ["-json", ENGRAM_DB, query], {
+    const output = execFileSync("sqlite3", ["-json", dbPath, query], {
       encoding: "utf-8",
       timeout: 5000,
       stdio: ["ignore", "pipe", "ignore"],
@@ -291,6 +286,7 @@ function truncateForRecall(str: string, max: number): string {
 function createRecallResolvedProjectsTool(
   project: string,
   directory: string,
+  dbPath: string,
   migrateProject: (oldProject: string, newProject: string) => Promise<boolean>,
 ) {
   return tool({
@@ -317,7 +313,7 @@ function createRecallResolvedProjectsTool(
 
       const rawQuery = String(args.query ?? "").trim()
       const rows = rawQuery
-        ? execSQLiteJson(`
+        ? execSQLiteJson(dbPath, `
             SELECT
               o.id,
               o.type,
@@ -337,7 +333,7 @@ function createRecallResolvedProjectsTool(
             ORDER BY score ASC, o.updated_at DESC
             LIMIT ${limit};
           `)
-        : execSQLiteJson(`
+        : execSQLiteJson(dbPath, `
             SELECT
               id,
               type,
@@ -423,6 +419,7 @@ function createRecallResolvedProjectsTool(
 // ─── Plugin Export ───────────────────────────────────────────────────────────
 
 export const Engram: Plugin = async (ctx) => {
+  const dbPath = path.join(Bun.env.HOME ?? "/tmp", ".engram", "engram.db")
   const oldProject = ctx.directory.split("/").pop() ?? "unknown"
   const project = extractProjectName(ctx.directory)
 
@@ -511,7 +508,7 @@ export const Engram: Plugin = async (ctx) => {
 
   return {
     tool: {
-      mem_recall_resolved_projects: createRecallResolvedProjectsTool(project, ctx.directory, migrateProject),
+      mem_recall_resolved_projects: createRecallResolvedProjectsTool(project, ctx.directory, dbPath, migrateProject),
     },
 
     // ─── Event Listeners ───────────────────────────────────────────
