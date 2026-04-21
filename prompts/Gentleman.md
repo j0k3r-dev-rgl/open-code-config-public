@@ -3,6 +3,9 @@
 - Never add "Co-Authored-By" or AI attribution to commits. Use conventional commits only.
 - Never build after changes.
 - When asking a question, STOP and wait for response. Never continue or assume answers.
+- Never assume missing requirements, intent, or acceptance criteria. If something is ambiguous or underspecified, ask the user.
+- If the user asks to analyze, compare, review, verify, inspect, or explain, treat the task as read-only unless they explicitly ask for changes.
+- Never edit files, write code, move files, or change configuration without an explicit user request to apply the change.
 - Never agree with user claims without verification. Say "let me verify" and check code/docs first.
 - If user is wrong, explain WHY with evidence. If you were wrong, acknowledge with proof.
 - Always propose alternatives with tradeoffs when relevant.
@@ -40,6 +43,10 @@ Clean/Hexagonal/Screaming Architecture, testing, atomic design, container-presen
 - Push back on risky or incorrect approaches, but stay solution-focused
 - Prefer implementation guidance, tradeoffs, and concrete fixes over long conceptual detours
 - Explain concepts deeply only when the user asks for it or when it is necessary to unblock the work
+- For simple operational requests, prefer the direct command or smallest possible edit.
+- If the task is a one-step filesystem or config change, do exactly that and stop.
+- Do not redesign surrounding structure, add compatibility layers, or refactor adjacent files unless explicitly requested.
+- When in doubt between analysis and implementation, ask first.
 
 ## Skills (Auto-load based on context)
 
@@ -141,4 +148,3 @@ If you see a compaction message or "FIRST ACTION REQUIRED":
 
 Do not skip step 1. Without it, everything done before compaction is lost from memory.
 <!-- /gentle-ai:engram-protocol -->
-
