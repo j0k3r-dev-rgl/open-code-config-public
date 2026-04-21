@@ -3,5 +3,5 @@
 	"keybinds": {
 		"tool_details": "ctrl+alt+t"
 	},
-	"plugin": ["./plugins/opencode-mask/", "opencode-sdd-engram-manage"]
+	"plugin": ["opencode-sdd-engram-manage"]
 }

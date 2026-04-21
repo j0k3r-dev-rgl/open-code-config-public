@@ -173,22 +173,16 @@ mem_save({
 // User: "¿Qué tengo pendiente?"
 
 // 1. Search the deterministic project index first
-const index = await mem_recall_resolved_projects({
-  query: "pending-index/{project}"
+const index = await mem_search({
+  query: "pending-index/{project}",
+  project: "{project}"
 })
-
-// Fallback when the alias-aware helper is unavailable:
-// const index = await mem_search({
-//   query: "pending-index/{project}",
-//   project: "{project}"
-// })
 
 // 2. Read the full index content
 const fullIndex = await mem_get_observation({ id: index[0].id })
 
 // 3. If index is missing or stale, recover with exact namespace searches:
-//    mem_recall_resolved_projects({ query: "pending/" })
-//    fallback: mem_search({ query: "pending/", project: "{project}" })
+//    mem_search({ query: "pending/", project: "{project}" })
 // 4. Only if recovery is needed, use mem_context to find recently mentioned pending work
 ```
 
@@ -199,15 +193,10 @@ const fullIndex = await mem_get_observation({ id: index[0].id })
 // User: "La tarea del auth middleware ya está lista"
 
 // 1. Find the task
-const results = await mem_recall_resolved_projects({
-  query: "pending/review-auth-middleware"
+const results = await mem_search({
+  query: "pending/review-auth-middleware",
+  project: "{project}"
 });
-
-// Fallback when needed:
-// const results = await mem_search({
-//   query: "pending/review-auth-middleware",
-//   project: "{project}"
-// });
 
 // 2. Update it
 if (results && results[0]) {
@@ -266,8 +255,7 @@ mem_save({
 ### Quick Status Check
 ```bash
 # Find the project index first
-prefer mem_recall_resolved_projects(query: "pending-index/{project}")
-fallback: mem_search(query: "pending-index/{project}")
+mem_search(query: "pending-index/{project}", project: "{project}")
 
 # Then read full content
 mem_get_observation(id: <index-id>)
@@ -276,8 +264,7 @@ mem_get_observation(id: <index-id>)
 ### Find by Type
 ```bash
 # Recovery search across deterministic task namespace
-prefer mem_recall_resolved_projects(query: "pending/")
-fallback: mem_search(query: "pending/")
+mem_search(query: "pending/", project: "{project}")
 ```
 
 ### Find by Priority
@@ -369,15 +356,10 @@ mem_save({
 **Action:**
 ```typescript
 // 1. Read the project index
-const tasksIndex = await mem_recall_resolved_projects({
-  query: "pending-index/{project}"
+const tasksIndex = await mem_search({
+  query: "pending-index/{project}",
+  project: "{project}"
 });
-
-// Fallback:
-// const tasksIndex = await mem_search({
-//   query: "pending-index/{project}",
-//   project: "{project}"
-// });
 
 // 2. Get the full index observation
 const pending = await mem_get_observation({ id: tasksIndex[0].id });
@@ -390,15 +372,10 @@ const pending = await mem_get_observation({ id: tasksIndex[0].id });
 **Action:**
 ```typescript
 // 1. Find
-const results = await mem_recall_resolved_projects({
-  query: "pending/refactor-database-queries"
+const results = await mem_search({
+  query: "pending/refactor-database-queries",
+  project: "{project}"
 });
-
-// Fallback:
-// const results = await mem_search({
-//   query: "pending/refactor-database-queries",
-//   project: "{project}"
-// });
 
 // 2. Update
 if (results[0]) {
