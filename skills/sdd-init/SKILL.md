@@ -221,14 +221,12 @@ If mode is `openspec` or `hybrid`, also write this as a section in `openspec/con
 
 ### Step 7: Build Skill Registry
 
-Follow the same logic as the `skill-registry` skill (`skills/skill-registry/SKILL.md`):
-
-1. Scan user skills: glob `*/SKILL.md` across ALL known skill directories. **User-level**: `~/.claude/skills/`, `~/.config/opencode/skills/`, `~/.gemini/skills/`, `~/.cursor/skills/`, `~/.copilot/skills/`, parent of this skill file. **Project-level**: `.claude/skills/`, `.gemini/skills/`, `.agent/skills/`, `skills/`. Skip `sdd-*`, `_shared`, `skill-registry`. Deduplicate by name (project-level wins). Read frontmatter triggers.
-2. Scan project conventions: check for `agents.md`, `AGENTS.md`, `CLAUDE.md` (project-level), `.cursorrules`, `GEMINI.md`, `copilot-instructions.md` in the project root. If an index file is found (e.g., `agents.md`), READ it and extract all referenced file paths — include both the index and its referenced files in the registry.
+1. Scan user skills: glob `*/SKILL.md` in `~/.config/opencode/skills/` only. Skip `sdd-*`, `_shared`, `skill-registry`. Read frontmatter `description` field for triggers.
+2. Scan project conventions: check for `AGENTS.md` in the project root only. If found, READ it and note the path.
 3. **ALWAYS write `.atl/skill-registry.md`** in the project root (create `.atl/` if needed). This file is mode-independent — it's infrastructure, not an SDD artifact.
 4. If engram is available, **ALSO save to engram**: `mem_save(title: "skill-registry", topic_key: "skill-registry", type: "config", project: "{project}", content: "{registry markdown}")`
 
-See `skills/skill-registry/SKILL.md` for the full registry format and scanning details.
+See `skills/skill-registry/SKILL.md` for the full registry format.
 
 ### Step 8: Persist Project Context
 

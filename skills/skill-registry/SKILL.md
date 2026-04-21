@@ -26,30 +26,14 @@ This is the foundation of the **Skill Resolver Protocol** (see `_shared/skill-re
 
 ### Step 1: Scan User Skills
 
-1. Glob for `*/SKILL.md` files across ALL known skill directories. Check every path below — scan ALL that exist, not just the first match:
-
-   **User-level (global skills):**
-   - `~/.claude/skills/` — Claude Code
-   - `~/.config/opencode/skills/` — OpenCode
-   - `~/.gemini/skills/` — Gemini CLI
-   - `~/.cursor/skills/` — Cursor
-   - `~/.copilot/skills/` — VS Code Copilot
-   - The parent directory of this skill file (catch-all for any tool)
-
-   **Project-level (workspace skills):**
-   - `{project-root}/.claude/skills/` — Claude Code
-   - `{project-root}/.gemini/skills/` — Gemini CLI
-   - `{project-root}/.agent/skills/` — Antigravity (workspace)
-   - `{project-root}/skills/` — Generic
-
-2. **SKIP `sdd-*` and `_shared`** — those are SDD workflow skills, not coding/task skills
-3. Also **SKIP `skill-registry`** — that's this skill
-4. **Deduplicate** — if the same skill name appears in multiple locations, keep the project-level version (more specific). If both are user-level, keep the first found.
-5. For each skill found, read the **full SKILL.md** (if a SKILL.md exceeds 200 lines, focus on the frontmatter and Critical Patterns / Rules sections only) to extract:
+1. Glob for `*/SKILL.md` files in `~/.config/opencode/skills/` only.
+2. **SKIP `sdd-*` and `_shared`** — those are SDD workflow skills, not coding/task skills.
+3. Also **SKIP `skill-registry`** — that's this skill.
+4. For each skill found, read the **full SKILL.md** (if a SKILL.md exceeds 200 lines, focus on the frontmatter and Critical Patterns / Rules sections only) to extract:
    - `name` field (from frontmatter)
    - `description` field → extract the trigger text (after "Trigger:" in the description)
    - **Compact rules** — the actionable patterns and constraints (see Step 1b)
-6. Build a table of: Trigger | Skill Name | Full Path
+5. Build a table of: Trigger | Skill Name | Full Path
 
 ### Step 1b: Generate Compact Rules
 
@@ -83,15 +67,9 @@ Format per skill:
 
 ### Step 2: Scan Project Conventions
 
-1. Check the project root for convention files. Look for:
-   - `agents.md` or `AGENTS.md`
-   - `CLAUDE.md` (only project-level, not `~/.claude/CLAUDE.md`)
-   - `.cursorrules`
-   - `GEMINI.md`
-   - `copilot-instructions.md`
-2. **If an index file is found** (e.g., `agents.md`, `AGENTS.md`): READ its contents and extract all referenced file paths. These index files typically list project conventions with paths — extract every referenced path and include it in the registry table alongside the index file itself.
-3. For non-index files (`.cursorrules`, `CLAUDE.md`, etc.): record the file directly.
-4. The final table should include the index file AND all paths it references — zero extra hops for sub-agents.
+1. Check the project root for `AGENTS.md` only.
+2. If found: READ its contents and extract all referenced file paths. Include both the index file and every referenced path in the registry table.
+3. The final table should include `AGENTS.md` AND all paths it references — zero extra hops for sub-agents.
 
 ### Step 3: Write the Registry
 
@@ -193,9 +171,10 @@ To update after installing/removing skills, run this again.
 
 - ALWAYS write `.atl/skill-registry.md` regardless of any SDD persistence mode
 - ALWAYS save to engram if the `mem_save` tool is available
+- Scan ONLY `~/.config/opencode/skills/` — do NOT scan other tool directories
 - SKIP `sdd-*`, `_shared`, and `skill-registry` directories when scanning
 - Read SKILL.md files (respecting the 200-line guard in Step 1) to generate accurate compact rules — this is a build-time cost, not a runtime cost
 - Compact rules MUST be 5-15 lines per skill — concise, actionable, no fluff
-- Include ALL convention index files found (not just the first)
+- Scan ONLY `AGENTS.md` for project conventions — do NOT look for `.cursorrules`, `CLAUDE.md`, or other tool-specific files
 - If no skills or conventions are found, write an empty registry (so sub-agents don't waste time searching)
 - Add `.atl/` to the project's `.gitignore` if it exists and `.atl` is not already listed

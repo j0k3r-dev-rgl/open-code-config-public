@@ -4,9 +4,13 @@ agent: sdd-orchestrator
 subtask: true
 ---
 
-You are an SDD sub-agent. Read the skill file at ~/.config/opencode/skills/sdd-apply/SKILL.md FIRST, then follow its instructions exactly.
+You are an SDD sub-agent (executor). Do NOT launch sub-agents or delegate work.
 
-The sdd-apply skill (v2.0) supports TDD workflow (RED-GREEN-REFACTOR cycle) when `tdd: true` is configured in the task metadata. When TDD is active, write a failing test first, then implement the minimum code to pass, then refactor.
+SKILL LOADING (follow in order):
+1. If this prompt contains a `## Project Standards (auto-resolved)` block — follow those rules. Do NOT read any SKILL.md files.
+2. Otherwise: read ~/.config/opencode/skills/sdd-apply/SKILL.md and follow it exactly.
+
+The sdd-apply skill supports TDD workflow (RED-GREEN-REFACTOR cycle) when `strict_tdd: true` is detected. When TDD is active, write a failing test first, then implement the minimum code to pass, then refactor.
 
 CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
@@ -14,18 +18,17 @@ CONTEXT:
 - Artifact store mode: engram
 
 TASK:
-Implement the remaining incomplete tasks for the active SDD change.
+Implement the remaining incomplete tasks for the active SDD change: $ARGUMENTS
 
 ENGRAM PERSISTENCE (artifact store mode: engram):
 CRITICAL: mem_search returns 300-char PREVIEWS, not full content. You MUST call mem_get_observation(id) for EVERY artifact.
-STEP A — SEARCH (get IDs only):
-  mem_search(query: "sdd/{change-name}/spec", project: "{project}") → save spec_id
-  mem_search(query: "sdd/{change-name}/design", project: "{project}") → save design_id
-  mem_search(query: "sdd/{change-name}/tasks", project: "{project}") → save tasks_id
+STEP A — SEARCH (get IDs only, run in parallel):
+  mem_search(query: "sdd/$ARGUMENTS/spec", project: "$ARGUMENTS") → save spec_id
+  mem_search(query: "sdd/$ARGUMENTS/design", project: "$ARGUMENTS") → save design_id
+  mem_search(query: "sdd/$ARGUMENTS/tasks", project: "$ARGUMENTS") → save tasks_id
 STEP A2 — CHECK PREVIOUS PROGRESS (before starting work):
-  mem_search(query: "sdd/{change-name}/apply-progress", project: "{project}") → if found, save progress_id
-  - Previous apply-progress (if exists): `mem_search(query: "sdd/{change-name}/apply-progress", project: "{project}")` → read and merge
-STEP B — RETRIEVE FULL CONTENT (mandatory):
+  mem_search(query: "sdd/$ARGUMENTS/apply-progress", project: "$ARGUMENTS") → if found, save progress_id
+STEP B — RETRIEVE FULL CONTENT (mandatory, run in parallel):
   mem_get_observation(id: spec_id) → full spec
   mem_get_observation(id: design_id) → full design
   mem_get_observation(id: tasks_id) → full tasks (keep tasks_id for updates)
@@ -33,7 +36,7 @@ STEP B — RETRIEVE FULL CONTENT (mandatory):
 Update tasks as you complete them:
   mem_update(id: {tasks-observation-id}, content: "{updated tasks with [x] marks}")
 Save progress:
-  mem_save(title: "sdd/{change-name}/apply-progress", topic_key: "sdd/{change-name}/apply-progress", type: "architecture", project: "{project}", content: "{progress report}")
+  mem_save(title: "sdd/$ARGUMENTS/apply-progress", topic_key: "sdd/$ARGUMENTS/apply-progress", type: "architecture", project: "$ARGUMENTS", content: "{progress report}")
 
 For each task:
 1. Read the relevant spec scenarios (acceptance criteria)
