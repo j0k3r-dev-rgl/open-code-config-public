@@ -5,7 +5,12 @@ agent: sdd-orchestrator
 
 Follow the SDD orchestrator workflow for starting a new change named "$ARGUMENTS".
 
-FIRST — ASK THE USER (before any delegation):
+FIRST — APPLY THE ORCHESTRATOR'S SDD INIT GUARD:
+1. Check whether `sdd-init/{project}` already exists.
+2. If init is missing, run `sdd-init` first.
+3. Only after init is resolved, continue with the workflow below.
+
+THEN — ASK THE USER (before any further phase delegation):
 1. Execution mode: **Automatic** (all phases back-to-back, show final result only) or **Interactive** (pause after each phase, ask before continuing)? Default: Interactive.
 2. Artifact store: **engram** (fast, no files), **openspec** (file-based, git history), or **hybrid** (both)? Default: engram if available.
 Cache both answers for the session — do NOT ask again.

@@ -5,6 +5,11 @@ agent: sdd-orchestrator
 
 Follow the SDD orchestrator workflow to continue the active change.
 
+FIRST — APPLY THE ORCHESTRATOR'S SDD INIT GUARD:
+1. Check whether `sdd-init/{project}` already exists.
+2. If init is missing, run `sdd-init` first.
+3. Only after init is resolved, continue with the workflow below.
+
 WORKFLOW:
 1. Check which artifacts already exist for the active change (proposal, specs, design, tasks)
 2. Determine the next phase needed based on the dependency graph:

@@ -102,7 +102,7 @@ Meta-commands (type directly — orchestrator handles them, won't appear in auto
 
 Before executing ANY SDD command (`/sdd-new`, `/sdd-ff`, `/sdd-continue`, `/sdd-explore`, `/sdd-apply`, `/sdd-verify`, `/sdd-archive`), check if `sdd-init` has been run for this project:
 
-1. Search Engram: prefer `mem_recall_resolved_projects(query: "sdd-init/{project}")`; fallback to `mem_search(query: "sdd-init/{project}", project: "{project}")` if needed
+1. Search Engram: `mem_search(query: "sdd-init/{project}", project: "{project}")`
 2. If found → init was done, proceed normally
 3. If NOT found → run `sdd-init` FIRST (delegate to `sdd-init` sub-agent), THEN proceed with the requested command
 
@@ -317,6 +317,6 @@ Convention files under the agent's global skills directory (global) or `.agent/s
 
 ### Recovery Rule
 
-- `engram` → prefer `mem_recall_resolved_projects(...)`; fallback to `mem_search(...)` → `mem_get_observation(...)`
+- `engram` → `mem_search(...)` → `mem_get_observation(...)`
 - `openspec` → read `openspec/changes/*/state.yaml`
 - `none` → state not persisted — explain to user

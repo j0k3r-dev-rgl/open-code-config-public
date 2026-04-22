@@ -7,11 +7,13 @@
 			"model": "google/gemini-3-flash-preview",
 			"options": {},
 			"permission": {
-				"edit": "allow"
+				"edit": "allow",
+				"read": "allow"
 			},
 			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/Gentleman.md}",
 			"tools": {
 				"edit": true,
+				"read": true,
 				"write": true
 			}
 		},
@@ -206,16 +208,42 @@
 			}
 		},
 		"sdd-java-apply": {
+			"description": "Implement Java/Spring SDD task slices",
+			"hidden": true,
 			"mode": "subagent",
 			"model": "google/gemini-3-flash-preview",
 			"options": {},
-			"permission": {}
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
 		},
 		"sdd-java-apply-fallback": {
+			"description": "Implement Java/Spring SDD task slices",
+			"hidden": true,
 			"mode": "subagent",
 			"model": "google/gemini-3-flash-preview",
 			"options": {},
-			"permission": {}
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
 		},
 		"sdd-onboard": {
 			"description": "Guide user through a complete SDD cycle using their real codebase",
@@ -260,6 +288,7 @@
 				"delegation_read": true,
 				"edit": true,
 				"read": true,
+				"task": true,
 				"write": true
 			}
 		},
@@ -302,16 +331,42 @@
 			}
 		},
 		"sdd-react-router-7-apply": {
+			"description": "Implement React Router 7 SDD task slices",
+			"hidden": true,
 			"mode": "subagent",
 			"model": "google/gemini-3-flash-preview",
 			"options": {},
-			"permission": {}
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
 		},
 		"sdd-react-router-7-apply-fallback": {
+			"description": "Implement React Router 7 SDD task slices",
+			"hidden": true,
 			"mode": "subagent",
 			"model": "google/gemini-3-flash-preview",
 			"options": {},
-			"permission": {}
+			"permission": {
+				"bash": "allow",
+				"edit": "allow",
+				"read": "allow"
+			},
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
+			"tools": {
+				"bash": true,
+				"edit": true,
+				"read": true,
+				"write": true
+			}
 		},
 		"sdd-spec": {
 			"description": "Write detailed specifications from proposals",

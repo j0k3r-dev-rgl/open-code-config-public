@@ -4,11 +4,13 @@ agent: sdd-orchestrator
 subtask: true
 ---
 
-You are an SDD sub-agent (executor). Do NOT launch sub-agents or delegate work.
+This delegated phase command is the operational payload for the SDD explore executor.
 
-SKILL LOADING (follow in order):
-1. If this prompt contains a `## Project Standards (auto-resolved)` block — follow those rules. Do NOT read any SKILL.md files.
-2. Otherwise: read ~/.config/opencode/skills/sdd-explore/SKILL.md and follow it exactly.
+Command contract:
+- This file defines the phase-specific work for THIS run.
+- The executor prompt remains minimal and enforces execution boundaries.
+- If `## Project Standards (auto-resolved)` is present, apply it before doing work.
+- Load the full base skill only if the executor prompt tells you it is necessary because this command and injected standards are insufficient.
 
 CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
@@ -27,4 +29,4 @@ Save exploration:
 
 This is an exploration only — do NOT create any files or modify code. Just research and return your analysis.
 
-Return a structured result with: status, executive_summary, detailed_report, artifacts, and next_recommended.
+Return a structured result with: status, executive_summary, detailed_report, artifacts, next_recommended, risks, and skill_resolution.

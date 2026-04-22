@@ -5,7 +5,12 @@ agent: sdd-orchestrator
 
 Follow the SDD orchestrator workflow to fast-forward all planning phases for change "$ARGUMENTS".
 
-FIRST — ASK THE USER (before any delegation, only if not already cached this session):
+FIRST — APPLY THE ORCHESTRATOR'S SDD INIT GUARD:
+1. Check whether `sdd-init/{project}` already exists.
+2. If init is missing, run `sdd-init` first.
+3. Only after init is resolved, continue with the workflow below.
+
+THEN — ASK THE USER (before any further phase delegation, only if not already cached this session):
 1. Execution mode: **Automatic** (all phases back-to-back, show combined summary at the end) or **Interactive** (pause after each phase, ask before continuing)? Default: Automatic (ff is designed for speed).
 2. Artifact store: **engram** (fast, no files), **openspec** (file-based, git history), or **hybrid** (both)? Default: engram if available.
 Cache both answers for the session — do NOT ask again.
