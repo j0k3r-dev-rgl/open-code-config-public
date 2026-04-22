@@ -16,18 +16,18 @@ THEN — ASK THE USER (before any further phase delegation):
 Cache both answers for the session — do NOT ask again.
 
 WORKFLOW:
-1. Launch sdd-explore sub-agent to investigate the codebase for this change
+1. Delegate the explore phase command to the `sdd-explore` executor for this change
 2. Present the exploration summary to the user (Interactive) or continue immediately (Automatic)
-3. Launch sdd-propose sub-agent to create a proposal based on the exploration
+3. Delegate the propose phase command to the `sdd-propose` executor based on the exploration
 4. Present the proposal summary and ask the user if they want to continue with specs and design (Interactive) or stop here (Automatic)
 
 CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
 - Current project: !`echo -n "$(basename $(pwd))"`
 - Change name: $ARGUMENTS
-- Artifact store mode: engram (override with user choice above)
+- Artifact store mode: resolved by the orchestrator for this run
 
-ENGRAM NOTE:
-Sub-agents handle persistence automatically. Each phase saves its artifact to engram with topic_key "sdd/$ARGUMENTS/{type}".
+ARTIFACT NOTE:
+Executors handle persistence automatically using the resolved artifact store mode for this run. When Engram is active, phase artifacts use topic keys like `sdd/$ARGUMENTS/{type}`.
 
-Read the orchestrator instructions to coordinate this workflow. Do NOT execute phase work inline — delegate to sub-agents.
+Read the orchestrator instructions to coordinate this workflow. Do NOT execute phase work inline — delegate phase commands to the executors.

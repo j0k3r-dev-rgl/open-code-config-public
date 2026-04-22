@@ -16,20 +16,22 @@ CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
 - Current project: !`echo -n "$(basename $(pwd))"`
 - Change name: $ARGUMENTS
-- Artifact store mode: engram
+- Artifact store mode: resolved by the orchestrator for this run
 
 TASK:
 Break SDD change `$ARGUMENTS` into clear implementation tasks.
 
-ENGRAM PERSISTENCE (artifact store mode: engram):
-CRITICAL: mem_search returns previews only. Retrieve full content before using artifacts.
-Read dependencies:
+ARTIFACT PERSISTENCE:
+CRITICAL: when using Engram, `mem_search` returns previews only. Retrieve full content before using artifacts.
+Read dependencies when Engram is available:
   mem_search(query: "sdd/$ARGUMENTS/spec", project: "{project}") → save spec_id
   mem_search(query: "sdd/$ARGUMENTS/design", project: "{project}") → save design_id
   mem_get_observation(id: spec_id) → full spec
   mem_get_observation(id: design_id) → full design
-Save tasks:
-  mem_save(title: "sdd/$ARGUMENTS/tasks", topic_key: "sdd/$ARGUMENTS/tasks", type: "architecture", project: "{project}", content: "{task breakdown}")
+- If artifact store mode is `engram`: save tasks with `mem_save(...)` under `sdd/$ARGUMENTS/tasks` and record the observation ID in `artifacts`.
+- If artifact store mode is `openspec`: write the tasks artifact to the filesystem path chosen by the phase workflow and return that path in `artifacts`.
+- If artifact store mode is `hybrid`: do BOTH and return both the filesystem path and the Engram observation ID in `artifacts`.
+- If artifact store mode is `none`: return the result inline only and do not persist artifacts.
 
 The tasks should:
 1. Be ordered and implementation-ready
@@ -37,4 +39,4 @@ The tasks should:
 3. Be small enough for apply batches
 4. Mark clear completion criteria per task
 
-Return a structured result with: status, executive_summary, artifacts, next_recommended, risks, and skill_resolution.
+Return a structured result with: status, executive_summary, detailed_report (optional), artifacts, next_recommended, risks, and skill_resolution.

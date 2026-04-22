@@ -16,17 +16,19 @@ CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
 - Current project: !`echo -n "$(basename $(pwd))"`
 - Change name: $ARGUMENTS
-- Artifact store mode: engram
+- Artifact store mode: resolved by the orchestrator for this run
 
 TASK:
 Create the SDD proposal for change `$ARGUMENTS`.
 
-ENGRAM PERSISTENCE (artifact store mode: engram):
-Read exploration if it exists:
+ARTIFACT PERSISTENCE:
+Read exploration if it exists and Engram is available:
   mem_search(query: "sdd/$ARGUMENTS/explore", project: "{project}") → if found, save explore_id
   IF explore_id exists: mem_get_observation(id: explore_id) → full exploration
-Save proposal:
-  mem_save(title: "sdd/$ARGUMENTS/proposal", topic_key: "sdd/$ARGUMENTS/proposal", type: "architecture", project: "{project}", content: "{proposal}")
+- If artifact store mode is `engram`: save proposal with `mem_save(...)` under `sdd/$ARGUMENTS/proposal` and record the observation ID in `artifacts`.
+- If artifact store mode is `openspec`: write the proposal artifact to the filesystem path chosen by the phase workflow and return that path in `artifacts`.
+- If artifact store mode is `hybrid`: do BOTH and return both the filesystem path and the Engram observation ID in `artifacts`.
+- If artifact store mode is `none`: return the result inline only and do not persist artifacts.
 
 The proposal should clearly capture:
 1. Problem / opportunity
@@ -34,4 +36,4 @@ The proposal should clearly capture:
 3. Recommended approach
 4. Risks, tradeoffs, and open questions
 
-Return a structured result with: status, executive_summary, artifacts, next_recommended, risks, and skill_resolution.
+Return a structured result with: status, executive_summary, detailed_report (optional), artifacts, next_recommended, risks, and skill_resolution.

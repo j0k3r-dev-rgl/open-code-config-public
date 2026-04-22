@@ -16,11 +16,11 @@ THEN — ASK THE USER (before any further phase delegation, only if not already 
 Cache both answers for the session — do NOT ask again.
 
 WORKFLOW:
-Run these sub-agents in sequence:
-1. sdd-propose — create the proposal
-2. sdd-spec — write specifications
-3. sdd-design — create technical design
-4. sdd-tasks — break down into implementation tasks
+Delegate these phase commands in sequence:
+1. `sdd-propose` — create the proposal
+2. `sdd-spec` — write specifications
+3. `sdd-design` — create technical design
+4. `sdd-tasks` — break down into implementation tasks
 
 In Automatic mode: present a combined summary after ALL phases complete.
 In Interactive mode: pause after each phase, show result, ask "¿Continuamos? / Continue?" before the next.
@@ -29,9 +29,9 @@ CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
 - Current project: !`echo -n "$(basename $(pwd))"`
 - Change name: $ARGUMENTS
-- Artifact store mode: engram (override with user choice above)
+- Artifact store mode: resolved by the orchestrator for this run
 
-ENGRAM NOTE:
-Sub-agents handle persistence automatically. Each phase saves its artifact to engram with topic_key "sdd/$ARGUMENTS/{type}" where type is: proposal, spec, design, tasks.
+ARTIFACT NOTE:
+Executors handle persistence automatically using the resolved artifact store mode for this run. When Engram is active, phase artifacts use topic keys like `sdd/$ARGUMENTS/{type}` where type is: proposal, spec, design, tasks.
 
-Read the orchestrator instructions to coordinate this workflow. Do NOT execute phase work inline — delegate to sub-agents.
+Read the orchestrator instructions to coordinate this workflow. Do NOT execute phase work inline — delegate phase commands to the executors.

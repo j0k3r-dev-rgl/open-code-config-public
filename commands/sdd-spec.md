@@ -16,18 +16,20 @@ CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
 - Current project: !`echo -n "$(basename $(pwd))"`
 - Change name: $ARGUMENTS
-- Artifact store mode: engram
+- Artifact store mode: resolved by the orchestrator for this run
 
 TASK:
 Write the SDD specification for change `$ARGUMENTS`.
 
-ENGRAM PERSISTENCE (artifact store mode: engram):
-CRITICAL: mem_search returns previews only. Retrieve full content before using proposal text.
-Read proposal:
+ARTIFACT PERSISTENCE:
+CRITICAL: when using Engram, `mem_search` returns previews only. Retrieve full content before using proposal text.
+Read proposal when Engram is available:
   mem_search(query: "sdd/$ARGUMENTS/proposal", project: "{project}") → save proposal_id
   mem_get_observation(id: proposal_id) → full proposal
-Save spec:
-  mem_save(title: "sdd/$ARGUMENTS/spec", topic_key: "sdd/$ARGUMENTS/spec", type: "architecture", project: "{project}", content: "{specification}")
+- If artifact store mode is `engram`: save spec with `mem_save(...)` under `sdd/$ARGUMENTS/spec` and record the observation ID in `artifacts`.
+- If artifact store mode is `openspec`: write the spec artifact to the filesystem path chosen by the phase workflow and return that path in `artifacts`.
+- If artifact store mode is `hybrid`: do BOTH and return both the filesystem path and the Engram observation ID in `artifacts`.
+- If artifact store mode is `none`: return the result inline only and do not persist artifacts.
 
 The spec should define:
 1. Requirements / acceptance criteria
@@ -35,4 +37,4 @@ The spec should define:
 3. Behavioral expectations
 4. Boundaries that verification can later check
 
-Return a structured result with: status, executive_summary, artifacts, next_recommended, risks, and skill_resolution.
+Return a structured result with: status, executive_summary, detailed_report (optional), artifacts, next_recommended, risks, and skill_resolution.

@@ -52,7 +52,7 @@ Anti-patterns — these ALWAYS inflate context without need:
 
 When delegating to any base SDD executor (`sdd-*`, excluding `sdd-orchestrator` and excluding agents that already end with `-fallback`), you MUST apply this fallback policy:
 
-1. Launch the primary executor first (for example: `sdd-apply`, `sdd-spec`, `sdd-java-apply`, `sdd-react-router-7-apply`).
+1. Launch the primary executor first (for example: `sdd-apply`, `sdd-spec`, `sdd-design`, `sdd-tasks`).
 2. If the primary delegation fails, returns no usable result, or times out, launch its fallback executor exactly once using the same phase context and task slice:
    - Fallback agent name = `<primary-agent>-fallback`
    - Example: `sdd-apply` -> `sdd-apply-fallback`
@@ -89,7 +89,6 @@ Skills (appear in autocomplete):
 - `/sdd-apply [change]` → implement tasks in batches; checks off items as it goes
 - `/sdd-verify [change]` → validate implementation against specs; reports CRITICAL / WARNING / SUGGESTION
 - `/sdd-archive [change]` → close a change and persist final state in the active artifact store 
-- `/sdd-onboard` → guided end-to-end walkthrough of SDD using your real codebase
 
 Meta-commands (type directly — orchestrator handles them, won't appear in autocomplete):
 - `/sdd-new \u003cchange\u003e` → start a new change by delegating exploration + proposal to sub-agents
@@ -227,47 +226,20 @@ Each phase has explicit read/write rules:
 
 For phases with required dependencies, sub-agent reads directly from the backend — orchestrator passes artifact references (topic keys or file paths), NOT content itself.
 
-#### Apply Executor Routing (MANDATORY)
+#### Apply Execution Contract (MANDATORY)
 
-When launching an implementation phase, the orchestrator MUST choose the correct apply executor instead of defaulting blindly to `sdd-apply`.
+When launching an implementation phase, the orchestrator MUST use the generic `sdd-apply` executor.
 
 1. Read project context from `sdd-init/{project}` first.
-2. Use the stack/framework detected by `sdd-init` as the PRIMARY routing signal.
-3. Inspect the current implementation batch using the change tasks, spec, design, and any explicit file/path hints as SECONDARY evidence.
-4. Classify the batch into one of these routing targets:
-   - `java-spring` → use `sdd-java-apply`
-   - `react-router-7` → use `sdd-react-router-7-apply`
-   - `mixed` → split the batch by concern and launch multiple apply sub-agents
-   - `generic` → use `sdd-apply`
+2. Inspect the current implementation batch using the change tasks, spec, design, and any explicit file/path hints.
+3. Resolve and inject the relevant compact rules for the affected stack/framework into the `sdd-apply` launch prompt.
+4. Pass the exact task slice and any stack-specific constraints to the executor.
 
-Routing signals:
-
-- Choose `sdd-java-apply` when the work is clearly backend Java/Spring/Mongo, for example:
-  - `.java` files
-  - Spring controllers, GraphQL, MVC, security, MongoTemplate, adapters, use cases
-  - hexagonal backend modules
-- Choose `sdd-react-router-7-apply` when the work is clearly React Router 7 SSR, for example:
-  - `app/routes/`, `app/api/`, route modules, `loader`, `action`, `layout.tsx`
-  - `*.tsx` / `*.ts` route work tied to React Router 7 patterns
-  - deferred UI, skeletons, server/client route boundaries
-- Choose `sdd-apply` when the stack is unclear, the work is framework-agnostic, or there is no strong routing signal.
-
-Mixed-batch rule:
-
-- If a single apply batch spans both Java and React Router 7 work, the orchestrator MUST split it into multiple sub-batches and assign each one to the matching specialized executor.
-- For mixed batches, use a SINGLE shared apply-progress artifact at `sdd/{change-name}/apply-progress`.
-- The orchestrator MUST tell each specialized sub-agent which exact task slice it owns and that all slices merge into the SAME apply-progress artifact.
-- If multiple specialized apply sub-agents run for the same change, they MUST read current apply-progress first, merge only their completed slice, and preserve previously completed work from the other slices.
-- Do NOT send a mixed Java + React batch to a single specialized executor.
-- Use generic `sdd-apply` only for the truly shared or framework-neutral slice.
-
-Fallback rule:
-
-- If routing evidence is insufficient after checking `sdd-init`, tasks, spec, and design, fall back to `sdd-apply` and explicitly note the ambiguity in the launch prompt.
+The `sdd-apply` executor remains a single generic executor. Stack awareness comes from injected standards and the task slice, not from specialized apply agents.
 
 #### Strict TDD Forwarding (MANDATORY)
 
-When launching `sdd-apply`, `sdd-java-apply`, `sdd-react-router-7-apply`, or `sdd-verify` sub-agents, the orchestrator MUST:
+When launching `sdd-apply` or `sdd-verify` sub-agents, the orchestrator MUST:
 
 1. Search for testing capabilities: `mem_search(query: "sdd-init/{project}", project: "{project}")`
 2. If the result contains `strict_tdd: true`:
@@ -279,7 +251,7 @@ The orchestrator resolves TDD status ONCE per session (at first apply/verify lau
 
 #### Apply-Progress Continuity (MANDATORY)
 
-When launching `sdd-apply`, `sdd-java-apply`, or `sdd-react-router-7-apply` for a continuation batch (not the first batch):
+When launching `sdd-apply` for a continuation batch (not the first batch):
 
 1. Search for existing apply-progress: `mem_search(query: "sdd/{change-name}/apply-progress", project: "{project}")`
 2. If found, add to the sub-agent prompt: `"PREVIOUS APPLY-PROGRESS EXISTS at topic_key 'sdd/{change-name}/apply-progress'. You MUST read it first via mem_search + mem_get_observation, merge your new progress with the existing progress, and save the combined result. Do NOT overwrite — MERGE."`
@@ -287,10 +259,10 @@ When launching `sdd-apply`, `sdd-java-apply`, or `sdd-react-router-7-apply` for 
 
 This prevents progress loss across batches. The sub-agent is responsible for read-merge-write, but the orchestrator MUST tell it that previous progress exists.
 
-For mixed batches:
-- If the orchestrator splits work across `sdd-java-apply`, `sdd-react-router-7-apply`, and/or `sdd-apply`, ALL of them still share the SAME `sdd/{change-name}/apply-progress` artifact.
-- The orchestrator MUST include the assigned task slice in each launch prompt so each sub-agent merges only its own completed tasks into the shared progress.
-- If parallel execution risks progress races, prefer sequential launches for the apply sub-batches.
+For split apply batches:
+- If the orchestrator splits work across multiple `sdd-apply` launches for the same change, ALL of them still share the SAME `sdd/{change-name}/apply-progress` artifact.
+- The orchestrator MUST include the assigned task slice in each launch prompt so each executor merges only its own completed slice into the shared progress.
+- If parallel execution risks progress races, prefer sequential launches.
 
 #### Engram Topic Key Format
 

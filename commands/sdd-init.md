@@ -15,16 +15,15 @@ Command contract:
 CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
 - Current project: !`echo -n "$(basename $(pwd))"`
-- Artifact store mode: engram
+- Artifact store mode: resolved by the orchestrator for this run
 
 TASK:
 Initialize Spec-Driven Development in this project. Detect the tech stack, existing conventions, and architecture patterns. Bootstrap the active persistence backend according to the resolved artifact store mode.
 
-ENGRAM PERSISTENCE (artifact store mode: engram):
-After detecting the project context, save it:
-  mem_save(title: "sdd-init/{project}", topic_key: "sdd-init/{project}", type: "architecture", project: "{project}", content: "{detected context}")
-topic_key enables upserts — re-running init updates, not duplicates.
+ARTIFACT PERSISTENCE:
+- If artifact store mode is `engram`: save project context with `mem_save(title: "sdd-init/{project}", topic_key: "sdd-init/{project}", type: "architecture", project: "{project}", content: "{detected context}")` and record the saved observation ID in `artifacts`.
+- If artifact store mode is `openspec`: write the init artifact to the filesystem path chosen by the phase workflow and return that path in `artifacts`.
+- If artifact store mode is `hybrid`: do BOTH and return both the filesystem path and the Engram observation ID in `artifacts`.
+- If artifact store mode is `none`: return the result inline only and do not persist artifacts.
 
-Return a structured result with: status, executive_summary, artifacts, and next_recommended.
-
-Also include: risks, skill_resolution.
+Return a structured result with: status, executive_summary, detailed_report (optional), artifacts, next_recommended, risks, and skill_resolution.

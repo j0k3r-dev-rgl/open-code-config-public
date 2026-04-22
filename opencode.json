@@ -10,12 +10,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/Gentleman.md}",
-			"tools": {
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/Gentleman.md}"
 		},
 		"sdd-apply": {
 			"description": "Implement code changes from task definitions",
@@ -28,13 +23,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}"
 		},
 		"sdd-apply-fallback": {
 			"description": "Implement code changes from task definitions",
@@ -47,13 +36,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}"
 		},
 		"sdd-archive": {
 			"description": "Archive completed change artifacts",
@@ -66,13 +49,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-archive.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-archive.md}"
 		},
 		"sdd-archive-fallback": {
 			"description": "Archive completed change artifacts",
@@ -85,13 +62,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-archive.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-archive.md}"
 		},
 		"sdd-design": {
 			"description": "Create technical design from proposals",
@@ -104,13 +75,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-design.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-design.md}"
 		},
 		"sdd-design-fallback": {
 			"description": "Create technical design from proposals",
@@ -123,13 +88,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-design.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-design.md}"
 		},
 		"sdd-explore": {
 			"description": "Investigate codebase and think through ideas",
@@ -142,13 +101,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-explore.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-explore.md}"
 		},
 		"sdd-explore-fallback": {
 			"description": "Investigate codebase and think through ideas",
@@ -161,13 +114,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-explore.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-explore.md}"
 		},
 		"sdd-init": {
 			"description": "Bootstrap SDD context and project configuration",
@@ -180,13 +127,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-init.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-init.md}"
 		},
 		"sdd-init-fallback": {
 			"description": "Bootstrap SDD context and project configuration",
@@ -199,69 +140,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-init.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
-		},
-		"sdd-java-apply": {
-			"description": "Implement Java/Spring SDD task slices",
-			"hidden": true,
-			"mode": "subagent",
-			"model": "google/gemini-3-flash-preview",
-			"options": {},
-			"permission": {
-				"bash": "allow",
-				"edit": "allow",
-				"read": "allow"
-			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
-		},
-		"sdd-java-apply-fallback": {
-			"description": "Implement Java/Spring SDD task slices",
-			"hidden": true,
-			"mode": "subagent",
-			"model": "google/gemini-3-flash-preview",
-			"options": {},
-			"permission": {
-				"bash": "allow",
-				"edit": "allow",
-				"read": "allow"
-			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
-		},
-		"sdd-onboard": {
-			"description": "Guide user through a complete SDD cycle using their real codebase",
-			"hidden": true,
-			"mode": "subagent",
-			"options": {},
-			"permission": {
-				"bash": "allow",
-				"edit": "allow",
-				"read": "allow"
-			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-onboard.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-init.md}"
 		},
 		"sdd-orchestrator": {
 			"description": "SDD Orchestrator - coordinates sub-agents, never does work inline",
@@ -280,17 +159,7 @@
 					"sdd-*": "allow"
 				}
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-orchestrator.md}",
-			"tools": {
-				"bash": true,
-				"delegate": true,
-				"delegation_list": true,
-				"delegation_read": true,
-				"edit": true,
-				"read": true,
-				"task": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-orchestrator.md}"
 		},
 		"sdd-propose": {
 			"description": "Create change proposals from explorations",
@@ -303,13 +172,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-propose.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-propose.md}"
 		},
 		"sdd-propose-fallback": {
 			"description": "Create change proposals from explorations",
@@ -322,51 +185,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-propose.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
-		},
-		"sdd-react-router-7-apply": {
-			"description": "Implement React Router 7 SDD task slices",
-			"hidden": true,
-			"mode": "subagent",
-			"model": "google/gemini-3-flash-preview",
-			"options": {},
-			"permission": {
-				"bash": "allow",
-				"edit": "allow",
-				"read": "allow"
-			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
-		},
-		"sdd-react-router-7-apply-fallback": {
-			"description": "Implement React Router 7 SDD task slices",
-			"hidden": true,
-			"mode": "subagent",
-			"model": "google/gemini-3-flash-preview",
-			"options": {},
-			"permission": {
-				"bash": "allow",
-				"edit": "allow",
-				"read": "allow"
-			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-propose.md}"
 		},
 		"sdd-spec": {
 			"description": "Write detailed specifications from proposals",
@@ -379,13 +198,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-spec.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-spec.md}"
 		},
 		"sdd-spec-fallback": {
 			"description": "Write detailed specifications from proposals",
@@ -398,13 +211,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-spec.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-spec.md}"
 		},
 		"sdd-tasks": {
 			"description": "Break down specs and designs into implementation tasks",
@@ -417,13 +224,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-tasks.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-tasks.md}"
 		},
 		"sdd-tasks-fallback": {
 			"description": "Break down specs and designs into implementation tasks",
@@ -436,13 +237,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-tasks.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-tasks.md}"
 		},
 		"sdd-verify": {
 			"description": "Validate implementation against specs",
@@ -455,13 +250,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-verify.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-verify.md}"
 		},
 		"sdd-verify-fallback": {
 			"description": "Validate implementation against specs",
@@ -474,13 +263,7 @@
 				"edit": "allow",
 				"read": "allow"
 			},
-			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-verify.md}",
-			"tools": {
-				"bash": true,
-				"edit": true,
-				"read": true,
-				"write": true
-			}
+			"prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-verify.md}"
 		}
 	},
 	"mcp": {
@@ -526,5 +309,5 @@
 			"*.env.*": "deny"
 		}
 	},
-	"plugin": ["opencode-gemini-auth", "opencode-claude-auth"]
+	"plugin": ["opencode-gemini-auth"]
 }

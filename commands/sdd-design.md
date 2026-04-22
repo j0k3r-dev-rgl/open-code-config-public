@@ -16,18 +16,20 @@ CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
 - Current project: !`echo -n "$(basename $(pwd))"`
 - Change name: $ARGUMENTS
-- Artifact store mode: engram
+- Artifact store mode: resolved by the orchestrator for this run
 
 TASK:
 Create the technical design for SDD change `$ARGUMENTS`.
 
-ENGRAM PERSISTENCE (artifact store mode: engram):
-CRITICAL: mem_search returns previews only. Retrieve full content before using proposal text.
-Read proposal:
+ARTIFACT PERSISTENCE:
+CRITICAL: when using Engram, `mem_search` returns previews only. Retrieve full content before using proposal text.
+Read proposal when Engram is available:
   mem_search(query: "sdd/$ARGUMENTS/proposal", project: "{project}") → save proposal_id
   mem_get_observation(id: proposal_id) → full proposal
-Save design:
-  mem_save(title: "sdd/$ARGUMENTS/design", topic_key: "sdd/$ARGUMENTS/design", type: "architecture", project: "{project}", content: "{design}")
+- If artifact store mode is `engram`: save design with `mem_save(...)` under `sdd/$ARGUMENTS/design` and record the observation ID in `artifacts`.
+- If artifact store mode is `openspec`: write the design artifact to the filesystem path chosen by the phase workflow and return that path in `artifacts`.
+- If artifact store mode is `hybrid`: do BOTH and return both the filesystem path and the Engram observation ID in `artifacts`.
+- If artifact store mode is `none`: return the result inline only and do not persist artifacts.
 
 The design should define:
 1. Architecture / component changes
@@ -35,4 +37,4 @@ The design should define:
 3. Key technical decisions and tradeoffs
 4. Implementation constraints relevant to tasks and apply
 
-Return a structured result with: status, executive_summary, artifacts, next_recommended, risks, and skill_resolution.
+Return a structured result with: status, executive_summary, detailed_report (optional), artifacts, next_recommended, risks, and skill_resolution.

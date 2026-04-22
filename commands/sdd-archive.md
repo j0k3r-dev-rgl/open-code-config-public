@@ -15,32 +15,38 @@ Command contract:
 CONTEXT:
 - Working directory: !`echo -n "$(pwd)"`
 - Current project: !`echo -n "$(basename $(pwd))"`
-- Artifact store mode: engram
+- Artifact store mode: resolved by the orchestrator for this run
 
 TASK:
 Archive the active SDD change: $ARGUMENTS
 
-ENGRAM PERSISTENCE (artifact store mode: engram):
-CRITICAL: mem_search returns 300-char PREVIEWS, not full content. You MUST call mem_get_observation(id) for EVERY artifact.
-STEP A — SEARCH (get IDs only, run in parallel):
-  mem_search(query: "sdd/$ARGUMENTS/proposal", project: "{project}") → save proposal_id
-  mem_search(query: "sdd/$ARGUMENTS/spec", project: "{project}") → save spec_id
-  mem_search(query: "sdd/$ARGUMENTS/design", project: "{project}") → save design_id
-  mem_search(query: "sdd/$ARGUMENTS/tasks", project: "{project}") → save tasks_id
-  mem_search(query: "sdd/$ARGUMENTS/verify-report", project: "{project}") → save verify_id
-STEP B — RETRIEVE FULL CONTENT (mandatory, run in parallel):
-  mem_get_observation(id: proposal_id) → full proposal
-  mem_get_observation(id: spec_id) → full spec
-  mem_get_observation(id: design_id) → full design
-  mem_get_observation(id: tasks_id) → full tasks
-  mem_get_observation(id: verify_id) → full verification report
-Record all observation IDs in the archive report for traceability.
-Save:
-  mem_save(title: "sdd/$ARGUMENTS/archive-report", topic_key: "sdd/$ARGUMENTS/archive-report", type: "architecture", project: "{project}", content: "{archive report with observation IDs}")
+ARTIFACT PERSISTENCE:
+Use the resolved artifact store mode for this run.
+- If artifact store mode is `engram` or `hybrid`:
+  - CRITICAL: `mem_search` returns previews only. You MUST call `mem_get_observation(id)` for EVERY artifact.
+  - STEP A — SEARCH (get IDs only, run in parallel):
+    - `mem_search(query: "sdd/$ARGUMENTS/proposal", project: "{project}")` → save proposal_id
+    - `mem_search(query: "sdd/$ARGUMENTS/spec", project: "{project}")` → save spec_id
+    - `mem_search(query: "sdd/$ARGUMENTS/design", project: "{project}")` → save design_id
+    - `mem_search(query: "sdd/$ARGUMENTS/tasks", project: "{project}")` → save tasks_id
+    - `mem_search(query: "sdd/$ARGUMENTS/verify-report", project: "{project}")` → save verify_id
+  - STEP B — RETRIEVE FULL CONTENT (mandatory, run in parallel):
+    - `mem_get_observation(id: proposal_id)` → full proposal
+    - `mem_get_observation(id: spec_id)` → full spec
+    - `mem_get_observation(id: design_id)` → full design
+    - `mem_get_observation(id: tasks_id)` → full tasks
+    - `mem_get_observation(id: verify_id)` → full verification report
+  - Record all observation IDs in the archive report for traceability.
+  - Save the archive report with `mem_save(...)` under `sdd/$ARGUMENTS/archive-report` and record the saved observation ID in `artifacts`.
+- If artifact store mode is `openspec` or `hybrid`:
+  - Write the archive artifact to the filesystem path chosen by the phase workflow.
+  - Record the written path in `artifacts`.
+- If artifact store mode is `none`:
+  - Return the result inline only and do not persist artifacts.
 
 Then:
 1. Sync delta specs into main specs (source of truth)
 2. Move the change folder to archive with date prefix
 3. Verify the archive is complete
 
-Return a structured result with: status, executive_summary, artifacts, next_recommended, risks, and skill_resolution.
+Return a structured result with: status, executive_summary, detailed_report (optional), artifacts, next_recommended, risks, and skill_resolution.
