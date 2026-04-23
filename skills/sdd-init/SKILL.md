@@ -217,14 +217,21 @@ mem_save(
 
 If mode is `openspec` or `hybrid`, also write this as a section in `openspec/config.yaml` under `testing:`.
 
-### Step 7: Build Skill Registry
+### Step 7: Build Skill Registry (STRICT FILESYSTEM SOURCE)
 
-1. Scan user skills: glob `*/SKILL.md` in `~/.config/opencode/skills/` only. Skip `sdd-*`, `_shared`, `skill-registry`. Read frontmatter `description` field for triggers.
-2. Scan project conventions: check for `AGENTS.md` in the project root only. If found, READ it and note the path.
-3. **ALWAYS write `.atl/skill-registry.md`** in the project root (create `.atl/` if needed). This file is mode-independent — it's infrastructure, not an SDD artifact.
-4. If engram is available, **ALSO save to engram**: `mem_save(title: "skill-registry", topic_key: "skill-registry", type: "config", content: "{registry markdown}")`
+1. **Identify Filtering Signals**: Use the project context (Step 1) and testing capabilities (Step 2) to identify the project's language, framework, and tools.
+2. **Scan and filter user skills (STRICT)**: Glob `*/SKILL.md` in `~/.config/opencode/skills/` only.
+   - **MANDATORY**: Derive the list ONLY from this filesystem scan. Do NOT include skills from memory or prompt inventory if they are missing from disk ("ghost skills").
+3. Apply the filtering rules defined in `skills/skill-registry/SKILL.md` using the strict categories:
+   - **stack-bound**: Include ONLY matching tech stack (e.g., `go-testing` only if `.go` or `go.mod` exists).
+   - **workflow-general**: Include only when the current task/workspace clearly justifies a lightweight reusable workflow skill.
+   - **intent-only**: NEVER auto-include (skip `judgment-day`, `skill-creator`, `engram-pending-tasks`, `branch-pr`, `issue-creation`).
+   - **ALWAYS SKIP**: `sdd-*`, `_shared`, and `skill-registry`.
+4. Scan project conventions: check for `AGENTS.md` in the project root only. If found, READ it and note the path.
+5. **ALWAYS write `.atl/skill-registry.md`** in the project root (create `.atl/` if needed). This file is mode-independent — it's infrastructure, not an SDD artifact.
+6. If engram is available, **ALSO save to engram**: `mem_save(title: "skill-registry", topic_key: "skill-registry", type: "config", content: "{registry markdown}")`
 
-See `skills/skill-registry/SKILL.md` for the full registry format.
+See `skills/skill-registry/SKILL.md` for the full registry format and filtering logic.
 
 ### Step 8: Persist Project Context
 

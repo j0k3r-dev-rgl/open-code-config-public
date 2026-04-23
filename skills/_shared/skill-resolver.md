@@ -16,6 +16,10 @@ Before EVERY sub-agent launch that involves **reading, writing, or reviewing cod
 
 The registry contains a **Compact Rules** section with pre-digested rules per skill (5-15 lines each). This is what you inject — NOT full SKILL.md paths.
 
+**The registry is project-aware and pre-filtered.** It contains ONLY skills relevant to the current project's stack (stack-bound) or general workflows (workflow-general). This keeps the registry small and ensures sub-agents only receive applicable standards.
+
+**Intent-only skills** (like `judgment-day`, `skill-creator`, `engram-pending-tasks`, `branch-pr`, or `issue-creation`) are NEVER auto-included in the project registry. They are loaded only when explicitly invoked by the user or a specialized task.
+
 Resolution order:
 1. Already cached from earlier in this session? → use cache
 2. `mem_search(query: "skill-registry")` → `mem_get_observation(id)` for full content
