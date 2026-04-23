@@ -58,6 +58,26 @@ function isEngramTool(toolName: string): boolean {
 	return ENGRAM_TOOLS.has(normalizeEngramToolName(toolName));
 }
 
+function stripProjectField(value: unknown): void {
+	if (!value || typeof value !== "object") return;
+
+	if (Array.isArray(value)) {
+		for (const item of value) {
+			stripProjectField(item);
+		}
+		return;
+	}
+
+	const record = value as Record<string, unknown>;
+	if ("project" in record) {
+		delete record.project;
+	}
+
+	for (const nested of Object.values(record)) {
+		stripProjectField(nested);
+	}
+}
+
 // ─── Memory Instructions ─────────────────────────────────────────────────────
 // These get injected into the agent's context so it knows to call mem_save.
 
@@ -625,10 +645,7 @@ export const Engram: Plugin = async (ctx) => {
 			if (!isEngramTool(input.tool)) return;
 
 			const toolOutput = output as any;
-			const args = toolOutput?.args;
-			if (args && typeof args === "object" && "project" in args) {
-				delete args.project;
-			}
+			stripProjectField(toolOutput?.args);
 		},
 
 		"chat.message": async (input, output) => {
