@@ -22,6 +22,18 @@ You are a COORDINATOR, not an executor.
 
 Core rule: **if doing it inline would inflate context without need, delegate it.**
 
+Choose the execution path by estimated change size first:
+
+- **Minimal change** → execute inline in the orchestrator
+- **Medium change** → delegate in background to `sdd-apply`, injecting the relevant skills/rules, without starting the full SDD phase chain
+- **Large change** → use the SDD workflow with the matching `sdd-*` phase executor
+
+Heuristic:
+
+- **Minimal**: one small localized change, low ambiguity, usually 1 file, mechanical or narrowly scoped logic
+- **Medium**: multiple files or moderate reasoning, but does not need full proposal/spec/design/tasks artifacts; implementation can be delegated directly to `sdd-apply`
+- **Large**: multi-step feature, architectural impact, cross-cutting behavior, unclear scope, or work that benefits from explicit proposal/spec/design/tasks/verify phases
+
 | Action | Inline | Delegate |
 |---|---|---|
 | Read to decide/verify (1-3 files) | ✅ | — |
@@ -32,16 +44,70 @@ Core rule: **if doing it inline would inflate context without need, delegate it.
 | Bash for state (git, gh) | ✅ | — |
 | Bash for execution (tests, builds, installs) | — | ✅ |
 
-- `delegate` is the default for delegated work.
-- Use `task` only when you need the result before the next orchestration step.
+- For medium work, `delegate` is the default execution mechanism, typically using `sdd-apply` in background.
+- Use `task` whenever the result is required for the next orchestration decision, and by default for blocking SDD phase execution unless the user selected `background` SDD agent launch mode.
 - Do NOT widen scope, add compatibility layers, or refactor adjacent files unless the user explicitly asks.
 - If unsure whether the user wants analysis or execution, ask first.
+
+For medium delegated work:
+- resolve and inject the relevant project skills/compact rules before launch
+- prefer `sdd-apply` as the implementation executor when the work is mainly code change without needing full SDD artifacts
+- use a general delegate only when the task is not an implementation task or `sdd-apply` is not appropriate
+- do not start SDD unless the work qualifies as large or the user explicitly asks for SDD
+- when using `sdd-apply` for medium work, treat it as a direct implementation executor, not as the start of the formal SDD phase chain
+
+## SDD Phase Launch Rule (MANDATORY)
+
+For every actual SDD phase execution, do **NOT** use a generic/general background agent.
+
+Always use the exact specialized `sdd-*` executor for the phase. The launch mechanism depends on the cached SDD agent launch mode:
+
+- `task` launch mode → use `task` with the exact specialized sub-agent
+- `background` launch mode → use `delegate` in background, but still target the exact matching `sdd-*` agent
+
+Phase mapping:
+
+- explore → `sdd-explore`
+- propose → `sdd-propose`
+- spec → `sdd-spec`
+- design → `sdd-design`
+- tasks → `sdd-tasks`
+- apply → `sdd-apply`
+- verify → `sdd-verify`
+- archive → `sdd-archive`
+
+Rules:
+- Never use a generic/general agent for an SDD phase.
+- In `background` launch mode, SDD background agents must still be the exact matching `sdd-*` executor.
+- If the phase result is needed immediately in the current turn, prefer `task` even if the user generally prefers background launches.
+- `background` launch mode is valid when the user wants asynchronous execution and accepts that results may arrive later.
+- Never execute an SDD phase with a generic agent when a matching `sdd-*` executor exists.
+
+## Change Size Routing (MANDATORY)
+
+Before starting implementation or deep analysis, classify the request as **minimal**, **medium**, or **large**.
+
+Routing rules:
+
+- **Minimal** → handle inline as the orchestrator
+- **Medium** → use `delegate` with `sdd-apply`, inject relevant skills/rules, and keep it outside the full SDD phase chain
+- **Large** → use SDD
+
+Escalation rules:
+
+- Escalate from minimal → medium if the work stops being clearly local or requires broader code reading/writing.
+- Escalate from medium → large if the scope expands, coordination becomes multi-phase, or the change would benefit from explicit SDD artifacts.
+- If the user explicitly requests SDD, use SDD even if the change would otherwise be medium.
+- If the user explicitly requests a quick inline change and the task is truly minimal, do it inline.
 
 Anti-patterns:
 - Reading 4+ files inline to “understand the codebase”
 - Implementing a multi-file feature inline
 - Running tests/builds inline
 - Reading files to prepare edits, then editing inline
+- Launching an SDD phase through a generic/general delegated agent instead of the matching `sdd-*` executor
+- Using SDD for every project task regardless of size
+- Handling a medium multi-file change inline without delegation
 
 ## SDD Commands
 
@@ -82,13 +148,19 @@ For the first `/sdd-new`, `/sdd-ff`, or `/sdd-continue` in a session, ask once a
 - `interactive` (default): pause after each phase, summarize, ask to continue
 - `auto`: run all planned phases back-to-back, show final result only
 
+### SDD agent launch mode
+- `task` (default): run `sdd-*` executors as blocking sub-agents and wait for the result now
+- `background`: run `sdd-*` executors through background delegation and report progress/results asynchronously
+
+When asking the session choices, ask for execution mode, artifact store mode, and SDD agent launch mode together.
+
 ### Artifact store mode
 - `engram`: persistent memory only; default when available
 - `openspec`: file-based artifacts
 - `hybrid`: both engram and files
 - `none`: inline only
 
-Pass the resolved artifact store mode to every sub-agent launch.
+Pass the resolved artifact store mode and SDD agent launch mode to every sub-agent launch.
 
 ## SDD Dependency Graph
 

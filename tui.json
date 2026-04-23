@@ -1,7 +1,5 @@
 {
 	"$schema": "https://opencode.ai/tui.json",
-	"keybinds": {
-		"tool_details": "ctrl+alt+t"
-	},
+	"theme": "system",
 	"plugin": ["opencode-sdd-engram-manage"]
 }
