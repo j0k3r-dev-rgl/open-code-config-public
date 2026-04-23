@@ -48,6 +48,16 @@ const ENGRAM_TOOLS = new Set([
 	"mem_session_end",
 ]);
 
+function normalizeEngramToolName(toolName: string): string {
+	const normalized = toolName.trim().toLowerCase();
+	const unscoped = normalized.split(/[.:/]/).pop() ?? normalized;
+	return unscoped.replace(/^engram_/, "");
+}
+
+function isEngramTool(toolName: string): boolean {
+	return ENGRAM_TOOLS.has(normalizeEngramToolName(toolName));
+}
+
 // ─── Memory Instructions ─────────────────────────────────────────────────────
 // These get injected into the agent's context so it knows to call mem_save.
 
@@ -168,48 +178,6 @@ async function isEngramRunning(): Promise<boolean> {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function extractProjectName(directory: string): string {
-	// Try git remote origin URL
-	try {
-		const result = Bun.spawnSync([
-			"git",
-			"-C",
-			directory,
-			"remote",
-			"get-url",
-			"origin",
-		]);
-		if (result.exitCode === 0) {
-			const url = result.stdout?.toString().trim();
-			if (url) {
-				const name = url
-					.replace(/\.git$/, "")
-					.split(/[/:]/)
-					.pop();
-				if (name) return name;
-			}
-		}
-	} catch {}
-
-	// Fallback: git root directory name (works in worktrees)
-	try {
-		const result = Bun.spawnSync([
-			"git",
-			"-C",
-			directory,
-			"rev-parse",
-			"--show-toplevel",
-		]);
-		if (result.exitCode === 0) {
-			const root = result.stdout?.toString().trim();
-			if (root) return root.split("/").pop() ?? "unknown";
-		}
-	} catch {}
-
-	// Final fallback: cwd basename
-	return directory.split("/").pop() ?? "unknown";
-}
 
 function normalizeProjectName(name: string): string {
 	return name.trim().toLowerCase();
@@ -466,9 +434,8 @@ function stripPrivateTags(str: string): string {
 // ─── Plugin Export ───────────────────────────────────────────────────────────
 
 export const Engram: Plugin = async (ctx) => {
-	const resolution = resolveProjectNames(ctx.directory);
-	const oldProject = resolution.cwd;
-	const project = resolution.canonical;
+	const migrationPlan = resolveMigrationPlan(ctx.directory);
+	const project = migrationPlan.canonical;
 
 	// Track tool counts per session (in-memory only, not critical)
 	const toolCounts = new Map<string, number>();
@@ -518,10 +485,10 @@ export const Engram: Plugin = async (ctx) => {
 		}
 	}
 
-	// Migrate project name if it changed (one-time, idempotent)
-	// Use direct SQLite updates so we can trust moved row counts.
-	if (oldProject !== project) {
-		migrateProjectRows(oldProject, project);
+	// Auto-migrate any detected aliases to the canonical project.
+	// This keeps memories unified even if project names changed over time.
+	for (const alias of migrationPlan.aliases) {
+		migrateProjectRows(alias, project);
 	}
 
 	// Auto-import: if .engram/manifest.json exists in the project repo,
@@ -655,7 +622,7 @@ export const Engram: Plugin = async (ctx) => {
 		// output.parts contains TextPart[] with the actual message text.
 
 		"tool.execute.before": async (input, output) => {
-			if (!ENGRAM_TOOLS.has(input.tool.toLowerCase())) return;
+			if (!isEngramTool(input.tool)) return;
 
 			const toolOutput = output as any;
 			const args = toolOutput?.args;
@@ -706,7 +673,7 @@ export const Engram: Plugin = async (ctx) => {
 		// the passive capture endpoint so the server extracts learnings.
 
 		"tool.execute.after": async (input, output) => {
-			if (ENGRAM_TOOLS.has(input.tool.toLowerCase())) return;
+			if (isEngramTool(input.tool)) return;
 
 			// input.sessionID comes from OpenCode — always available
 			const sessionId = input.sessionID;
@@ -780,7 +747,8 @@ export const Engram: Plugin = async (ctx) => {
 					`The agent has access to Engram persistent memory via MCP tools.\n` +
 					`You MUST include the following instruction at the TOP of the compacted summary:\n\n` +
 					`"FIRST ACTION REQUIRED: Call mem_session_summary with the content of this compacted summary. ` +
-					`Use project: '${project}'. This preserves what was accomplished before compaction. Do this BEFORE any other work."\n\n` +
+					`Do NOT pass an explicit project; let Engram autodetect it from the active workspace/session. ` +
+					`This preserves what was accomplished before compaction. Do this BEFORE any other work."\n\n` +
 					`This is NOT optional. Without this, everything done before compaction is lost from memory.`,
 			);
 		},
