@@ -24,12 +24,13 @@ Load this skill when:
 
 Every pending task MUST follow this schema:
 
+IMPORTANT: omit explicit `project` from all Engram calls. Engram must resolve the current project automatically from the active workspace/session unless the user explicitly requested cross-project targeting.
+
 ```yaml
 title: "[PENDING] {brief description}"
 type: "manual"        # manual | tech-debt | bug | feature
 status: "pending"     # pending | in_progress | blocked | completed
 priority: "medium"    # low | medium | high | critical
-project: "{project}"
 topic_key: "pending/{kebab-case-description}"
 content: |
   **Description**: {what needs to be done}
@@ -49,7 +50,6 @@ To avoid broad or random searches, maintain a project-scoped index artifact.
 title: "pending-index/{project}"
 topic_key: "pending-index/{project}"
 type: "pattern"
-project: "{project}"
 scope: "project"
 content: |
   ## Open Tasks
@@ -133,7 +133,6 @@ When user says:
 mem_save({
   title: "[PENDING] Review auth middleware",
   type: "manual",
-  project: "{project}",
   topic_key: "pending/review-auth-middleware",
   content: `
 **Description**: Review auth middleware implementation
@@ -151,7 +150,6 @@ mem_save({
   title: "pending-index/{project}",
   topic_key: "pending-index/{project}",
   type: "pattern",
-  project: "{project}",
   content: `
 ## Open Tasks
 - topic_key: pending/review-auth-middleware
@@ -174,15 +172,14 @@ mem_save({
 
 // 1. Search the deterministic project index first
 const index = await mem_search({
-  query: "pending-index/{project}",
-  project: "{project}"
+  query: "pending-index/{project}"
 })
 
 // 2. Read the full index content
 const fullIndex = await mem_get_observation({ id: index[0].id })
 
 // 3. If index is missing or stale, recover with exact namespace searches:
-//    mem_search({ query: "pending/", project: "{project}" })
+//    mem_search({ query: "pending/" })
 // 4. Only if recovery is needed, use mem_context to find recently mentioned pending work
 ```
 
@@ -194,8 +191,7 @@ const fullIndex = await mem_get_observation({ id: index[0].id })
 
 // 1. Find the task
 const results = await mem_search({
-  query: "pending/review-auth-middleware",
-  project: "{project}"
+  query: "pending/review-auth-middleware"
 });
 
 // 2. Update it
@@ -219,7 +215,6 @@ mem_save({
   title: "pending-index/{project}",
   topic_key: "pending-index/{project}",
   type: "pattern",
-  project: "{project}",
   content: `
 ## Open Tasks
 
@@ -255,7 +250,7 @@ mem_save({
 ### Quick Status Check
 ```bash
 # Find the project index first
-mem_search(query: "pending-index/{project}", project: "{project}")
+mem_search(query: "pending-index/{project}")
 
 # Then read full content
 mem_get_observation(id: <index-id>)
@@ -264,7 +259,7 @@ mem_get_observation(id: <index-id>)
 ### Find by Type
 ```bash
 # Recovery search across deterministic task namespace
-mem_search(query: "pending/", project: "{project}")
+mem_search(query: "pending/")
 ```
 
 ### Find by Priority
@@ -317,7 +312,6 @@ User mentions "pending", "pendiente", "TODO", "tech-debt"?
 mem_save({
   title: "[PENDING] Refactor database queries",
   type: "tech-debt",
-  project: "{project}",
   topic_key: "pending/refactor-database-queries",
   content: `
 **Description**: Refactor database queries for better performance
@@ -334,7 +328,6 @@ mem_save({
   title: "pending-index/{project}",
   topic_key: "pending-index/{project}",
   type: "pattern",
-  project: "{project}",
   content: `
 ## Open Tasks
 - topic_key: pending/refactor-database-queries
@@ -357,8 +350,7 @@ mem_save({
 ```typescript
 // 1. Read the project index
 const tasksIndex = await mem_search({
-  query: "pending-index/{project}",
-  project: "{project}"
+  query: "pending-index/{project}"
 });
 
 // 2. Get the full index observation
@@ -373,8 +365,7 @@ const pending = await mem_get_observation({ id: tasksIndex[0].id });
 ```typescript
 // 1. Find
 const results = await mem_search({
-  query: "pending/refactor-database-queries",
-  project: "{project}"
+  query: "pending/refactor-database-queries"
 });
 
 // 2. Update
@@ -389,7 +380,6 @@ await mem_save({
   title: "pending-index/{project}",
   topic_key: "pending-index/{project}",
   type: "pattern",
-  project: "{project}",
   content: `
 ## Open Tasks
 

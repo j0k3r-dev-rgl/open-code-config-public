@@ -24,7 +24,7 @@ CONTEXT:
 - Artifact store mode: resolved by the orchestrator for this run
 
 ARTIFACT NOTE:
-When Engram is active, you can inspect persisted artifacts with `mem_search(query: "sdd/$ARGUMENTS/", project: "{project}")`.
+When Engram is active, you can inspect persisted artifacts with `mem_search(query: "sdd/$ARGUMENTS/")`.
 Executors handle persistence automatically using the resolved artifact store mode for this run.
 
 Read the orchestrator instructions to coordinate this workflow. Do NOT execute phase work inline — delegate phase commands to the executors.

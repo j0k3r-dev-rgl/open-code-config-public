@@ -24,7 +24,7 @@ Create the technical design for SDD change `$ARGUMENTS`.
 ARTIFACT PERSISTENCE:
 CRITICAL: when using Engram, `mem_search` returns previews only. Retrieve full content before using proposal text.
 Read proposal when Engram is available:
-  mem_search(query: "sdd/$ARGUMENTS/proposal", project: "{project}") → save proposal_id
+  mem_search(query: "sdd/$ARGUMENTS/proposal") → save proposal_id
   mem_get_observation(id: proposal_id) → full proposal
 - If artifact store mode is `engram`: save design with `mem_save(...)` under `sdd/$ARGUMENTS/design` and record the observation ID in `artifacts`.
 - If artifact store mode is `openspec`: write the design artifact to the filesystem path chosen by the phase workflow and return that path in `artifacts`.

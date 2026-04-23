@@ -26,7 +26,6 @@ You are an EXECUTOR for this phase, not the orchestrator. Do the initialization 
     title: "sdd-init/{project-name}",
     topic_key: "sdd-init/{project-name}",
     type: "architecture",
-    project: "{project-name}",
     content: "{detected project context markdown}"
   )
   ```
@@ -181,7 +180,6 @@ mem_save(
   title: "sdd/{project-name}/testing-capabilities",
   topic_key: "sdd/{project-name}/testing-capabilities",
   type: "config",
-  project: "{project-name}",
   content: "{testing capabilities markdown — see format below}"
 )
 ```
@@ -224,7 +222,7 @@ If mode is `openspec` or `hybrid`, also write this as a section in `openspec/con
 1. Scan user skills: glob `*/SKILL.md` in `~/.config/opencode/skills/` only. Skip `sdd-*`, `_shared`, `skill-registry`. Read frontmatter `description` field for triggers.
 2. Scan project conventions: check for `AGENTS.md` in the project root only. If found, READ it and note the path.
 3. **ALWAYS write `.atl/skill-registry.md`** in the project root (create `.atl/` if needed). This file is mode-independent — it's infrastructure, not an SDD artifact.
-4. If engram is available, **ALSO save to engram**: `mem_save(title: "skill-registry", topic_key: "skill-registry", type: "config", project: "{project}", content: "{registry markdown}")`
+4. If engram is available, **ALSO save to engram**: `mem_save(title: "skill-registry", topic_key: "skill-registry", type: "config", content: "{registry markdown}")`
 
 See `skills/skill-registry/SKILL.md` for the full registry format.
 
@@ -238,7 +236,6 @@ mem_save(
   title: "sdd-init/{project-name}",
   topic_key: "sdd-init/{project-name}",
   type: "architecture",
-  project: "{project-name}",
   content: "{your detected project context from Steps 1-7}"
 )
 ```

@@ -24,8 +24,8 @@ Break SDD change `$ARGUMENTS` into clear implementation tasks.
 ARTIFACT PERSISTENCE:
 CRITICAL: when using Engram, `mem_search` returns previews only. Retrieve full content before using artifacts.
 Read dependencies when Engram is available:
-  mem_search(query: "sdd/$ARGUMENTS/spec", project: "{project}") → save spec_id
-  mem_search(query: "sdd/$ARGUMENTS/design", project: "{project}") → save design_id
+  mem_search(query: "sdd/$ARGUMENTS/spec") → save spec_id
+  mem_search(query: "sdd/$ARGUMENTS/design") → save design_id
   mem_get_observation(id: spec_id) → full spec
   mem_get_observation(id: design_id) → full design
 - If artifact store mode is `engram`: save tasks with `mem_save(...)` under `sdd/$ARGUMENTS/tasks` and record the observation ID in `artifacts`.

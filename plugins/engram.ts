@@ -14,7 +14,9 @@
  *   hooks (input.sessionID) rather than relying on a session.created event.
  */
 
-import type { Plugin } from "@opencode-ai/plugin";
+import { tool, type Plugin } from "@opencode-ai/plugin";
+import * as os from "node:os";
+import * as path from "node:path";
 
 // ─── Configuration ───────────────────────────────────────────────────────────
 
@@ -24,6 +26,10 @@ const ENGRAM_BIN =
 	process.env.ENGRAM_BIN ??
 	Bun.which("engram") ??
 	"/home/j0k3r/.linuxbrew/Cellar/engram/1.12.0/bin/engram";
+const ENGRAM_DB = path.join(
+	process.env.ENGRAM_DATA_DIR ?? path.join(os.homedir(), ".engram"),
+	"engram.db",
+);
 
 // Engram's own MCP tools — don't count these as "tool calls" for session stats
 const ENGRAM_TOOLS = new Set([
@@ -48,6 +54,13 @@ const ENGRAM_TOOLS = new Set([
 const MEMORY_INSTRUCTIONS = `## Engram Persistent Memory — Protocol
 
 You have access to Engram, a persistent memory system that survives across sessions and compactions.
+
+### PROJECT RESOLUTION (mandatory)
+
+- NEVER pass an explicit \`project\` value to Engram memory tools unless the user explicitly asks for cross-project/manual targeting.
+- Engram MUST resolve the current project automatically from the active workspace/session.
+- This applies to \`mem_save\`, \`mem_search\`, \`mem_context\`, \`mem_session_summary\`, \`mem_save_prompt\`, and related memory calls.
+- Your job is to provide the semantic payload (title, topic_key, content, query, etc.), not to choose the project name.
 
 ### WHEN TO SAVE (mandatory — not optional)
 
@@ -198,9 +211,246 @@ function extractProjectName(directory: string): string {
 	return directory.split("/").pop() ?? "unknown";
 }
 
+function normalizeProjectName(name: string): string {
+	return name.trim().toLowerCase();
+}
+
+function resolveProjectNames(directory: string): {
+	canonical: string;
+	variants: string[];
+	remote: string;
+	gitRoot: string;
+	cwd: string;
+} {
+	const cwd = directory.split("/").pop() ?? "unknown";
+
+	let gitRoot = cwd;
+	try {
+		const result = Bun.spawnSync([
+			"git",
+			"-C",
+			directory,
+			"rev-parse",
+			"--show-toplevel",
+		]);
+		if (result.exitCode === 0) {
+			const root = result.stdout?.toString().trim();
+			if (root) gitRoot = root.split("/").pop() ?? cwd;
+		}
+	} catch {}
+
+	let remote = gitRoot;
+	try {
+		const result = Bun.spawnSync([
+			"git",
+			"-C",
+			directory,
+			"remote",
+			"get-url",
+			"origin",
+		]);
+		if (result.exitCode === 0) {
+			const url = result.stdout?.toString().trim();
+			if (url) {
+				const name = url
+					.replace(/\.git$/, "")
+					.split(/[/:]/)
+					.pop();
+				if (name) remote = name;
+			}
+		}
+	} catch {}
+
+	const ordered = [remote, gitRoot, cwd].map(normalizeProjectName);
+	const variants = Array.from(new Set(ordered.filter(Boolean)));
+
+	return {
+		canonical: variants[0] ?? "unknown",
+		variants,
+		remote: normalizeProjectName(remote),
+		gitRoot: normalizeProjectName(gitRoot),
+		cwd: normalizeProjectName(cwd),
+	};
+}
+
 function truncate(str: string, max: number): string {
 	if (!str) return "";
 	return str.length > max ? str.slice(0, max) + "..." : str;
+}
+
+function escapeSqlString(value: string): string {
+	return value.replace(/'/g, "''");
+}
+
+function execSQLite(query: string): { ok: boolean; stdout: string; stderr: string } {
+	const sqliteBin = Bun.which("sqlite3") ?? "sqlite3";
+	try {
+		const result = Bun.spawnSync([sqliteBin, ENGRAM_DB, query], {
+			stdout: "pipe",
+			stderr: "pipe",
+			stdin: "ignore",
+		});
+		return {
+			ok: result.exitCode === 0,
+			stdout: result.stdout?.toString().trim() ?? "",
+			stderr: result.stderr?.toString().trim() ?? "",
+		};
+	} catch (error) {
+		return {
+			ok: false,
+			stdout: "",
+			stderr: error instanceof Error ? error.message : "sqlite3 execution failed",
+		};
+	}
+}
+
+function migrateProjectRows(oldProject: string, newProject: string): {
+	ok: boolean;
+	observations: number;
+	sessions: number;
+	prompts: number;
+	error?: string;
+} {
+	const oldEscaped = escapeSqlString(normalizeProjectName(oldProject));
+	const newEscaped = escapeSqlString(normalizeProjectName(newProject));
+	const query = [
+		"BEGIN;",
+		`UPDATE observations SET project='${newEscaped}' WHERE lower(project)='${oldEscaped}';`,
+		"SELECT changes();",
+		`UPDATE sessions SET project='${newEscaped}' WHERE lower(project)='${oldEscaped}';`,
+		"SELECT changes();",
+		`UPDATE user_prompts SET project='${newEscaped}' WHERE lower(project)='${oldEscaped}';`,
+		"SELECT changes();",
+		"COMMIT;",
+	].join(" ");
+
+	const result = execSQLite(query);
+	if (!result.ok) {
+		return {
+			ok: false,
+			observations: 0,
+			sessions: 0,
+			prompts: 0,
+			error: result.stderr || "sqlite migration failed",
+		};
+	}
+
+	const counts = result.stdout
+		.split(/\r?\n/)
+		.map((line) => Number.parseInt(line.trim(), 10))
+		.filter((value) => Number.isFinite(value));
+
+	return {
+		ok: true,
+		observations: counts[0] ?? 0,
+		sessions: counts[1] ?? 0,
+		prompts: counts[2] ?? 0,
+	};
+}
+
+function readProjectFootprint(projectName: string): {
+	observations: number;
+	sessions: number;
+	prompts: number;
+	total: number;
+} {
+	const projectEscaped = escapeSqlString(normalizeProjectName(projectName));
+	const query = [
+		`SELECT COUNT(*) FROM observations WHERE lower(project)='${projectEscaped}';`,
+		`SELECT COUNT(*) FROM sessions WHERE lower(project)='${projectEscaped}';`,
+		`SELECT COUNT(*) FROM user_prompts WHERE lower(project)='${projectEscaped}';`,
+	].join(" ");
+
+	const result = execSQLite(query);
+	if (!result.ok) {
+		return { observations: 0, sessions: 0, prompts: 0, total: 0 };
+	}
+
+	const counts = result.stdout
+		.split(/\r?\n/)
+		.map((line) => Number.parseInt(line.trim(), 10))
+		.filter((value) => Number.isFinite(value));
+
+	const observations = counts[0] ?? 0;
+	const sessions = counts[1] ?? 0;
+	const prompts = counts[2] ?? 0;
+
+	return {
+		observations,
+		sessions,
+		prompts,
+		total: observations + sessions + prompts,
+	};
+}
+
+function resolveMigrationPlan(directory: string): {
+	canonical: string;
+	aliases: string[];
+	detected: {
+		remote: string;
+		gitRoot: string;
+		cwd: string;
+		gitRootCwd: string | null;
+		parentDir: string | null;
+		parentCwd: string | null;
+	};
+	footprints: Map<string, { observations: number; sessions: number; prompts: number; total: number }>;
+} {
+	const current = resolveProjectNames(directory);
+	const resolvedDir = path.resolve(directory);
+	const parentDirRaw = path.basename(path.dirname(resolvedDir));
+	const parentDir =
+		parentDirRaw && parentDirRaw !== "." && parentDirRaw !== path.basename(resolvedDir)
+			? normalizeProjectName(parentDirRaw)
+			: null;
+	const parentCwd =
+		parentDir && current.cwd ? normalizeProjectName(`${parentDir}/${current.cwd}`) : null;
+	const gitRootCwd =
+		current.gitRoot && current.cwd && current.gitRoot !== current.cwd
+			? normalizeProjectName(`${current.gitRoot}/${current.cwd}`)
+			: null;
+
+	const orderedCandidates = [
+		current.remote,
+		current.gitRoot,
+		current.cwd,
+		parentDir,
+		parentCwd,
+		gitRootCwd,
+	].filter((value): value is string => Boolean(value));
+	const candidates = Array.from(new Set(orderedCandidates));
+
+	const footprints = new Map<
+		string,
+		{ observations: number; sessions: number; prompts: number; total: number }
+	>();
+	for (const candidate of candidates) {
+		footprints.set(candidate, readProjectFootprint(candidate));
+	}
+
+	let canonical = current.canonical;
+	let bestTotal = footprints.get(canonical)?.total ?? -1;
+	for (const candidate of candidates) {
+		const total = footprints.get(candidate)?.total ?? 0;
+		if (total > bestTotal) {
+			bestTotal = total;
+			canonical = candidate;
+		}
+	}
+
+	return {
+		canonical,
+		aliases: candidates.filter((name) => name !== canonical),
+		detected: {
+			remote: current.remote,
+			gitRoot: current.gitRoot,
+			cwd: current.cwd,
+			gitRootCwd,
+			parentDir,
+			parentCwd,
+		},
+		footprints,
+	};
 }
 
 /**
@@ -216,8 +466,9 @@ function stripPrivateTags(str: string): string {
 // ─── Plugin Export ───────────────────────────────────────────────────────────
 
 export const Engram: Plugin = async (ctx) => {
-	const oldProject = ctx.directory.split("/").pop() ?? "unknown";
-	const project = extractProjectName(ctx.directory);
+	const resolution = resolveProjectNames(ctx.directory);
+	const oldProject = resolution.cwd;
+	const project = resolution.canonical;
 
 	// Track tool counts per session (in-memory only, not critical)
 	const toolCounts = new Map<string, number>();
@@ -268,12 +519,9 @@ export const Engram: Plugin = async (ctx) => {
 	}
 
 	// Migrate project name if it changed (one-time, idempotent)
-	// Must run AFTER server startup to ensure the endpoint is available
+	// Use direct SQLite updates so we can trust moved row counts.
 	if (oldProject !== project) {
-		await engramFetch("/projects/migrate", {
-			method: "POST",
-			body: { old_project: oldProject, new_project: project },
-		});
+		migrateProjectRows(oldProject, project);
 	}
 
 	// Auto-import: if .engram/manifest.json exists in the project repo,
@@ -296,6 +544,67 @@ export const Engram: Plugin = async (ctx) => {
 	}
 
 	return {
+		tool: {
+			engram_migrate_canonical_project: tool({
+				description:
+					"Resolve Engram project variants for the current repo and migrate all detected aliases to the canonical project automatically. Takes no parameters.",
+				args: {},
+				async execute(): Promise<string> {
+					const plan = resolveMigrationPlan(ctx.directory);
+					const aliases = plan.aliases;
+
+					if (aliases.length === 0) {
+						return [
+							"✅ No hay aliases para migrar.",
+							`Canónico: ${plan.canonical}`,
+							`Detectados: remote=${plan.detected.remote}, git_root=${plan.detected.gitRoot}, cwd=${plan.detected.cwd}${plan.detected.parentDir ? `, parent=${plan.detected.parentDir}` : ""}${plan.detected.parentCwd ? `, parent/cwd=${plan.detected.parentCwd}` : ""}${plan.detected.gitRootCwd ? `, git_root/cwd=${plan.detected.gitRootCwd}` : ""}`,
+						].join("\n");
+					}
+
+					const migrated: string[] = [];
+					const failed: string[] = [];
+					let totalObservations = 0;
+					let totalSessions = 0;
+					let totalPrompts = 0;
+
+					for (const alias of aliases) {
+						const result = migrateProjectRows(alias, plan.canonical);
+
+						if (!result.ok) {
+							failed.push(alias);
+							continue;
+						}
+
+						totalObservations += result.observations;
+						totalSessions += result.sessions;
+						totalPrompts += result.prompts;
+						migrated.push(
+							`${alias} (obs=${result.observations}, sessions=${result.sessions}, prompts=${result.prompts})`,
+						);
+					}
+
+					const lines = [
+						failed.length === 0
+							? "✅ Migración de memorias completada."
+							: "⚠️ Migración completada con errores parciales.",
+						`Canónico: ${plan.canonical}`,
+						`Detectados: remote=${plan.detected.remote}, git_root=${plan.detected.gitRoot}, cwd=${plan.detected.cwd}${plan.detected.parentDir ? `, parent=${plan.detected.parentDir}` : ""}${plan.detected.parentCwd ? `, parent/cwd=${plan.detected.parentCwd}` : ""}${plan.detected.gitRootCwd ? `, git_root/cwd=${plan.detected.gitRootCwd}` : ""}`,
+						`Migrados: ${migrated.length > 0 ? migrated.join(", ") : "ninguno"}`,
+						`Totales movidos: obs=${totalObservations}, sessions=${totalSessions}, prompts=${totalPrompts}`,
+						`Footprint previo: ${Array.from(plan.footprints.entries())
+							.map(([name, f]) => `${name}(obs=${f.observations}, sessions=${f.sessions}, prompts=${f.prompts})`)
+							.join(", ")}`,
+					];
+
+					if (failed.length > 0) {
+						lines.push(`Fallidos: ${failed.join(", ")}`);
+					}
+
+					return lines.join("\n");
+				},
+			}),
+		},
+
 		// ─── Event Listeners ───────────────────────────────────────────
 
 		event: async ({ event }) => {
@@ -344,6 +653,16 @@ export const Engram: Plugin = async (ctx) => {
 		// input.sessionID is always reliable here (no knownSessions workaround).
 		// output.message is typed as UserMessage (role:"user" already guaranteed).
 		// output.parts contains TextPart[] with the actual message text.
+
+		"tool.execute.before": async (input, output) => {
+			if (!ENGRAM_TOOLS.has(input.tool.toLowerCase())) return;
+
+			const toolOutput = output as any;
+			const args = toolOutput?.args;
+			if (args && typeof args === "object" && "project" in args) {
+				delete args.project;
+			}
+		},
 
 		"chat.message": async (input, output) => {
 			// Skip sub-agent sessions — they inflate session counts (issue #116)

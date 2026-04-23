@@ -25,11 +25,11 @@ Use the resolved artifact store mode for this run.
 - If artifact store mode is `engram` or `hybrid`:
   - CRITICAL: `mem_search` returns previews only. You MUST call `mem_get_observation(id)` for EVERY artifact.
   - STEP A — SEARCH (get IDs only, run in parallel):
-    - `mem_search(query: "sdd/$ARGUMENTS/proposal", project: "{project}")` → save proposal_id
-    - `mem_search(query: "sdd/$ARGUMENTS/spec", project: "{project}")` → save spec_id
-    - `mem_search(query: "sdd/$ARGUMENTS/design", project: "{project}")` → save design_id
-    - `mem_search(query: "sdd/$ARGUMENTS/tasks", project: "{project}")` → save tasks_id
-    - `mem_search(query: "sdd/$ARGUMENTS/verify-report", project: "{project}")` → save verify_id
+    - `mem_search(query: "sdd/$ARGUMENTS/proposal")` → save proposal_id
+    - `mem_search(query: "sdd/$ARGUMENTS/spec")` → save spec_id
+    - `mem_search(query: "sdd/$ARGUMENTS/design")` → save design_id
+    - `mem_search(query: "sdd/$ARGUMENTS/tasks")` → save tasks_id
+    - `mem_search(query: "sdd/$ARGUMENTS/verify-report")` → save verify_id
   - STEP B — RETRIEVE FULL CONTENT (mandatory, run in parallel):
     - `mem_get_observation(id: proposal_id)` → full proposal
     - `mem_get_observation(id: spec_id)` → full spec

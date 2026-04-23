@@ -135,7 +135,6 @@ mem_save(
   title: "skill-registry",
   topic_key: "skill-registry",
   type: "config",
-  project: "{project}",
   content: "{registry markdown from Step 3}"
 )
 ```

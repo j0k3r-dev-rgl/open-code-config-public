@@ -27,11 +27,11 @@ Use the resolved artifact store mode for this run.
 - If artifact store mode is `engram` or `hybrid`:
   - CRITICAL: `mem_search` returns previews only. You MUST call `mem_get_observation(id)` for EVERY artifact.
   - STEP A — SEARCH (get IDs only, run in parallel):
-    - `mem_search(query: "sdd/$ARGUMENTS/spec", project: "{project}")` → save spec_id
-    - `mem_search(query: "sdd/$ARGUMENTS/design", project: "{project}")` → save design_id
-    - `mem_search(query: "sdd/$ARGUMENTS/tasks", project: "{project}")` → save tasks_id
+    - `mem_search(query: "sdd/$ARGUMENTS/spec")` → save spec_id
+    - `mem_search(query: "sdd/$ARGUMENTS/design")` → save design_id
+    - `mem_search(query: "sdd/$ARGUMENTS/tasks")` → save tasks_id
   - STEP A2 — CHECK PREVIOUS PROGRESS (before starting work):
-    - `mem_search(query: "sdd/$ARGUMENTS/apply-progress", project: "{project}")` → if found, save progress_id
+    - `mem_search(query: "sdd/$ARGUMENTS/apply-progress")` → if found, save progress_id
   - STEP B — RETRIEVE FULL CONTENT (mandatory, run in parallel):
     - `mem_get_observation(id: spec_id)` → full spec
     - `mem_get_observation(id: design_id)` → full design
@@ -40,7 +40,7 @@ Use the resolved artifact store mode for this run.
   - Update tasks as you complete them:
     - `mem_update(id: {tasks-observation-id}, content: "{updated tasks with [x] marks}")`
   - Save progress:
-    - `mem_save(title: "sdd/$ARGUMENTS/apply-progress", topic_key: "sdd/$ARGUMENTS/apply-progress", type: "architecture", project: "{project}", content: "{progress report}")`
+    - `mem_save(title: "sdd/$ARGUMENTS/apply-progress", topic_key: "sdd/$ARGUMENTS/apply-progress", type: "architecture", content: "{progress report}")`
   - Record the saved observation ID for apply-progress in `artifacts`.
 - If artifact store mode is `openspec` or `hybrid`:
   - Write the apply-progress/task updates to the filesystem path chosen by the phase workflow.

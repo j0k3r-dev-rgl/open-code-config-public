@@ -129,7 +129,8 @@ Never treat `/sdd-new`, `/sdd-continue`, or `/sdd-ff` as skills.
 
 Before executing ANY SDD command (`/sdd-new`, `/sdd-ff`, `/sdd-continue`, `/sdd-explore`, `/sdd-apply`, `/sdd-verify`, `/sdd-archive`):
 
-1. Search Engram: `mem_search(query: "sdd-init/{project}", project: "{project}")`
+0. NEVER pass an explicit `project` argument to Engram memory tools unless the user explicitly asked for cross-project targeting. Let Engram resolve the current project automatically.
+1. Search Engram: `mem_search(query: "sdd-init/{project}")`
 2. If found, continue normally.
 3. If not found, run `sdd-init` first, then continue.
 
@@ -215,7 +216,7 @@ Read configured models from `opencode.json` once per session and cache them.
 Before every sub-agent launch that involves reading, writing, or reviewing code:
 
 1. Resolve the skill registry once per session:
-   - `mem_search(query: "skill-registry", project: "{project}")` → `mem_get_observation(id)`
+   - `mem_search(query: "skill-registry")` → `mem_get_observation(id)`
    - fallback: read `.atl/skill-registry.md`
 2. Cache:
    - the **Compact Rules** section
@@ -330,7 +331,7 @@ If you split apply into multiple launches for the same change:
 | DAG state | `sdd/{change-name}/state` |
 
 When using Engram:
-1. `mem_search(query: "{topic_key}", project: "{project}")` → observation ID
+1. `mem_search(query: "{topic_key}")` → observation ID
 2. `mem_get_observation(id)` → full content
 
 Never rely on `mem_search` previews as source material.

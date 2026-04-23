@@ -23,7 +23,7 @@ Create the SDD proposal for change `$ARGUMENTS`.
 
 ARTIFACT PERSISTENCE:
 Read exploration if it exists and Engram is available:
-  mem_search(query: "sdd/$ARGUMENTS/explore", project: "{project}") → if found, save explore_id
+  mem_search(query: "sdd/$ARGUMENTS/explore") → if found, save explore_id
   IF explore_id exists: mem_get_observation(id: explore_id) → full exploration
 - If artifact store mode is `engram`: save proposal with `mem_save(...)` under `sdd/$ARGUMENTS/proposal` and record the observation ID in `artifacts`.
 - If artifact store mode is `openspec`: write the proposal artifact to the filesystem path chosen by the phase workflow and return that path in `artifacts`.

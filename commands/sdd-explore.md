@@ -23,7 +23,7 @@ Explore the topic "$ARGUMENTS" in this codebase. Investigate the current state, 
 
 ARTIFACT PERSISTENCE:
 Read project context (optional when Engram is available):
-  mem_search(query: "sdd-init/{project}", project: "{project}") → if found, mem_get_observation(id) for full content
+  mem_search(query: "sdd-init/{project}") → if found, mem_get_observation(id) for full content
 - If artifact store mode is `engram`: save exploration with `mem_save(...)` under `sdd/$ARGUMENTS/explore` and record the observation ID in `artifacts`.
 - If artifact store mode is `openspec`: write the exploration artifact to the filesystem path chosen by the phase workflow and return that path in `artifacts`.
 - If artifact store mode is `hybrid`: do BOTH and return both the filesystem path and the Engram observation ID in `artifacts`.

@@ -68,6 +68,13 @@ Load skills BEFORE writing code. Apply ALL patterns. Multiple skills can apply s
 You have access to Engram, a persistent memory system that survives across sessions and compactions.
 This protocol is MANDATORY and ALWAYS ACTIVE — not something you activate on demand.
 
+### PROJECT RESOLUTION (mandatory)
+
+- NEVER pass an explicit `project` value to Engram memory tools unless the user explicitly asks for cross-project/manual targeting.
+- Engram must resolve the current project automatically from the active workspace/session.
+- This applies to `mem_save`, `mem_search`, `mem_context`, `mem_session_summary`, `mem_save_prompt`, and related memory calls.
+- Your responsibility is the memory payload and query, not the project name.
+
 ### PROACTIVE SAVE TRIGGERS (mandatory — do NOT wait for user to ask)
 
 Call `mem_save` IMMEDIATELY and WITHOUT BEING ASKED after any of these:
