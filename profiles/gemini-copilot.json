@@ -1,0 +1,14 @@
+{
+  "models": {
+    "sdd-apply": "github-copilot/gpt-5.3-codex",
+    "sdd-archive": "github-copilot/claude-haiku-4.5",
+    "sdd-design": "github-copilot/gemini-3.1-pro-preview",
+    "sdd-propose": "github-copilot/gemini-3.1-pro-preview",
+    "sdd-orchestrator": "google/gemini-3-flash-preview",
+    "sdd-init": "google/gemini-3-flash-preview",
+    "sdd-explore": "google/gemini-3-flash-preview",
+    "sdd-spec": "google/gemini-3-flash-preview",
+    "sdd-tasks": "github-copilot/gpt-5.3-codex",
+    "sdd-verify": "github-copilot/gpt-5.3-codex"
+  }
+}

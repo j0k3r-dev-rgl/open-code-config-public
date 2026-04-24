@@ -16,7 +16,7 @@
       }
     },
     "sdd-apply": {
-      "model": "google/gemini-3-flash-preview",
+      "model": "github-copilot/gpt-5.3-codex",
       "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
       "description": "Implement code changes from task definitions",
       "mode": "subagent",
@@ -29,7 +29,7 @@
       }
     },
     "sdd-apply-fallback": {
-      "model": "google/gemini-3-flash-preview",
+      "model": "github-copilot/gpt-5.3-codex",
       "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-apply.md}",
       "description": "Implement code changes from task definitions",
       "mode": "subagent",
@@ -42,7 +42,7 @@
       }
     },
     "sdd-archive": {
-      "model": "opencode-go/kimi-k2.6",
+      "model": "github-copilot/claude-haiku-4.5",
       "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-archive.md}",
       "description": "Archive completed change artifacts",
       "mode": "subagent",
@@ -55,7 +55,7 @@
       }
     },
     "sdd-archive-fallback": {
-      "model": "openai/gpt-5.3-codex",
+      "model": "github-copilot/claude-haiku-4.5",
       "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-archive.md}",
       "description": "Archive completed change artifacts",
       "mode": "subagent",
@@ -120,7 +120,7 @@
       }
     },
     "sdd-init": {
-      "model": "opencode-go/mimo-v2-pro",
+      "model": "google/gemini-3-flash-preview",
       "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-init.md}",
       "description": "Bootstrap SDD context and project configuration",
       "mode": "subagent",
@@ -133,7 +133,7 @@
       }
     },
     "sdd-init-fallback": {
-      "model": "opencode-go/mimo-v2-pro",
+      "model": "google/gemini-3-flash-preview",
       "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-init.md}",
       "description": "Bootstrap SDD context and project configuration",
       "mode": "subagent",
@@ -146,7 +146,7 @@
       }
     },
     "sdd-orchestrator": {
-      "model": "openai/gpt-5.5",
+      "model": "google/gemini-3-flash-preview",
       "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-orchestrator.md}",
       "description": "SDD Orchestrator - coordinates sub-agents, never does work inline",
       "mode": "primary",
@@ -217,7 +217,7 @@
       }
     },
     "sdd-tasks": {
-      "model": "google/gemini-3-flash-preview",
+      "model": "github-copilot/gpt-5.3-codex",
       "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-tasks.md}",
       "description": "Break down specs and designs into implementation tasks",
       "mode": "subagent",
@@ -230,7 +230,7 @@
       }
     },
     "sdd-tasks-fallback": {
-      "model": "google/gemini-3-flash-preview",
+      "model": "github-copilot/gpt-5.3-codex",
       "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-tasks.md}",
       "description": "Break down specs and designs into implementation tasks",
       "mode": "subagent",
@@ -243,7 +243,7 @@
       }
     },
     "sdd-verify": {
-      "model": "openai/gpt-5.3-codex",
+      "model": "github-copilot/gpt-5.3-codex",
       "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-verify.md}",
       "description": "Validate implementation against specs",
       "mode": "subagent",
@@ -256,7 +256,7 @@
       }
     },
     "sdd-verify-fallback": {
-      "model": "openai/gpt-5.3-codex",
+      "model": "github-copilot/gpt-5.3-codex",
       "prompt": "{file:/home/j0k3r/.config/opencode/prompts/sdd/sdd-verify.md}",
       "description": "Validate implementation against specs",
       "mode": "subagent",
