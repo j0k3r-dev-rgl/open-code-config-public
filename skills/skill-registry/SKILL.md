@@ -11,9 +11,7 @@ metadata:
 
 ## Purpose
 
-You generate or update the **skill registry** — a project-aware catalog of relevant skills with **compact rules** (pre-digested, 5-15 line summaries) that any delegator injects directly into sub-agent prompts. Sub-agents do NOT read the registry or individual SKILL.md files — they receive compact rules pre-resolved in their launch prompt.
-
-This skill filters available user skills based on the project's detected stack, language, and workflows to ensure sub-agents only receive relevant standards.
+You generate or update the **skill registry** — a catalog of all available skills with **compact rules** (pre-digested, 5-15 line summaries) that any delegator injects directly into sub-agent prompts. Sub-agents do NOT read the registry or individual SKILL.md files — they receive compact rules pre-resolved in their launch prompt.
 
 This is the foundation of the **Skill Resolver Protocol** (see `_shared/skill-resolver.md`). The registry is built ONCE (expensive), then read cheaply at every delegation.
 
@@ -26,26 +24,32 @@ This is the foundation of the **Skill Resolver Protocol** (see `_shared/skill-re
 
 ## What to Do
 
-### Step 1: Filter & Scan User Skills (STRICT FILESYSTEM SOURCE)
+### Step 1: Scan User Skills
 
-**MANDATORY: You MUST derive the list of skills ONLY from a current filesystem scan. Do NOT use skills from memory, prompt inventory, or available-skills lists unless they are verified on disk in this step.**
+1. Glob for `*/SKILL.md` files across ALL known skill directories. Check every path below — scan ALL that exist, not just the first match:
 
-1. Glob for `*/SKILL.md` files in `~/.config/opencode/skills/` only.
-2. **VERIFY EXISTENCE**: For every skill being considered, you MUST confirm the `SKILL.md` file exists on disk. If a skill exists in your prompt/context/inventory but NOT on disk, it is a "ghost skill" and MUST be excluded.
-3. Filter the discovered skill list using these strict categories:
-   - **stack-bound**: Include ONLY when hard project signals (language/framework/tooling) are present in the workspace.
-     - **Match rule**: Skill triggers (e.g., "go", "react", "spring", "vitest") must match detected tech stack exactly.
-     - **Hard Signal rule**: `go-testing` matches ONLY if `.go` or `go.mod` exists. Generic "testing" language in a prompt is NOT enough to include stack-bound skills.
-   - **workflow-general**: Include automatically only for lightweight, broadly reusable project workflows that are clearly justified by the current task or workspace.
-     - **Docs rule**: `documentation` or `RFC` match if the task involves writing specs or designs.
-   - **intent-only**: NEVER auto-include in the `.atl/skill-registry.md`. These are specialized tools loaded ONLY when a user or task explicitly invokes them.
-     - **Explicitly Skip**: `judgment-day`, `skill-creator`, `engram-pending-tasks`, `branch-pr`, `issue-creation`.
-   - **ALWAYS SKIP**: `sdd-*`, `_shared`, and `skill-registry`.
-4. For each RELEVANT skill found, read the **full SKILL.md** (if a SKILL.md exceeds 200 lines, focus on the frontmatter and Critical Patterns / Rules sections only) to extract:
+   **User-level (global skills):**
+   - `~/.claude/skills/` — Claude Code
+   - `~/.config/opencode/skills/` — OpenCode
+   - `~/.gemini/skills/` — Gemini CLI
+   - `~/.cursor/skills/` — Cursor
+   - `~/.copilot/skills/` — VS Code Copilot
+   - The parent directory of this skill file (catch-all for any tool)
+
+   **Project-level (workspace skills):**
+   - `{project-root}/.claude/skills/` — Claude Code
+   - `{project-root}/.gemini/skills/` — Gemini CLI
+   - `{project-root}/.agent/skills/` — Antigravity (workspace)
+   - `{project-root}/skills/` — Generic
+
+2. **SKIP `sdd-*` and `_shared`** — those are SDD workflow skills, not coding/task skills
+3. Also **SKIP `skill-registry`** — that's this skill
+4. **Deduplicate** — if the same skill name appears in multiple locations, keep the project-level version (more specific). If both are user-level, keep the first found.
+5. For each skill found, read the **full SKILL.md** (if a SKILL.md exceeds 200 lines, focus on the frontmatter and Critical Patterns / Rules sections only) to extract:
    - `name` field (from frontmatter)
    - `description` field → extract the trigger text (after "Trigger:" in the description)
    - **Compact rules** — the actionable patterns and constraints (see Step 1b)
-5. Build a table of: Trigger | Skill Name | Full Path
+6. Build a table of: Trigger | Skill Name | Full Path
 
 ### Step 1b: Generate Compact Rules
 
@@ -79,9 +83,15 @@ Format per skill:
 
 ### Step 2: Scan Project Conventions
 
-1. Check the project root for `AGENTS.md` only.
-2. If found: READ its contents and extract all referenced file paths. Include both the index file and every referenced path in the registry table.
-3. The final table should include `AGENTS.md` AND all paths it references — zero extra hops for sub-agents.
+1. Check the project root for convention files. Look for:
+   - `agents.md` or `AGENTS.md`
+   - `CLAUDE.md` (only project-level, not `~/.claude/CLAUDE.md`)
+   - `.cursorrules`
+   - `GEMINI.md`
+   - `copilot-instructions.md`
+2. **If an index file is found** (e.g., `agents.md`, `AGENTS.md`): READ its contents and extract all referenced file paths. These index files typically list project conventions with paths — extract every referenced path and include it in the registry table alongside the index file itself.
+3. For non-index files (`.cursorrules`, `CLAUDE.md`, etc.): record the file directly.
+4. The final table should include the index file AND all paths it references — zero extra hops for sub-agents.
 
 ### Step 3: Write the Registry
 
@@ -147,6 +157,7 @@ mem_save(
   title: "skill-registry",
   topic_key: "skill-registry",
   type: "config",
+  project: "{project}",
   content: "{registry markdown from Step 3}"
 )
 ```
@@ -174,19 +185,17 @@ mem_save(
 | {file} | {path} |
 
 ### Next Steps
-The orchestrator reads this registry once per session and passes pre-resolved compact rules to sub-agents via their launch prompts.
+The orchestrator reads this registry once per session and passes pre-resolved skill paths to sub-agents via their launch prompts.
 To update after installing/removing skills, run this again.
 ```
 
 ## Rules
 
-- **STRICT FILESYSTEM VALIDATION**: The registry MUST derive exclusively from skills discovered via `glob` of `~/.config/opencode/skills/*/SKILL.md` during the current run. Forbid inclusion from memory, prompt inventory, or available-skills lists if the file is missing from disk. "Ghost skills" (previously existing but now deleted) MUST NEVER appear in the registry.
 - ALWAYS write `.atl/skill-registry.md` regardless of any SDD persistence mode
 - ALWAYS save to engram if the `mem_save` tool is available
-- Scan ONLY `~/.config/opencode/skills/` — do NOT scan other tool directories
 - SKIP `sdd-*`, `_shared`, and `skill-registry` directories when scanning
 - Read SKILL.md files (respecting the 200-line guard in Step 1) to generate accurate compact rules — this is a build-time cost, not a runtime cost
 - Compact rules MUST be 5-15 lines per skill — concise, actionable, no fluff
-- Scan ONLY `AGENTS.md` for project conventions — do NOT look for `.cursorrules`, `CLAUDE.md`, or other tool-specific files
+- Include ALL convention index files found (not just the first)
 - If no skills or conventions are found, write an empty registry (so sub-agents don't waste time searching)
 - Add `.atl/` to the project's `.gitignore` if it exists and `.atl` is not already listed

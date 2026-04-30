@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "id": "gpt-gemini.json/2026-04-30T16-10-16-403Z-qoyht9.json",
+  "profileFile": "gpt-gemini.json",
+  "createdAt": "2026-04-30T16:10:16.403Z",
+  "source": "phase",
+  "operation": {
+    "source": "phase",
+    "phase": "sdd-spec",
+    "field": "primary",
+    "modelId": "google/gemini-3-flash-preview",
+    "changedPhases": 1
+  },
+  "operationSummary": "Set sdd-spec primary model to google/gemini-3-flash-preview",
+  "beforeRaw": "{\n  \"models\": {\n    \"sdd-apply\": \"openai/gpt-5.3-codex\",\n    \"sdd-archive\": \"openai/gpt-5.4-mini\",\n    \"sdd-design\": \"openai/gpt-5.4\",\n    \"sdd-explore\": \"google/gemini-3-flash-preview\",\n    \"sdd-init\": \"google/gemini-3-flash-preview\",\n    \"sdd-orchestrator\": \"openai/gpt-5.4\",\n    \"sdd-propose\": \"openai/gpt-5.4\"\n  }\n}",
+  "preview": {
+    "models": {
+      "sdd-apply": "openai/gpt-5.3-codex",
+      "sdd-archive": "openai/gpt-5.4-mini",
+      "sdd-design": "openai/gpt-5.4",
+      "sdd-explore": "google/gemini-3-flash-preview",
+      "sdd-init": "google/gemini-3-flash-preview",
+      "sdd-orchestrator": "openai/gpt-5.4",
+      "sdd-propose": "openai/gpt-5.4"
+    },
+    "fallback": {}
+  }
+}

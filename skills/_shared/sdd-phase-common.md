@@ -2,14 +2,14 @@
 
 Boilerplate identical across all SDD phase skills. Sub-agents MUST load this alongside their phase-specific SKILL.md.
 
-Executor boundary: every SDD phase agent is an EXECUTOR, not an orchestrator. Do the phase work yourself. Do NOT launch sub-agents, do NOT call `delegate`/`task`, and do NOT bounce work back unless the phase skill explicitly says to stop and report a blocker. This is a hard contract for all `sdd-*` executors.
+Executor boundary: every SDD phase agent is an EXECUTOR, not an orchestrator. Do the phase work yourself. Do NOT launch sub-agents, do NOT call `delegate`/`task`, and do NOT bounce work back unless the phase skill explicitly says to stop and report a blocker.
 
 ## A. Skill Loading
 
 1. Check if the orchestrator injected a `## Project Standards (auto-resolved)` block in your launch prompt. If yes, follow those rules — they are pre-digested compact rules from the skill registry. **Do NOT read any SKILL.md files.**
 2. If no Project Standards block was provided, check for `SKILL: Load` instructions. If present, load those exact skill files.
 3. If neither was provided, search for the skill registry as a fallback:
-   a. `mem_search(query: "skill-registry")` — if found, `mem_get_observation(id)` for full content
+   a. `mem_search(query: "skill-registry", project: "{project}")` — if found, `mem_get_observation(id)` for full content
    b. Fallback: read `.atl/skill-registry.md` from the project root if it exists
    c. From the registry's **Compact Rules** section, apply rules whose triggers match your current task.
 4. If no registry exists, proceed with your phase skill only.
@@ -23,7 +23,7 @@ NOTE: the preferred path is (1) — compact rules pre-injected by the orchestrat
 **Run all searches in parallel** — do NOT search sequentially.
 
 ```
-mem_search(query: "sdd/{change-name}/{artifact-type}") → save ID
+mem_search(query: "sdd/{change-name}/{artifact-type}", project: "{project}") → save ID
 ```
 
 Then **run all retrievals in parallel**:
@@ -45,6 +45,7 @@ mem_save(
   title: "sdd/{change-name}/{artifact-type}",
   topic_key: "sdd/{change-name}/{artifact-type}",
   type: "architecture",
+  project: "{project}",
   content: "{your full artifact markdown}"
 )
 ```
@@ -86,5 +87,3 @@ Example:
 **Skill Resolution**: injected — 3 skills (react-19, typescript, tailwind-4)
 (other values: `fallback-registry`, `fallback-path`, or `none — no registry found`)
 ```
-
-When using Engram, include the saved observation IDs in `artifacts` whenever available so future phases can retrieve artifacts directly and trace persistence.

@@ -26,6 +26,7 @@ You are an EXECUTOR for this phase, not the orchestrator. Do the initialization 
     title: "sdd-init/{project-name}",
     topic_key: "sdd-init/{project-name}",
     type: "architecture",
+    project: "{project-name}",
     content: "{detected project context markdown}"
   )
   ```
@@ -180,6 +181,7 @@ mem_save(
   title: "sdd/{project-name}/testing-capabilities",
   topic_key: "sdd/{project-name}/testing-capabilities",
   type: "config",
+  project: "{project-name}",
   content: "{testing capabilities markdown — see format below}"
 )
 ```
@@ -217,21 +219,16 @@ mem_save(
 
 If mode is `openspec` or `hybrid`, also write this as a section in `openspec/config.yaml` under `testing:`.
 
-### Step 7: Build Skill Registry (STRICT FILESYSTEM SOURCE)
+### Step 7: Build Skill Registry
 
-1. **Identify Filtering Signals**: Use the project context (Step 1) and testing capabilities (Step 2) to identify the project's language, framework, and tools.
-2. **Scan and filter user skills (STRICT)**: Glob `*/SKILL.md` in `~/.config/opencode/skills/` only.
-   - **MANDATORY**: Derive the list ONLY from this filesystem scan. Do NOT include skills from memory or prompt inventory if they are missing from disk ("ghost skills").
-3. Apply the filtering rules defined in `skills/skill-registry/SKILL.md` using the strict categories:
-   - **stack-bound**: Include ONLY matching tech stack (e.g., `go-testing` only if `.go` or `go.mod` exists).
-   - **workflow-general**: Include only when the current task/workspace clearly justifies a lightweight reusable workflow skill.
-   - **intent-only**: NEVER auto-include (skip `judgment-day`, `skill-creator`, `engram-pending-tasks`, `branch-pr`, `issue-creation`).
-   - **ALWAYS SKIP**: `sdd-*`, `_shared`, and `skill-registry`.
-4. Scan project conventions: check for `AGENTS.md` in the project root only. If found, READ it and note the path.
-5. **ALWAYS write `.atl/skill-registry.md`** in the project root (create `.atl/` if needed). This file is mode-independent — it's infrastructure, not an SDD artifact.
-6. If engram is available, **ALSO save to engram**: `mem_save(title: "skill-registry", topic_key: "skill-registry", type: "config", content: "{registry markdown}")`
+Follow the same logic as the `skill-registry` skill (`skills/skill-registry/SKILL.md`):
 
-See `skills/skill-registry/SKILL.md` for the full registry format and filtering logic.
+1. Scan user skills: glob `*/SKILL.md` across ALL known skill directories. **User-level**: `~/.claude/skills/`, `~/.config/opencode/skills/`, `~/.gemini/skills/`, `~/.cursor/skills/`, `~/.copilot/skills/`, parent of this skill file. **Project-level**: `.claude/skills/`, `.gemini/skills/`, `.agent/skills/`, `skills/`. Skip `sdd-*`, `_shared`, `skill-registry`. Deduplicate by name (project-level wins). Read frontmatter triggers.
+2. Scan project conventions: check for `agents.md`, `AGENTS.md`, `CLAUDE.md` (project-level), `.cursorrules`, `GEMINI.md`, `copilot-instructions.md` in the project root. If an index file is found (e.g., `agents.md`), READ it and extract all referenced file paths — include both the index and its referenced files in the registry.
+3. **ALWAYS write `.atl/skill-registry.md`** in the project root (create `.atl/` if needed). This file is mode-independent — it's infrastructure, not an SDD artifact.
+4. If engram is available, **ALSO save to engram**: `mem_save(title: "skill-registry", topic_key: "skill-registry", type: "config", project: "{project}", content: "{registry markdown}")`
+
+See `skills/skill-registry/SKILL.md` for the full registry format and scanning details.
 
 ### Step 8: Persist Project Context
 
@@ -243,6 +240,7 @@ mem_save(
   title: "sdd-init/{project-name}",
   topic_key: "sdd-init/{project-name}",
   type: "architecture",
+  project: "{project-name}",
   content: "{your detected project context from Steps 1-7}"
 )
 ```

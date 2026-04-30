@@ -1,0 +1,15 @@
+{
+  "models": {
+    "sdd-apply": "openai/gpt-5.3-codex",
+    "sdd-archive": "openai/gpt-5.3-codex",
+    "sdd-design": "openai/gpt-5.3-codex",
+    "sdd-explore": "openai/gpt-5.3-codex",
+    "sdd-init": "openai/gpt-5.3-codex",
+    "sdd-onboard": "openai/gpt-5.3-codex",
+    "sdd-orchestrator": "openai/gpt-5.3-codex",
+    "sdd-propose": "openai/gpt-5.3-codex",
+    "sdd-spec": "openai/gpt-5.3-codex",
+    "sdd-tasks": "openai/gpt-5.3-codex",
+    "sdd-verify": "openai/gpt-5.3-codex"
+  }
+}
