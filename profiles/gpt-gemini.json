@@ -5,10 +5,10 @@
     "sdd-design": "openai/gpt-5.4",
     "sdd-explore": "google/gemini-3-flash-preview",
     "sdd-init": "google/gemini-3-flash-preview",
-    "sdd-orchestrator": "openai/gpt-5.4",
     "sdd-propose": "openai/gpt-5.4",
     "sdd-spec": "google/gemini-3-flash-preview",
     "sdd-tasks": "google/gemini-3-flash-preview",
-    "sdd-verify": "openai/gpt-5.3-codex"
+    "sdd-verify": "openai/gpt-5.3-codex",
+    "gentle-orchestrator": "openai/gpt-5.4"
   }
 }

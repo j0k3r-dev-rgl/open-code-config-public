@@ -1,8 +1,6 @@
 ---
 name: sdd-init
-description: >
-  Initialize Spec-Driven Development context in any project. Detects stack, conventions, testing capabilities, and bootstraps the active persistence backend.
-  Trigger: When user wants to initialize SDD in a project, or says "sdd init", "iniciar sdd", "openspec init".
+description: "Initialize Spec-Driven Development context in any project. Detects stack, conventions, testing capabilities, and bootstraps the active persistence backend. Trigger: When user wants to initialize SDD in a project, or says \"sdd init\", \"iniciar sdd\", \"openspec init\"."
 license: MIT
 metadata:
   author: gentleman-programming
@@ -23,14 +21,16 @@ You are an EXECUTOR for this phase, not the orchestrator. Do the initialization 
   **Save project context**:
   ```
   mem_save(
-    title: "sdd-init/{project-name}",
-    topic_key: "sdd-init/{project-name}",
+    title: "sdd-init/{project}",
+    topic_key: "sdd-init/{project}",
     type: "architecture",
-    project: "{project-name}",
+    project: "{project}",
+    capture_prompt: false,
     content: "{detected project context markdown}"
   )
   ```
   `topic_key` enables upserts — re-running init updates the existing context, not duplicates.
+  Set `capture_prompt: false` when the Engram tool schema supports it; if an older schema rejects or does not expose the field, omit it rather than failing.
 
   (See `skills/_shared/engram-convention.md` for full naming conventions.)
 - If mode is `openspec`: Read and follow `skills/_shared/openspec-convention.md`. Run full bootstrap.
@@ -178,13 +178,15 @@ Persist detected testing capabilities as a separate Engram observation (or secti
 If mode is `engram` or `hybrid`:
 ```
 mem_save(
-  title: "sdd/{project-name}/testing-capabilities",
-  topic_key: "sdd/{project-name}/testing-capabilities",
+  title: "sdd/{project}/testing-capabilities",
+  topic_key: "sdd/{project}/testing-capabilities",
   type: "config",
-  project: "{project-name}",
+  project: "{project}",
+  capture_prompt: false,
   content: "{testing capabilities markdown — see format below}"
 )
 ```
+Set `capture_prompt: false` when the Engram tool schema supports it; if an older schema rejects or does not expose the field, omit it rather than failing.
 
 **Testing Capabilities format**:
 
@@ -226,7 +228,7 @@ Follow the same logic as the `skill-registry` skill (`skills/skill-registry/SKIL
 1. Scan user skills: glob `*/SKILL.md` across ALL known skill directories. **User-level**: `~/.claude/skills/`, `~/.config/opencode/skills/`, `~/.gemini/skills/`, `~/.cursor/skills/`, `~/.copilot/skills/`, parent of this skill file. **Project-level**: `.claude/skills/`, `.gemini/skills/`, `.agent/skills/`, `skills/`. Skip `sdd-*`, `_shared`, `skill-registry`. Deduplicate by name (project-level wins). Read frontmatter triggers.
 2. Scan project conventions: check for `agents.md`, `AGENTS.md`, `CLAUDE.md` (project-level), `.cursorrules`, `GEMINI.md`, `copilot-instructions.md` in the project root. If an index file is found (e.g., `agents.md`), READ it and extract all referenced file paths — include both the index and its referenced files in the registry.
 3. **ALWAYS write `.atl/skill-registry.md`** in the project root (create `.atl/` if needed). This file is mode-independent — it's infrastructure, not an SDD artifact.
-4. If engram is available, **ALSO save to engram**: `mem_save(title: "skill-registry", topic_key: "skill-registry", type: "config", project: "{project}", content: "{registry markdown}")`
+4. If engram is available, **ALSO save to engram**: `mem_save(title: "skill-registry", topic_key: "skill-registry", type: "config", project: "{project}", capture_prompt: false, content: "{registry markdown}")`. Set `capture_prompt: false` when the Engram tool schema supports it; if an older schema rejects or does not expose the field, omit it rather than failing.
 
 See `skills/skill-registry/SKILL.md` for the full registry format and scanning details.
 
@@ -237,13 +239,15 @@ See `skills/skill-registry/SKILL.md` for the full registry format and scanning d
 If mode is `engram`:
 ```
 mem_save(
-  title: "sdd-init/{project-name}",
-  topic_key: "sdd-init/{project-name}",
+  title: "sdd-init/{project}",
+  topic_key: "sdd-init/{project}",
   type: "architecture",
-  project: "{project-name}",
+  project: "{project}",
+  capture_prompt: false,
   content: "{your detected project context from Steps 1-7}"
 )
 ```
+Set `capture_prompt: false` when the Engram tool schema supports it; if an older schema rejects or does not expose the field, omit it rather than failing.
 
 If mode is `openspec` or `hybrid`: the config was already written in Step 5.
 
@@ -255,7 +259,7 @@ Return a structured summary adapted to the resolved mode:
 
 #### If mode is `engram`:
 
-Persist project context following `skills/_shared/engram-convention.md` with title and topic_key `sdd-init/{project-name}`.
+Persist project context following `skills/_shared/engram-convention.md` with title and topic_key `sdd-init/{project}`.
 
 Return:
 ```
@@ -280,9 +284,9 @@ Return:
 ### Context Saved
 Project context persisted to Engram.
 - **Engram ID**: #{observation-id}
-- **Topic key**: sdd-init/{project-name}
+- **Topic key**: sdd-init/{project}
 - **Capabilities ID**: #{capabilities-observation-id}
-- **Capabilities key**: sdd/{project-name}/testing-capabilities
+- **Capabilities key**: sdd/{project}/testing-capabilities
 
 No project files created.
 

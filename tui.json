@@ -1,5 +1,5 @@
 {
 	"$schema": "https://opencode.ai/tui.json",
-	"theme": "arch-electric",
-	"plugin": ["opencode-sdd-engram-manage", "opencode-subagent-statusline"]
+	"plugin": ["opencode-subagent-statusline", "opencode-sdd-engram-manage"],
+	"theme": "arch-electric"
 }
