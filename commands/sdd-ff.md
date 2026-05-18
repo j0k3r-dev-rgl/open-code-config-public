@@ -15,9 +15,10 @@ Run these sub-agents in sequence:
 Present a combined summary after ALL phases complete (not between each one).
 
 CONTEXT:
-- Working directory: !`echo -n "$(pwd)"`
-- Current project: !`echo -n "$(basename $(pwd))"`
+- Working directory: !`pwd`
+- Current project: !`basename "$(pwd)"`
 - Change name: $ARGUMENTS
+- Execution mode: ask/cache per orchestrator
 - Artifact store mode: ask/cache per orchestrator
 - Delivery strategy: ask/cache per orchestrator
 

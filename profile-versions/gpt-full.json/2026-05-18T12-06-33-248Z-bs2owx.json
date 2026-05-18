@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "gpt-full.json/2026-05-18T12-06-33-248Z-bs2owx.json",
+  "profileFile": "gpt-full.json",
+  "createdAt": "2026-05-18T12:06:33.248Z",
+  "source": "phase",
+  "operation": {
+    "source": "phase",
+    "phase": "sdd-init",
+    "field": "primary",
+    "modelId": "openai/gpt-5.4",
+    "changedPhases": 1
+  },
+  "operationSummary": "Set sdd-init primary model to openai/gpt-5.4",
+  "beforeRaw": "{\n  \"models\": {\n    \"sdd-apply\": \"openai/gpt-5.4\",\n    \"sdd-archive\": \"openai/gpt-5.3-codex\",\n    \"sdd-design\": \"openai/gpt-5.5\",\n    \"sdd-explore\": \"openai/gpt-5.4\",\n    \"sdd-init\": \"openai/gpt-5.3-codex\",\n    \"sdd-onboard\": \"openai/gpt-5.3-codex\",\n    \"sdd-propose\": \"openai/gpt-5.5\",\n    \"sdd-spec\": \"openai/gpt-5.3-codex\",\n    \"sdd-tasks\": \"openai/gpt-5.3-codex\",\n    \"sdd-verify\": \"openai/gpt-5.3-codex\",\n    \"gentle-orchestrator\": \"openai/gpt-5.5\"\n  }\n}",
+  "preview": {
+    "models": {
+      "sdd-apply": "openai/gpt-5.4",
+      "sdd-archive": "openai/gpt-5.3-codex",
+      "sdd-design": "openai/gpt-5.5",
+      "sdd-explore": "openai/gpt-5.4",
+      "sdd-init": "openai/gpt-5.3-codex",
+      "sdd-onboard": "openai/gpt-5.3-codex",
+      "sdd-propose": "openai/gpt-5.5",
+      "sdd-spec": "openai/gpt-5.3-codex",
+      "sdd-tasks": "openai/gpt-5.3-codex",
+      "sdd-verify": "openai/gpt-5.3-codex",
+      "gentle-orchestrator": "openai/gpt-5.5"
+    },
+    "fallback": {}
+  }
+}

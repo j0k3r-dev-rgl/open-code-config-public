@@ -9,7 +9,7 @@
     "sdd-spec": "google/gemini-3-flash-preview",
     "sdd-tasks": "google/gemini-3-flash-preview",
     "sdd-verify": "openai/gpt-5.3-codex",
-    "gentle-orchestrator": "openai/gpt-5.5"
+    "gentle-orchestrator": "opencode-go/minimax-m2.7"
   },
   "fallback": {
     "sdd-apply": "google/gemini-3-flash-preview",

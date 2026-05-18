@@ -1,12 +1,12 @@
 {
-  "dependencies": {
-    "@opencode-ai/plugin": "1.14.39",
-    "opencode-sdd-engram-manage": "^1.4.2",
-    "opencode-subagent-statusline": "^0.6.1",
-    "unique-names-generator": "^4.7.1"
-  },
-  "devDependencies": {
-    "@types/node": "^22.0.0",
-    "bun-types": "latest"
-  }
+	"dependencies": {
+		"@opencode-ai/plugin": "^1.15.4",
+		"opencode-sdd-engram-manage": "^1.6.6",
+		"opencode-subagent-statusline": "^0.7.0",
+		"unique-names-generator": "^4.7.1"
+	},
+	"devDependencies": {
+		"@types/node": "^25.7.0",
+		"bun-types": "latest"
+	}
 }
